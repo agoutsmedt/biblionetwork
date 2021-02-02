@@ -58,6 +58,7 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
   #' @import data.table
   #' @import Rdpack
 
+
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()
   # See https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/
   id_ref <- id_art <- N <- .N <- Source <- Target <- weight <- nb_cit_Target <- nb_cit_Source <- NULL

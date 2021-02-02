@@ -3,7 +3,7 @@ coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_c
   #' Calculating The Coupling Strength Measure For Edges
   #'
   #' @description This function calculates the coupling strength measure \insertCite{@following @vladutz1984 and @shen2019}{biblionetwork}
-  #' from a direct citation data frame. It is a refinement of [biblio_coupling()][biblionetwork::biblio_coupling()]:
+  #' from a direct citation data frame. It is a refinement of [biblio_coupling()]:
   #' it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus.
   #' In other words, the most cited references are less important in the links between two articles, than references that have
   #' been rarely cited. To a certain extent, it is similar to the TF-IDF measure.
@@ -97,8 +97,9 @@ coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_c
 
   # CS
   bib_coup[,weight := (sum(log(nb_doc/nb_cit))) / (nb_ref_Target*nb_ref_Source), .(Source,Target)]
+
   # Keep only unique couple
-  #bib_coup <- bib_coup[, head(.SD, 1), .(Source,Target)]
+  bib_coup <- unique(bib_coup)
 
   # copying the Source and Target columns in case of using Tidygraph later
   bib_coup[, `:=` (from = Source, to = Target)]
@@ -109,7 +110,7 @@ coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_c
       bib_coup$to <- as.character(bib_coup$to)
   }
 
- return (bib_coup[, c("from","to","weight","Source","Target")])
+ return (unique(bib_coup[, c("from","to","weight","Source","Target")]))
 
   }
 

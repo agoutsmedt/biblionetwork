@@ -1,22 +1,22 @@
 Package: biblionetwork
-Title: A Package For Creating Different Type of Bibliometric Network
+Title: A Package For Creating Different Types of Bibliometric Networks
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Aurélien",
            family = "Goutsmedt",
            role = c("aut", "cre"),
            email = "agoutsmedt@hotmail.fr",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           comment = c(ORCID = "0000-0002-3788-7237"))
     person(given = "François",
            family = "Claveau",
-           role = c("aut", "cre"),
+           role = c("aut"),
            email = "françois.claveau@usherbrooke.ca",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           comment = c(ORCID = "0000-0001-7129-7794"))
     person(given = "Alexandre",
            family = "Truc",
            role = c("aut", "cre"),
            email = "alexandre.truc77@gmail.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           comment = c(ORCID = "0000-0002-1328-7819"))
 Description: This package brings different functions to create bibliometric networks 
     like bibliographic coupling network, co-citation network and co-authorship network. 
     The weights of network edges can be calculated according to different methods, 

@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
 ```
 
 # biblionetwork
@@ -27,6 +28,10 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 The goal of biblionetwork is to provide functions to create bibliometric networks like bibliographic coupling network, co-citation network and co-authorship network. The weights of network edges can be calculated according to different methods, depending on the type of networks, the type of nodes, and what you want to analyse. These functions are optimized to be be used on very large dataset.
+
+The original function which uses data.table and allows the user to find edges and calculate weights for very large networks was developed by [François Claveau](https://www.usherbrooke.ca/philosophie/nous-joindre/personnel-enseignant/claveau-francois/). The different functions in this package have been developed, from Claveau's original idea, by [Alexandre Truc](https://sites.google.com/view/alexandre-truc/home-and-contact) and [Aurélien Goutsmedt](https://agoutsmedt.wordpress.com/). The package is maintained by Aurélien Goutsmedt and Alexandre Truc.^[Contact: [agoutsmedt@hotmail.fr](agoutsmedt@hotmail.fr).]
+
+You can cite this package as: Claveau, François, Aurélien Goutsmedt, and Alexandre Truc.(2021). biblionetwork: A Package For Creating Different Types of Bibliometric Networks. R package version 0.0.0.9000.
 
 ## Installation
 
@@ -37,22 +42,80 @@ You can install the development version from [GitHub](https://github.com/) with:
 devtools::install_github("agoutsmedt/biblionetwork")
 ```
 
-## Example
+## Uses of the package
 
-This is a basic example using the data integrated in the package. It uses the `biblio_coupling()` function which is the most general function of the package. This function calculates the number of references that different articles share together, as well as the coupling angle value of edges in a bibliographic coupling network @sen1983, from a direct citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure: it divides the number of references that two articles share by the rootsquare of the product of both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography.
+Let's use the different functions of the package with the data integrated in the package.
+
+### The basic coupling angle (or cosine) function
+
+ It uses the `biblio_coupling()` function which is the most general function of the package. This function calculates the number of references that different articles share together, as well as the coupling angle value of edges in a bibliographic coupling network @sen1983, from a direct citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure: it divides the number of references that two articles share by the rootsquare of the product of both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography. It looks like:
+
+$$ 
+\frac{R(A) \bullet R(B)}{\sqrt{L(A).L(B)}} 
+$$
+
+with $R(A)$ and $R(B)$ the references of document A and document B, $R(A) \bullet R(B)$ being the number of shared references by A and B, and $L(A)$ and $L(B)$ the length of the bibliographies of document A and document B.
 
 The output is an edges data frame linking nodes together (see the `from` and `to` columns) with a weight for each edge being the coupling angle measure. If `normalized_weight_only` is set to be `FALSE`, another column displays the number of references shared by the two nodes. 
 
-```{r example}
+```{r coupling angle}
 library(biblionetwork)
 
-edges <- biblio_coupling(Ref_stagflation, source = "Citing_ItemID_Ref", ref = "ItemID_Ref", normalized_weight_only = FALSE)
+biblio_coupling(Ref_stagflation, source = "Citing_ItemID_Ref", ref = "ItemID_Ref", normalized_weight_only = FALSE, weight_threshold = 1)
 
 ```
 
 This function is a relatively general function that can also be used:
 
+1. for co-citation, just by inverting the `source`and `ref` columns;
 1. for title co-occurence networks (taking care of the lenght of the title thanks to the coupling angle measure);
 1. for co-authorship networks (taking care of the number of co-authors an author has collaborated with on a period)
+
+The function just keeps the edges that have a non-normalized weight superior to the `weight_threshold`. In a large bibliographic coupling network, you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together. This parameter could also be modified to avoid creating untractable networks with too many edges.
+
+```{r threshold example}
+library(biblionetwork)
+
+biblio_coupling(Ref_stagflation, source = "Citing_ItemID_Ref", ref = "ItemID_Ref", weight_threshold = 3)
+
+```
+
+
+### Testing another method: the `coupling_strength()` function
+
+This function calculates the coupling strength measure [following @vladutz1984 and @shen2019] from a direct citation data frame. It is a refinement of `biblio_coupling()`: it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus. In other words, the most cited references are less important in the links between two articles, than references that have been rarely cited. To a certain extent, it is similar to the TF-IDF measure. It looks like:
+
+$$ 
+\frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j}(log({\frac{N}{freq(R_{j})}}))
+$$
+
+with $N$ the number of articles in the whole dataset and $freq(R_{j})$ the number of time the reference j (which is shared by documents A and B) is cited in the whole corpus.
+
+```{r coupling strength}
+library(biblionetwork)
+
+coupling_strength(Ref_stagflation, source = "Citing_ItemID_Ref", ref = "ItemID_Ref", weight_threshold = 1)
+
+```
+
+### Aggregating at the "entity" level
+
+Rather than focusing on documents, you can want to study the relationships between authors, institutions/affiliations or journals. The `coupling_entity()` function allows you to do that. Coupling links are calculated using the coupling angle measure or the coupling strength measure. Coupling links are calculated depending of the number references two authors share, taking into account the minimum number of times two authors are citing each references. For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles), the second one three times, the function takes two as the minimum value. In addition to the features of the [coupling strength measure][#coupling-strength] or the [coupling angle measure][#coupling-angle], it means that, if two entities share two reference in common, the fact that the first reference is cited at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than the second reference. This use of minimum shared reference for entities coupling comes from @zhao2008b. It looks like:
+
+$$ 
+\frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j} Min(C_{Aj},C_{Bj}).(log({\frac{N}{freq(R_{j})}}))
+$$
+
+with $C_{Aj}$ and $C_{Bj}$ the number of time documents A and B cite the reference $j$.
+
+```{r coupling entity}
+library(biblionetwork)
+
+# merging the references data with the citing author information in Nodes_stagflation
+entity_citations <- merge(Ref_stagflation, Nodes_stagflation, by.x = "Citing_ItemID_Ref", by.y = "ItemID_Ref")
+
+coupling_entity(entity_citations, source = "Citing_ItemID_Ref", ref = "ItemID_Ref", entity = "Author.y", method = "coupling_angle")
+
+```
 
 ## References

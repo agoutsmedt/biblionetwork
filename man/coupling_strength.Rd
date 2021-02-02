@@ -34,7 +34,7 @@ are using the tidygraph package then, where \code{from} and \code{to} values are
 }
 \description{
 This function calculates the coupling strength measure \insertCite{@following @vladutz1984 and @shen2019}{biblionetwork}
-from a direct citation data frame. It is a refinement of \link[=biblio_coupling]{biblio_coupling()}:
+from a direct citation data frame. It is a refinement of \code{\link[=biblio_coupling]{biblio_coupling()}}:
 it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus.
 In other words, the most cited references are less important in the links between two articles, than references that have
 been rarely cited. To a certain extent, it is similar to the TF-IDF measure.
