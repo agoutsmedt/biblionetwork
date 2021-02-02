@@ -2,7 +2,7 @@
 % Please edit documentation in R/biblio_coupling.R
 \name{biblio_coupling}
 \alias{biblio_coupling}
-\title{function for edges of bibliographic coupling}
+\title{Calculating The Coupling Angle Measure For Edges}
 \usage{
 biblio_coupling(
   dt,
@@ -14,13 +14,12 @@ biblio_coupling(
 )
 }
 \arguments{
-\item{dt}{For bibliographic coupling, the dataframe with citing and cited documents. It could also be used
+\item{dt}{For bibliographic coupling (or co-citation), the dataframe with citing and cited documents. It could also be used
 \enumerate{
 \item for title co-occurence network, with \code{source} being the articles,
 and \code{ref} being the list of words in articles titles;
 \item for co-authorship network,
-with \code{source} being the authors, and \code{ref} the list of articles. For co-authorship,
-rather use the \code{coauth_network} function.
+with \code{source} being the authors, and \code{ref} the list of articles.
 }}
 
 \item{source}{the column name of the source identifiers, that is the documents that are citing.}
@@ -36,7 +35,7 @@ you can consider for instance that sharing only one reference is not sufficient/
 This parameter could also be modified to avoid creating untractable networks with too many edges.}
 
 \item{output_in_character}{If TRUE, the function ends by transforming the \code{from} and \code{to} columns in character, to make the
-creation of a tidygraph object easier.}
+creation of a \href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} graph easier.}
 }
 \value{
 A data.table with the articles (or authors) identifier in \code{from} and \code{to} columns, with one or two additional columns (the coupling angle measure and
@@ -56,10 +55,13 @@ on a very large dataframe very quickly.
 
 This function is a relatively general function that can also be used
 \enumerate{
+\item for co-citation networks (just by inversing the \code{source} and \code{ref} columns).
+If you want to avoid confusion, rather use the \code{biblio_cocit} function.
 \item for title co-occurence networks (taking care of
 the lenght of the title thanks to the coupling angle measure);
 \item for co-authorship networks (taking care of the
-number of co-authors an author has collaborated with on a period)
+number of co-authors an author has collaborated with on a period). For co-authorship,
+rather use the \code{coauth_network} function.
 }
 }
 \references{

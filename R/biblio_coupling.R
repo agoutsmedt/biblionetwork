@@ -1,6 +1,6 @@
 biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight_threshold = 1, output_in_character = TRUE)
 {
-  #' function for edges of bibliographic coupling
+  #' Calculating The Coupling Angle Measure For Edges
   #'
   #' @description This function calculates the number of references that different articles share together, as well as
   #' the coupling angle value of edges in a bibliographic coupling network \insertCite{sen1983}{biblionetwork}, from a direct
@@ -12,18 +12,20 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
   #' on a very large dataframe very quickly.
   #'
   #' This function is a relatively general function that can also be used
-  #' 1) for title co-occurence networks (taking care of
+  #' 1. for co-citation networks (just by inversing the `source` and `ref` columns).
+  #' If you want to avoid confusion, rather use the `biblio_cocit` function.
+  #' 1. for title co-occurence networks (taking care of
   #' the lenght of the title thanks to the coupling angle measure);
-  #' 2) for co-authorship networks (taking care of the
-  #' number of co-authors an author has collaborated with on a period)
+  #' 1. for co-authorship networks (taking care of the
+  #' number of co-authors an author has collaborated with on a period). For co-authorship,
+  #' rather use the `coauth_network` function.
   #'
   #' @param dt
-  #' For bibliographic coupling, the dataframe with citing and cited documents. It could also be used
+  #' For bibliographic coupling (or co-citation), the dataframe with citing and cited documents. It could also be used
   #' 1) for title co-occurence network, with `source` being the articles,
   #' and `ref` being the list of words in articles titles;
   #' 2) for co-authorship network,
-  #' with `source` being the authors, and `ref` the list of articles. For co-authorship,
-  #' rather use the `coauth_network` function.
+  #' with `source` being the authors, and `ref` the list of articles.
   #'
   #' @param source
   #' the column name of the source identifiers, that is the documents that are citing.
@@ -43,7 +45,7 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
   #'
   #' @param output_in_character
   #' If TRUE, the function ends by transforming the `from` and `to` columns in character, to make the
-  #' creation of a tidygraph object easier.
+  #' creation of a [tidygraph](https://tidygraph.data-imaginist.com/index.html) graph easier.
   #'
   #' @return A data.table with the articles (or authors) identifier in `from` and `to` columns, with one or two additional columns (the coupling angle measure and
   #' the number of shared references). It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
