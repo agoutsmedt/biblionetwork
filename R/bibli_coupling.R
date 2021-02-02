@@ -2,13 +2,13 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
 {
   #' function for edges of bibliographic coupling
   #'
-  #' This function calculates the number of references that different articles share together, as weel as
+  #' This function calculates the number of references that different articles share together, as well as
   #' the coupling angle value of edges in a bibliographic coupling network (Sen and Gan, 1983), from a direct
   #' citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure:
   #' it divides the number of references that two articles share by the rootsquare of the product of
   #' both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography.
   #'
-  #' This function uses data.table package and is thus very fast. It allows the user to compute the coupling angle
+  #' @details This function uses data.table package and is thus very fast. It allows the user to compute the coupling angle
   #' on a very large dataframe very quickly.
   #'
   #' This function is a relatively general function that can also be used

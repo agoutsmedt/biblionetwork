@@ -44,7 +44,7 @@ the number of shared references). It also keeps a copy of \code{from} and \code{
 are using the tidygraph package then, where \code{from} and \code{to} values are modified when creating a graph.
 }
 \description{
-This function calculates the number of references that different articles share together, as weel as
+This function calculates the number of references that different articles share together, as well as
 the coupling angle value of edges in a bibliographic coupling network (Sen and Gan, 1983), from a direct
 citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure:
 it divides the number of references that two articles share by the rootsquare of the product of
