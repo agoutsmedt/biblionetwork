@@ -2,8 +2,8 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
 {
   #' function for edges of bibliographic coupling
   #'
-  #' This function calculates the number of references that different articles share together, as well as
-  #' the coupling angle value of edges in a bibliographic coupling network (Sen and Gan, 1983), from a direct
+  #' @description This function calculates the number of references that different articles share together, as well as
+  #' the coupling angle value of edges in a bibliographic coupling network \insertCite{sen1983}{biblionetwork}, from a direct
   #' citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure:
   #' it divides the number of references that two articles share by the rootsquare of the product of
   #' both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography.
@@ -49,10 +49,12 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
   #' the number of shared references). It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
   #' are using the tidygraph package then, where `from` and `to` values are modified when creating a graph.
   #'
-  #' @references Sen, S. K., & Gan, S. K. (1983). A mathematical extension of the idea of bibliographic coupling and its applications.
+  #' @references
+  #' \insertAllCited{}
   #'
   #' @export
   #' @import data.table
+  #' @import Rdpack
 
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()
   # See https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/
