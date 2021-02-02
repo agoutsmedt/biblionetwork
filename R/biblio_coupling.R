@@ -74,11 +74,11 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
   # remove loop
   dt <- dt[id_art!=id_ref]
 
-  # Removing references cited only once:
-  dt <- dt[,N := .N, by = id_ref][N > 1][, list(id_art,id_ref)]
-
   # Computing how many items each citing document has (necessary for normalization later)
   id_nb_cit <-  dt[,list(nb_cit = .N),by=id_art]
+
+  # Removing references cited only once:
+  dt <- dt[,N := .N, by = id_ref][N > 1][, list(id_art,id_ref)]
 
   #Creating every combinaison of articles per references
   bib_coup <- dt[,list(Target = rep(id_art[1:(length(id_art)-1)],(length(id_art)-1):1),
