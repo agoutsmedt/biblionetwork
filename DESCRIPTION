@@ -1,0 +1,33 @@
+Package: biblionetwork
+Title: A Package For Creating Different Type of Bibliometric Network
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Aurélien",
+           family = "Goutsmedt",
+           role = c("aut", "cre"),
+           email = "agoutsmedt@hotmail.fr",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+    person(given = "François",
+           family = "Claveau",
+           role = c("aut", "cre"),
+           email = "françois.claveau@usherbrooke.ca",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+    person(given = "Alexandre",
+           family = "Truc",
+           role = c("aut", "cre"),
+           email = "alexandre.truc77@gmail.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This package brings different functions to create bibliometric networks 
+    like bibliographic coupling network, co-citation network and co-authorship network. 
+    The weights of network edges can be calculated according to different methods, 
+    depending on the type of networks, the type of nodes, and what you want to analyse. 
+    These functions are optimized to be be used on very large dataset.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    data.table
+Depends: 
+    R (>= 2.10)
