@@ -22,7 +22,8 @@ and \code{ref} being the list of words in articles titles;
 with \code{source} being the authors, and \code{ref} the list of articles.
 }}
 
-\item{source}{the column name of the source identifiers, that is the documents that are citing.}
+\item{source}{the column name of the source identifiers, that is the documents that are citing. In coupling network, these documents
+are the nodes of the network.}
 
 \item{ref}{the column name of the cited references identifiers.}
 

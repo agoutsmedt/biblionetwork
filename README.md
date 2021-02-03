@@ -8,6 +8,8 @@
             function](#testing-another-method-the-coupling_strength-function)
         -   [Aggregating at the “entity”
             level](#aggregating-at-the-entity-level)
+        -   [A different world: building co-authorship
+            network](#a-different-world-building-co-authorship-network)
     -   [Incorporated data](#incorporated-data)
     -   [References](#references)
 
@@ -80,6 +82,8 @@ The output is an edges data frame linking nodes together (see the `from`
 and `to` columns) with a weight for each edge being the coupling angle
 measure. If `normalized_weight_only` is set to be `FALSE`, another
 column displays the number of references shared by the two nodes.
+
+This example use the [`Ref_stagflation.rda`](#incorporated-data) file.
 
 ``` r
 library(biblionetwork)
@@ -211,6 +215,9 @@ $$
 with *C*<sub>*A**j*</sub> and *C*<sub>*B**j*</sub> the number of time
 documents A and B cite the reference *j*.
 
+This example use the [`Ref_stagflation.rda`](#incorporated-data) and the
+[`Nodes_stagflation.rda`](#incorporated-data) files.
+
 ``` r
 library(biblionetwork)
 
@@ -232,6 +239,75 @@ coupling_entity(entity_citations, source = "Citing_ItemID_Ref", ref = "ItemID_Re
 #> 1460:  WACHTER-M WEINTRAUB-S 0.14586499  WACHTER-M WEINTRAUB-S   coupling_angle
 ```
 
+### A different world: building co-authorship network
+
+Even if co-authorship links weights can be calculated using the
+[`biblio_coupling`](#the-basic-coupling-angle-or-cosine-function)
+function with authors as `source` and articles as `ref`, the method used
+is not necessarily the most appropriate for co-authorship networks. The
+`coauth_network` function implements different types of methods for
+calculating the weights linking different authors:[3]
+
+1.  a “full counting” method;
+2.  a “fractional counting” method (see [Perianes-Rodriguez, Waltman,
+    and Van Eck 2016](#ref-perianes-rodriguez2016b) for an interesting
+    comparison between full counting and fractional counting results);
+3.  a “fractional counting refined” method, inspired by [Leydesdorff and
+    Park](#ref-leydesdorff2017) ([2017-02](#ref-leydesdorff2017)).
+
+In addition, it is possible to take into account the total number of
+collaborations of two linked authors, by fixing `cosine_normalized` to
+`True`.
+
+This example use the [`Authors_stagflation.rda`](#incorporated-data)
+file.
+
+``` r
+library(biblionetwork)
+
+full_counting <- coauth_network(Authors_stagflation, authors = "Author", articles = "ItemID_Ref", method = "full_counting")
+head(full_counting[order(Source)],10)
+#>              from           to weight        Source       Target
+#>  1:       CHARI-V   ALBANESI-S      1       CHARI-V   ALBANESI-S
+#>  2:  CHRISTIANO-L      CHARI-V      2  CHRISTIANO-L      CHARI-V
+#>  3:  CHRISTIANO-L   ALBANESI-S      1  CHRISTIANO-L   ALBANESI-S
+#>  4:   CUKIERMAN-A    BRUNNER-K      1   CUKIERMAN-A    BRUNNER-K
+#>  5:  EICHENBAUM-M      CHARI-V      1  EICHENBAUM-M      CHARI-V
+#>  6:  EICHENBAUM-M CHRISTIANO-L      1  EICHENBAUM-M CHRISTIANO-L
+#>  7: EICHENGREEN-B      BORDO-M      1 EICHENGREEN-B      BORDO-M
+#>  8:      EUSEPI-S    BULLARD-J      1      EUSEPI-S    BULLARD-J
+#>  9:      FARMER-R      BEYER-A      1      FARMER-R      BEYER-A
+#> 10:  FITZGERALD-T CHRISTIANO-L      1  FITZGERALD-T CHRISTIANO-L
+
+fractional_counting <- coauth_network(Authors_stagflation, authors = "Author", articles = "ItemID_Ref", method = "fractional_counting")
+head(fractional_counting[order(Source)],10)
+#>              from           to weight        Source       Target
+#>  1:       CHARI-V   ALBANESI-S    0.5       CHARI-V   ALBANESI-S
+#>  2:  CHRISTIANO-L      CHARI-V    1.0  CHRISTIANO-L      CHARI-V
+#>  3:  CHRISTIANO-L   ALBANESI-S    0.5  CHRISTIANO-L   ALBANESI-S
+#>  4:   CUKIERMAN-A    BRUNNER-K    0.5   CUKIERMAN-A    BRUNNER-K
+#>  5:  EICHENBAUM-M      CHARI-V    0.5  EICHENBAUM-M      CHARI-V
+#>  6:  EICHENBAUM-M CHRISTIANO-L    0.5  EICHENBAUM-M CHRISTIANO-L
+#>  7: EICHENGREEN-B      BORDO-M    1.0 EICHENGREEN-B      BORDO-M
+#>  8:      EUSEPI-S    BULLARD-J    1.0      EUSEPI-S    BULLARD-J
+#>  9:      FARMER-R      BEYER-A    1.0      FARMER-R      BEYER-A
+#> 10:  FITZGERALD-T CHRISTIANO-L    1.0  FITZGERALD-T CHRISTIANO-L
+
+fractional_counting_cosine <- coauth_network(Authors_stagflation, authors = "Author", articles = "ItemID_Ref", method = "fractional_counting", cosine_normalized = TRUE)
+head(fractional_counting_cosine[order(Source)],10)
+#>              from           to    weight        Source       Target
+#>  1:       CHARI-V   ALBANESI-S 0.3535534       CHARI-V   ALBANESI-S
+#>  2:  CHRISTIANO-L   ALBANESI-S 0.2500000  CHRISTIANO-L   ALBANESI-S
+#>  3:  CHRISTIANO-L      CHARI-V 0.3535534  CHRISTIANO-L      CHARI-V
+#>  4:   CUKIERMAN-A    BRUNNER-K 0.3535534   CUKIERMAN-A    BRUNNER-K
+#>  5:  EICHENBAUM-M      CHARI-V 0.3535534  EICHENBAUM-M      CHARI-V
+#>  6:  EICHENBAUM-M CHRISTIANO-L 0.2500000  EICHENBAUM-M CHRISTIANO-L
+#>  7: EICHENGREEN-B      BORDO-M 1.0000000 EICHENGREEN-B      BORDO-M
+#>  8:      EUSEPI-S    BULLARD-J 1.0000000      EUSEPI-S    BULLARD-J
+#>  9:      FARMER-R      BEYER-A 1.0000000      FARMER-R      BEYER-A
+#> 10:  FITZGERALD-T CHRISTIANO-L 0.5000000  FITZGERALD-T CHRISTIANO-L
+```
+
 ## Incorporated data
 
 The biblionetwork package contains bibliometric data built by
@@ -244,7 +320,10 @@ information about the academic articles and books on stagflation (the
 staflation documents), as well as about the references cited at least by
 two of these stagflation documents. The `Ref_stagflation.rda` is a data
 frame of direct citations, with the identifiers of citing documents, and
-the identifiers of cited documents.
+the identifiers of cited documents. The `Authors_stagflation.rda` is a
+data frame with the list of documents explaining the US stagflation, and
+all the authors of these documents (`Nodes_stagflation.rda` just takes
+the first author for each document).
 
 ## References
 
@@ -256,6 +335,24 @@ Goutsmedt, Aurélien. 2021. “From the Stagflation to the Great Inflation:
 Explaining the US Economy of the 1970s.” *Revue d’Economie Politique*
 Forthcoming.
 <https://mega.nz/file/zfJ2QBbb#3OqXBIQRYmuQzptMyfvwW92IXhN-pWApKpILSs_w-pg>.
+
+</div>
+
+<div id="ref-leydesdorff2017" class="csl-entry">
+
+Leydesdorff, Loet, and Han Woo Park. 2017-02. “Full and Fractional
+Counting in Bibliometric Networks.” *Journal of Informetrics* 11 (1):
+117–20.
+<https://linkinghub.elsevier.com/retrieve/pii/S1751157716303133>.
+
+</div>
+
+<div id="ref-perianes-rodriguez2016b" class="csl-entry">
+
+Perianes-Rodriguez, Antonio, Ludo Waltman, and Nees Jan Van Eck. 2016.
+“Constructing Bibliometric Networks: A Comparison Between Full and
+Fractional Counting.” *Journal of Informetrics* 10 (4): 1178–95.
+<https://www.sciencedirect.com/science/article/pii/S1751157716302036?casa_token=AtzjmZ-1QmYAAAAA:2mlBPZsjGUleYi9mnybHODFw2RmMh3GHvRAuMYXygRm63cQOv07M4ixbAmJXuGq71tx2ug29baTp>.
 
 </div>
 
@@ -291,6 +388,7 @@ Zhao, Dangzhi, and Andreas Strotmann. 2008. “Author Bibliographic
 Coupling: Another Approach to Citation-Based Author Knowledge Network
 Analysis.” *Proceedings of the American Society for Information Science
 and Technology* 45 (1): 1–10.
+<https://asistdl.onlinelibrary.wiley.com/doi/full/10.1002/meet.2008.1450450292>.
 
 </div>
 
@@ -301,3 +399,7 @@ and Technology* 45 (1): 1–10.
 [2] Github\_document does not render properly math equations and I have
 decided to let them in a format that would allow proper computation in
 .html or .pdf documents.
+
+[3] I take as example authors here, but the function could also be used
+for calculating a co-authorship network with institutions or countries
+as nodes.

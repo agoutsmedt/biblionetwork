@@ -61,6 +61,8 @@ with $R(A)$ and $R(B)$ the references of document A and document B, $R(A) \bulle
 
 The output is an edges data frame linking nodes together (see the `from` and `to` columns) with a weight for each edge being the coupling angle measure. If `normalized_weight_only` is set to be `FALSE`, another column displays the number of references shared by the two nodes. 
 
+This example use the [`Ref_stagflation.rda`][Incorporated data] file.
+
 ```{r coupling angle}
 library(biblionetwork)
 
@@ -111,6 +113,8 @@ $$
 
 with $C_{Aj}$ and $C_{Bj}$ the number of time documents A and B cite the reference $j$.
 
+This example use the [`Ref_stagflation.rda`][Incorporated data] and the [`Nodes_stagflation.rda`][Incorporated data] files.
+
 ```{r coupling entity}
 library(biblionetwork)
 
@@ -121,8 +125,35 @@ coupling_entity(entity_citations, source = "Citing_ItemID_Ref", ref = "ItemID_Re
 
 ```
 
+### A different world: building co-authorship network
+
+Even if co-authorship links weights can be calculated using the [`biblio_coupling`][The basic coupling angle (or cosine) function] function with authors as `source` and articles as `ref`, the method used is not necessarily the most appropriate for co-authorship networks. The `coauth_network` function implements different types of methods for calculating the weights linking different authors:^[I take as example authors here, but the function could also be used for calculating a co-authorship network with institutions or countries as nodes.]
+
+1. a "full counting" method;
+1. a "fractional counting" method [see @perianes-rodriguez2016b for an interesting comparison between full counting and fractional counting results];
+1. a "fractional counting refined" method, inspired by @leydesdorff2017.
+
+In addition, it is possible to take into account the total number of collaborations of two linked authors, by fixing `cosine_normalized` to `True`.
+
+This example use the [`Authors_stagflation.rda`][Incorporated data] file.
+
+```{r coauthorship network}
+library(biblionetwork)
+
+full_counting <- coauth_network(Authors_stagflation, authors = "Author", articles = "ItemID_Ref", method = "full_counting")
+head(full_counting[order(Source)],10)
+
+fractional_counting <- coauth_network(Authors_stagflation, authors = "Author", articles = "ItemID_Ref", method = "fractional_counting")
+head(fractional_counting[order(Source)],10)
+
+fractional_counting_cosine <- coauth_network(Authors_stagflation, authors = "Author", articles = "ItemID_Ref", method = "fractional_counting", cosine_normalized = TRUE)
+head(fractional_counting_cosine[order(Source)],10)
+  
+```
+
 ## Incorporated data
 
-The biblionetwork package contains bibliometric data built by @goutsmedt2021a. These data gather the academic articles and books that endeavoured to explain the United States stagflation of the 1970s, published between 1975 and 2013. They also gather all the references cited by these articles and books on stagflation. The `Nodes_stagflation.rda` file contains information about the academic articles and books on stagflation (the staflation documents), as well as about the references cited at least by two of these stagflation documents. The `Ref_stagflation.rda` is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. 
+The biblionetwork package contains bibliometric data built by @goutsmedt2021a. These data gather the academic articles and books that endeavoured to explain the United States stagflation of the 1970s, published between 1975 and 2013. They also gather all the references cited by these articles and books on stagflation. The `Nodes_stagflation.rda` file contains information about the academic articles and books on stagflation (the staflation documents), as well as about the references cited at least by two of these stagflation documents. The `Ref_stagflation.rda` is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. The `Authors_stagflation.rda` is a data frame with the list of documents explaining the US stagflation, and all the authors of these documents (`Nodes_stagflation.rda` just takes the first author for each document).
+
 
 ## References

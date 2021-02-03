@@ -28,7 +28,8 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
   #' with `source` being the authors, and `ref` the list of articles.
   #'
   #' @param source
-  #' the column name of the source identifiers, that is the documents that are citing.
+  #' the column name of the source identifiers, that is the documents that are citing. In coupling network, these documents
+  #' are the nodes of the network.
   #'
   #' @param ref
   #'the column name of the cited references identifiers.
