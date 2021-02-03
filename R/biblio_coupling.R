@@ -91,6 +91,9 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
   # remove loop
   bib_coup <- bib_coup[Source!=Target]
 
+  # Inverse Source and Target so that couple of Source/Target are always on the same side
+  bib_coup <- unique(bib_coup[Source > Target, c("Target", "Source") := list(Source, Target)]) # exchanging and checking for doublons
+
   #Calculating the weight
   bib_coup <- bib_coup[,.N,by=list(Target,Source)] # This is the number of go references
 
@@ -114,16 +117,15 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
     bib_coup$from <- as.character(bib_coup$Source)
     bib_coup$to <- as.character(bib_coup$Target)
     if(normalized_weight_only==TRUE){
-      return (bib_coup[, c("from","to","weight","Source","Target")])
+      bib_coup[, c("from","to","weight","Source","Target")]
     } else {
-      return (bib_coup[, c("from","to","weight","nb_shared_references","Source","Target")])
+      bib_coup[, c("from","to","weight","nb_shared_references","Source","Target")]
     }
-  }
-  else{
+  } else{
     if(normalized_weight_only==TRUE){
-      return (bib_coup[, c("Source","Target","weight")])
+      bib_coup[, c("Source","Target","weight")]
     } else {
-      return (bib_coup[, c("Source","Target","weight","nb_shared_references")])
+      bib_coup[, c("Source","Target","weight","nb_shared_references")]
     }
   }
 

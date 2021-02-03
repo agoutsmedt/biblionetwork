@@ -77,7 +77,7 @@ coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_c
   bib_coup <- bib_coup[Source!=Target]
 
   # Inverse Source and Target so that couple of Source/Target are always on the same side
-  bib_coup <- bib_coup[Source > Target, c("Target", "Source") := list(Source, Target)] # exchanging
+  bib_coup <- unique(bib_coup[Source > Target, c("Target", "Source") := list(Source, Target)]) # exchanging
 
   ###### Add columns with info for weighting
   #Calculating the number of references in common and deleting the links between articles that share less than weight_threshold

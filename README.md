@@ -1,4 +1,16 @@
 
+-   [biblionetwork](#biblionetwork)
+    -   [Installation](#installation)
+    -   [Uses of the package](#uses-of-the-package)
+        -   [The basic coupling angle (or cosine)
+            function](#the-basic-coupling-angle-or-cosine-function)
+        -   [Testing another method: the `coupling_strength()`
+            function](#testing-another-method-the-coupling_strength-function)
+        -   [Aggregating at the “entity”
+            level](#aggregating-at-the-entity-level)
+    -   [Incorporated data](#incorporated-data)
+    -   [References](#references)
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # biblionetwork
@@ -53,7 +65,7 @@ data frame. This is a standard way to build bibliographic coupling
 network using Salton’s cosine measure: it divides the number of
 references that two articles share by the rootsquare of the product of
 both articles bibliography lengths. It avoids giving too much importance
-to articles with a large bibliography. It looks like:
+to articles with a large bibliography. It looks like:[2]
 
 $$ 
 \\frac{R(A) \\bullet R(B)}{\\sqrt{L(A).L(B)}} 
@@ -74,29 +86,29 @@ library(biblionetwork)
 
 biblio_coupling(Ref_stagflation, source = "Citing_ItemID_Ref", ref = "ItemID_Ref", normalized_weight_only = FALSE, weight_threshold = 1)
 #>             from         to     weight nb_shared_references     Source
-#>    1:    1184127    1021902 0.04622502                    1    1184127
-#>    2:    2207578     214927 0.14605935                    4    2207578
-#>    3:    2901822    1184127 0.04233338                    1    2901822
-#>    4:    2901822    1184130 0.05184758                    1    2901822
-#>    5:    2901822    1717556 0.02804964                    1    2901822
+#>    1:     214927    2207578 0.14605935                    4     214927
+#>    2:     214927    5982867 0.04082483                    1     214927
+#>    3:     214927    8456979 0.09733285                    3     214927
+#>    4:     214927   10729971 0.29848100                    7     214927
+#>    5:     214927   16008556 0.04714045                    1     214927
 #>   ---                                                                 
-#> 2712: 1111111183 1111111134 0.04256283                    1 1111111183
-#> 2713: 1111111183 1111111146 0.05212860                    1 1111111183
-#> 2714: 1111111183 1111111148 0.05212860                    1 1111111183
-#> 2715: 1111111183 1111111161 0.04050542                    2 1111111183
-#> 2716: 1111111183 1111111182 0.27060404                    8 1111111183
+#> 2712: 1111111161 1111111172 0.03434014                    1 1111111161
+#> 2713: 1111111161 1111111180 0.02003610                    1 1111111161
+#> 2714: 1111111161 1111111183 0.04050542                    2 1111111161
+#> 2715: 1111111172 1111111180 0.03646625                    1 1111111172
+#> 2716: 1111111182 1111111183 0.27060404                    8 1111111182
 #>           Target
-#>    1:    1021902
-#>    2:     214927
-#>    3:    1184127
-#>    4:    1184130
-#>    5:    1717556
+#>    1:    2207578
+#>    2:    5982867
+#>    3:    8456979
+#>    4:   10729971
+#>    5:   16008556
 #>   ---           
-#> 2712: 1111111134
-#> 2713: 1111111146
-#> 2714: 1111111148
-#> 2715: 1111111161
-#> 2716: 1111111182
+#> 2712: 1111111172
+#> 2713: 1111111180
+#> 2714: 1111111183
+#> 2715: 1111111180
+#> 2716: 1111111183
 ```
 
 This function is a relatively general function that can also be used:
@@ -119,29 +131,29 @@ library(biblionetwork)
 
 biblio_coupling(Ref_stagflation, source = "Citing_ItemID_Ref", ref = "ItemID_Ref", weight_threshold = 3)
 #>            from         to     weight     Source     Target
-#>   1:    2207578     214927 0.14605935    2207578     214927
-#>   2:    6714008    5160307 0.09128709    6714008    5160307
-#>   3:    7815498    1717556 0.16564729    7815498    1717556
-#>   4:    8456979     214927 0.09733285    8456979     214927
-#>   5:    8456979    2207578 0.11846978    8456979    2207578
+#>   1:     214927    2207578 0.14605935     214927    2207578
+#>   2:     214927    8456979 0.09733285     214927    8456979
+#>   3:     214927   10729971 0.29848100     214927   10729971
+#>   4:     214927   19627977 0.11202241     214927   19627977
+#>   5:    1021902   12824456 0.06537205    1021902   12824456
 #>  ---                                                       
-#> 958: 1111111180   39858452 0.06596992 1111111180   39858452
-#> 959: 1111111180  151268764 0.09464970 1111111180  151268764
-#> 960: 1111111183    1021902 0.08674724 1111111183    1021902
-#> 961: 1111111183  106566092 0.05710402 1111111183  106566092
-#> 962: 1111111183 1111111182 0.27060404 1111111183 1111111182
+#> 958: 1111111147 1111111156 0.17325923 1111111147 1111111156
+#> 959: 1111111147 1111111161 0.13333938 1111111147 1111111161
+#> 960: 1111111156 1111111161 0.08580846 1111111156 1111111161
+#> 961: 1111111159 1111111171 0.24333213 1111111159 1111111171
+#> 962: 1111111182 1111111183 0.27060404 1111111182 1111111183
 ```
 
 ### Testing another method: the `coupling_strength()` function
 
 This function calculates the coupling strength measure [Shen et
-al.](#ref-shen2019) ([2019-05](#ref-shen2019)) from a direct citation
-data frame. It is a refinement of `biblio_coupling()`: it takes into
-account the frequency with which a reference shared by two articles has
-been cited in the whole corpus. In other words, the most cited
-references are less important in the links between two articles, than
-references that have been rarely cited. To a certain extent, it is
-similar to the TF-IDF measure. It looks like:
+al.](#ref-shen2019) ([2019](#ref-shen2019)) from a direct citation data
+frame. It is a refinement of `biblio_coupling()`: it takes into account
+the frequency with which a reference shared by two articles has been
+cited in the whole corpus. In other words, the most cited references are
+less important in the links between two articles, than references that
+have been rarely cited. To a certain extent, it is similar to the TF-IDF
+measure. It looks like:
 
 $$ 
 \\frac{1}{L(A)}.\\frac{1}{L(A)}\\sum\_{j}(log({\\frac{N}{freq(R\_{j})}}))
@@ -181,14 +193,16 @@ times two authors are citing each references. For instance, if two
 entities share a reference in common, the first one citing it twice (in
 other words, citing it in two different articles), the second one three
 times, the function takes two as the minimum value. In addition to the
-features of the \[coupling strength measure\]\[\#coupling-strength\] or
-the \[coupling angle measure\]\[\#coupling-angle\], it means that, if
-two entities share two reference in common, the fact that the first
-reference is cited at least four times by the two entities, whereas the
-second reference is cited at least only once, the first reference
-contributes more to the edge weight than the second reference. This use
-of minimum shared reference for entities coupling comes from [Zhao and
-Strotmann](#ref-zhao2008b) ([2008](#ref-zhao2008b)). It looks like:
+features of the [coupling strength
+measure](#testing-another-method-the-coupling_strength-function) or the
+[coupling angle measure](#the-basic-coupling-angle-or-cosine-function),
+it means that, if two entities share two reference in common, the fact
+that the first reference is cited at least four times by the two
+entities, whereas the second reference is cited at least only once, the
+first reference contributes more to the edge weight than the second
+reference. This use of minimum shared reference for entities coupling
+comes from [Zhao and Strotmann](#ref-zhao2008b)
+([2008](#ref-zhao2008b)). It looks like:
 
 $$ 
 \\frac{1}{L(A)}.\\frac{1}{L(A)}\\sum\_{j} Min(C\_{Aj},C\_{Bj}).(log({\\frac{N}{freq(R\_{j})}}))
@@ -218,9 +232,32 @@ coupling_entity(entity_citations, source = "Citing_ItemID_Ref", ref = "ItemID_Re
 #> 1460:  WACHTER-M WEINTRAUB-S 0.14586499  WACHTER-M WEINTRAUB-S   coupling_angle
 ```
 
+## Incorporated data
+
+The biblionetwork package contains bibliometric data built by
+[Goutsmedt](#ref-goutsmedt2021a) ([2021](#ref-goutsmedt2021a)). These
+data gather the academic articles and books that endeavoured to explain
+the United States stagflation of the 1970s, published between 1975 and
+2013. They also gather all the references cited by these articles and
+books on stagflation. The `Nodes_stagflation.rda` file contains
+information about the academic articles and books on stagflation (the
+staflation documents), as well as about the references cited at least by
+two of these stagflation documents. The `Ref_stagflation.rda` is a data
+frame of direct citations, with the identifiers of citing documents, and
+the identifiers of cited documents.
+
 ## References
 
 <div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-goutsmedt2021a" class="csl-entry">
+
+Goutsmedt, Aurélien. 2021. “From the Stagflation to the Great Inflation:
+Explaining the US Economy of the 1970s.” *Revue d’Economie Politique*
+Forthcoming.
+<https://mega.nz/file/zfJ2QBbb#3OqXBIQRYmuQzptMyfvwW92IXhN-pWApKpILSs_w-pg>.
+
+</div>
 
 <div id="ref-sen1983" class="csl-entry">
 
@@ -234,8 +271,8 @@ Science and Documentation* 30 (2).
 <div id="ref-shen2019" class="csl-entry">
 
 Shen, Si, Danhao Zhu, Ronald Rousseau, Xinning Su, and Dongbo Wang.
-2019-05. “A Refined Method for Computing Bibliographic Coupling
-Strengths.” *Journal of Informetrics* 13 (2): 605–15.
+2019. “A Refined Method for Computing Bibliographic Coupling Strengths.”
+*Journal of Informetrics* 13 (2): 605–15.
 <https://linkinghub.elsevier.com/retrieve/pii/S1751157716300244>.
 
 </div>
@@ -254,10 +291,13 @@ Zhao, Dangzhi, and Andreas Strotmann. 2008. “Author Bibliographic
 Coupling: Another Approach to Citation-Based Author Knowledge Network
 Analysis.” *Proceedings of the American Society for Information Science
 and Technology* 45 (1): 1–10.
-<https://asistdl.onlinelibrary.wiley.com/doi/pdf/10.1002/meet.2008.1450450292>.
 
 </div>
 
 </div>
 
 [1] Contact: [agoutsmedt@hotmail.fr](agoutsmedt@hotmail.fr).
+
+[2] Github\_document does not render properly math equations and I have
+decided to let them in a format that would allow proper computation in
+.html or .pdf documents.

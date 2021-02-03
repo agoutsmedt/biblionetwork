@@ -1,5 +1,8 @@
 ---
-output: github_document
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
 
 ###
 ### Bibliography settings
@@ -48,7 +51,7 @@ Let's use the different functions of the package with the data integrated in the
 
 ### The basic coupling angle (or cosine) function
 
- It uses the `biblio_coupling()` function which is the most general function of the package. This function calculates the number of references that different articles share together, as well as the coupling angle value of edges in a bibliographic coupling network @sen1983, from a direct citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure: it divides the number of references that two articles share by the rootsquare of the product of both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography. It looks like:
+ It uses the `biblio_coupling()` function which is the most general function of the package. This function calculates the number of references that different articles share together, as well as the coupling angle value of edges in a bibliographic coupling network @sen1983, from a direct citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure: it divides the number of references that two articles share by the rootsquare of the product of both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography. It looks like:^[Github_document does not render properly math equations and I have decided to let them in a format that would allow proper computation in .html or .pdf documents.]
 
 $$ 
 \frac{R(A) \bullet R(B)}{\sqrt{L(A).L(B)}} 
@@ -100,7 +103,7 @@ coupling_strength(Ref_stagflation, source = "Citing_ItemID_Ref", ref = "ItemID_R
 
 ### Aggregating at the "entity" level
 
-Rather than focusing on documents, you can want to study the relationships between authors, institutions/affiliations or journals. The `coupling_entity()` function allows you to do that. Coupling links are calculated using the coupling angle measure or the coupling strength measure. Coupling links are calculated depending of the number references two authors share, taking into account the minimum number of times two authors are citing each references. For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles), the second one three times, the function takes two as the minimum value. In addition to the features of the [coupling strength measure][#coupling-strength] or the [coupling angle measure][#coupling-angle], it means that, if two entities share two reference in common, the fact that the first reference is cited at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than the second reference. This use of minimum shared reference for entities coupling comes from @zhao2008b. It looks like:
+Rather than focusing on documents, you can want to study the relationships between authors, institutions/affiliations or journals. The `coupling_entity()` function allows you to do that. Coupling links are calculated using the coupling angle measure or the coupling strength measure. Coupling links are calculated depending of the number references two authors share, taking into account the minimum number of times two authors are citing each references. For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles), the second one three times, the function takes two as the minimum value. In addition to the features of the [coupling strength measure][Testing another method: the `coupling_strength()` function] or the [coupling angle measure][The basic coupling angle (or cosine) function], it means that, if two entities share two reference in common, the fact that the first reference is cited at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than the second reference. This use of minimum shared reference for entities coupling comes from @zhao2008b. It looks like:
 
 $$ 
 \frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j} Min(C_{Aj},C_{Bj}).(log({\frac{N}{freq(R_{j})}}))
@@ -117,5 +120,9 @@ entity_citations <- merge(Ref_stagflation, Nodes_stagflation, by.x = "Citing_Ite
 coupling_entity(entity_citations, source = "Citing_ItemID_Ref", ref = "ItemID_Ref", entity = "Author.y", method = "coupling_angle")
 
 ```
+
+## Incorporated data
+
+The biblionetwork package contains bibliometric data built by @goutsmedt2021a. These data gather the academic articles and books that endeavoured to explain the United States stagflation of the 1970s, published between 1975 and 2013. They also gather all the references cited by these articles and books on stagflation. The `Nodes_stagflation.rda` file contains information about the academic articles and books on stagflation (the staflation documents), as well as about the references cited at least by two of these stagflation documents. The `Ref_stagflation.rda` is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. 
 
 ## References
