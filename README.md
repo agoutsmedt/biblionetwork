@@ -148,6 +148,48 @@ biblio_coupling(Ref_stagflation, source = "Citing_ItemID_Ref", ref = "ItemID_Ref
 #> 962: 1111111182 1111111183 0.27060404 1111111182 1111111183
 ```
 
+As explained above, you can use the `biblio_coupling` function for
+creating a co-citation network, you just have to put the references in
+the `source` column (they will be the nodes of your network) and the
+citing articles in `ref`. As it is likely to create some confusion, the
+package also integrates a `biblio_cocitation` function, which has a
+similar structure to the `biblio_coupling` one, but which is explicitly
+for co-citation: citing articles stay in `source` and references stay in
+`ref`. You can see in the next example that they produce the same
+results:
+
+``` r
+library(biblionetwork)
+
+biblio_coupling(Ref_stagflation, source = "ItemID_Ref", ref = "Citing_ItemID_Ref")
+#>              from         to    weight     Source     Target
+#>     1:      49248     180162 1.0000000      49248     180162
+#>     2:      49248     804988 0.3162278      49248     804988
+#>     3:      49248    1999903 1.0000000      49248    1999903
+#>     4:      49248    2031010 1.0000000      49248    2031010
+#>     5:      49248    3580645 0.7071068      49248    3580645
+#>    ---                                                      
+#> 87706: 1111112223 1111112225 1.0000000 1111112223 1111112225
+#> 87707: 1111112223 1111112227 1.0000000 1111112223 1111112227
+#> 87708: 1111112224 1111112225 1.0000000 1111112224 1111112225
+#> 87709: 1111112224 1111112227 1.0000000 1111112224 1111112227
+#> 87710: 1111112225 1111112227 1.0000000 1111112225 1111112227
+
+biblio_cocitation(Ref_stagflation, source = "Citing_ItemID_Ref", ref = "ItemID_Ref")
+#>              from         to    weight     Source     Target
+#>     1:      49248     180162 1.0000000      49248     180162
+#>     2:      49248     804988 0.3162278      49248     804988
+#>     3:      49248    1999903 1.0000000      49248    1999903
+#>     4:      49248    2031010 1.0000000      49248    2031010
+#>     5:      49248    3580645 0.7071068      49248    3580645
+#>    ---                                                      
+#> 87706: 1111112223 1111112225 1.0000000 1111112223 1111112225
+#> 87707: 1111112223 1111112227 1.0000000 1111112223 1111112227
+#> 87708: 1111112224 1111112225 1.0000000 1111112224 1111112225
+#> 87709: 1111112224 1111112227 1.0000000 1111112224 1111112227
+#> 87710: 1111112225 1111112227 1.0000000 1111112225 1111112227
+```
+
 ### Testing another method: the `coupling_strength()` function
 
 This function calculates the coupling strength measure [Shen et
