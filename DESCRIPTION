@@ -17,12 +17,15 @@ Authors@R: c(
            role = c("aut"),
            email = "alexandre.truc77@gmail.com",
            comment = c(ORCID = "0000-0002-1328-7819")))
+Author: François Claveau, Aurélien Goutsmedt and Alexandre Truc.
+Maintainer: Aurélien Goutsmedt <agoutsmedt@hotmail.fr>
 Description: This package brings different functions to create bibliometric networks 
     like bibliographic coupling network, co-citation network and co-authorship network. 
     The weights of network edges can be calculated according to different methods, 
     depending on the type of networks, the type of nodes, and what you want to analyse. 
     These functions are optimized to be be used on very large dataset.
 URL: https://github.com/agoutsmedt/biblionetwork
+BugReports: https://github.com/agoutsmedt/biblionetwork/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
