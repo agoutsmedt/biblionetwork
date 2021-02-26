@@ -50,6 +50,14 @@ In addition, it is possible to take into account the total number of collaborati
 If \code{cosine_normalized} is set to \code{True}, the weight calculated with one of the three methods above is divided by
 \deqn{\sqrt{C_{i}.C_{j}}}, with \deqn{C_{i}} being the number of articles co-written by author i.
 }
+\examples{
+library(biblionetwork)
+coauth_network(Authors_stagflation,
+authors = "Author",
+articles = "ItemID_Ref",
+method = "fractional_counting")
+
+}
 \references{
 \insertAllCited{}
 }

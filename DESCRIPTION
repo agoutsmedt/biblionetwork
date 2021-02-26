@@ -1,11 +1,12 @@
 Package: biblionetwork
-Title: A Package For Creating Different Types of Bibliometric Networks
+Title: A Package for Creating Different Types of Bibliometric Networks
 Version: 0.0.0.9000
+Date: 2021
 Authors@R: c(
     person(given = "Aurélien",
            family = "Goutsmedt",
            role = c("cre","aut"),
-           email = "agoutsmedt@gmail.com",
+           email = "agoutsmedt@hotmail.fr",
            comment = c(ORCID = "0000-0002-3788-7237")),
     person(given = "François",
            family = "Claveau",
@@ -19,7 +20,7 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-1328-7819")))
 Author: François Claveau, Aurélien Goutsmedt and Alexandre Truc.
 Maintainer: Aurélien Goutsmedt <agoutsmedt@hotmail.fr>
-Description: This package brings different functions to create bibliometric networks 
+Description: Functions to create bibliometric networks 
     like bibliographic coupling network, co-citation network and co-authorship network. 
     The weights of network edges can be calculated according to different methods, 
     depending on the type of networks, the type of nodes, and what you want to analyse. 
@@ -38,3 +39,7 @@ Depends:
     R (>= 2.10)
 RdMacros:
     Rdpack
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

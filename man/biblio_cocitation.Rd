@@ -48,6 +48,13 @@ The more two references are cited, the more they have to be cited together for t
 This function uses data.table package and is thus very fast. It allows the user to compute the coupling angle
 on a very large dataframe very quickly.
 }
+\examples{
+library(biblionetwork)
+biblio_cocitation(Ref_stagflation,
+source = "Citing_ItemID_Ref",
+ref = "ItemID_Ref")
+
+}
 \references{
 \insertAllCited{}
 }

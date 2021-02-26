@@ -1,0 +1,176 @@
+---
+title: "How to use biblionetwork"
+author: "Aurélien Goutsmedt"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to use biblionetwork}
+  %\VignetteEngine{knitr::rmarkdown}
+  \VignetteEncoding{UTF-8}
+  
+
+### Bibliography settings
+bibliography: REFERENCES.bib
+csl:  chicago-author-date.csl
+suppress-bibliography: false
+link-citations: true
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  #fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+
+```
+
+
+This vignette introduces you to the different functions of the package with the [data integrated][Incorporated data] in the package.
+
+# The basic coupling angle (or cosine) function
+
+The `biblio_coupling()` function is the most general function of the package. This function calculates the number of references that different articles share together, as well as the coupling angle value of edges in a bibliographic coupling network [@sen1983], from a direct citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure: it divides the number of references that two articles share by the rootsquare of the product of both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography. It looks like:^[Github_document does not render properly math equations and I have decided to let them in a format that would allow proper computation in .html or .pdf documents.]
+
+$$ 
+\frac{R(A) \bullet R(B)}{\sqrt{L(A).L(B)}} 
+$$
+
+with $R(A)$ and $R(B)$ the references of document A and document B, $R(A) \bullet R(B)$ being the number of shared references by A and B, and $L(A)$ and $L(B)$ the length of the bibliographies of document A and document B.
+
+The output is an edges data frame linking nodes together (see the `from` and `to` columns) with a weight for each edge being the coupling angle measure. If `normalized_weight_only` is set to be `FALSE`, another column displays the number of references shared by the two nodes. 
+
+This example use the [`Ref_stagflation.rda`][Incorporated data] file.
+
+```{r coupling angle}
+library(biblionetwork)
+
+biblio_coupling(Ref_stagflation, 
+                source = "Citing_ItemID_Ref", 
+                ref = "ItemID_Ref", 
+                normalized_weight_only = FALSE, 
+                weight_threshold = 1)
+
+```
+
+This function is a relatively general function that can also be used:
+
+1. for co-citation, just by inverting the `source`and `ref` columns;
+1. for title co-occurence networks (taking care of the lenght of the title thanks to the coupling angle measure);
+1. for co-authorship networks (taking care of the number of co-authors an author has collaborated with on a period)
+
+The function just keeps the edges that have a non-normalized weight superior to the `weight_threshold`. In a large bibliographic coupling network, you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together. This parameter could also be modified to avoid creating untractable networks with too many edges.
+
+```{r threshold example}
+
+biblio_coupling(Ref_stagflation, 
+                source = "Citing_ItemID_Ref", 
+                ref = "ItemID_Ref", 
+                weight_threshold = 3)
+
+```
+
+As explained above, you can use the `biblio_coupling` function for creating a co-citation network, you just have to put the references in the `source` column (they will be the nodes of your network) and the citing articles in `ref`. As it is likely to create some confusion, the package also integrates a `biblio_cocitation` function, which has a similar structure to the `biblio_coupling` one, but which is explicitly for co-citation: citing articles stay in `source` and references stay in `ref`. You can see in the next example that they produce the same results:
+
+```{r cocitation}
+
+biblio_coupling(Ref_stagflation, 
+                source = "ItemID_Ref", 
+                ref = "Citing_ItemID_Ref")
+
+biblio_cocitation(Ref_stagflation, 
+                  source = "Citing_ItemID_Ref", 
+                  ref = "ItemID_Ref")
+
+```
+
+# Testing another method: the `coupling_strength()` function
+
+This function calculates the coupling strength measure [following @vladutz1984 and @shen2019] from a direct citation data frame. It is a refinement of `biblio_coupling()`: it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus. In other words, the most cited references are less important in the links between two articles, than references that have been rarely cited. To a certain extent, it is similar to the TF-IDF measure. It looks like:
+
+$$ 
+\frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j}(log({\frac{N}{freq(R_{j})}}))
+$$
+
+with $N$ the number of articles in the whole dataset and $freq(R_{j})$ the number of time the reference j (which is shared by documents A and B) is cited in the whole corpus.
+
+```{r coupling strength}
+
+coupling_strength(Ref_stagflation, 
+                  source = "Citing_ItemID_Ref", 
+                  ref = "ItemID_Ref", 
+                  weight_threshold = 1)
+
+```
+
+# Aggregating at the "entity" level
+
+Rather than focusing on documents, you can want to study the relationships between authors, institutions/affiliations or journals. The `coupling_entity()` function allows you to do that. Coupling links are calculated using the coupling angle measure or the coupling strength measure. Coupling links are calculated depending of the number references two authors share, taking into account the minimum number of times two authors are citing each references. For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles), the second one three times, the function takes two as the minimum value. In addition to the features of the [coupling strength measure][Testing another method: the `coupling_strength()` function] or the [coupling angle measure][The basic coupling angle (or cosine) function], it means that, if two entities share two reference in common, the fact that the first reference is cited at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than the second reference. This use of minimum shared reference for entities coupling comes from @zhao2008b. It looks like:
+
+$$ 
+\frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j} Min(C_{Aj},C_{Bj}).(log({\frac{N}{freq(R_{j})}}))
+$$
+
+with $C_{Aj}$ and $C_{Bj}$ the number of time documents A and B cite the reference $j$.
+
+This example use the [`Ref_stagflation.rda`][Incorporated data] and the [`Nodes_stagflation.rda`][Incorporated data] files.
+
+```{r coupling entity}
+
+# merging the references data with the citing author information in Nodes_stagflation
+entity_citations <- merge(Ref_stagflation, 
+                          Nodes_stagflation, 
+                          by.x = "Citing_ItemID_Ref", 
+                          by.y = "ItemID_Ref")
+
+coupling_entity(entity_citations, 
+                source = "Citing_ItemID_Ref", 
+                ref = "ItemID_Ref", 
+                entity = "Author.y", 
+                method = "coupling_angle")
+
+```
+
+# A different world: building co-authorship network
+
+Even if co-authorship links weights can be calculated using the [`biblio_coupling`][The basic coupling angle (or cosine) function] function with authors as `source` and articles as `ref`, the method used is not necessarily the most appropriate for co-authorship networks. The `coauth_network` function implements different types of methods for calculating the weights linking different authors:^[I take as example authors here, but the function could also be used for calculating a co-authorship network with institutions or countries as nodes.]
+
+1. a "full counting" method;
+1. a "fractional counting" method [see @perianes-rodriguez2016b for an interesting comparison between full counting and fractional counting results];
+1. a "fractional counting refined" method, inspired by @leydesdorff2017.
+
+In addition, it is possible to take into account the total number of collaborations of two linked authors, by fixing `cosine_normalized` to `True`.
+
+This example use the [`Authors_stagflation.rda`][Incorporated data] file.
+
+```{r coauthorship network}
+
+full_counting <- coauth_network(Authors_stagflation, 
+                                authors = "Author", 
+                                articles = "ItemID_Ref", 
+                                method = "full_counting")
+head(full_counting[order(Source)],10)
+
+fractional_counting <- coauth_network(Authors_stagflation, 
+                                      authors = "Author", 
+                                      articles = "ItemID_Ref", 
+                                      method = "fractional_counting")
+head(fractional_counting[order(Source)],10)
+
+fractional_counting_cosine <- coauth_network(Authors_stagflation,
+                                             authors = "Author", 
+                                             articles = "ItemID_Ref", 
+                                             method = "fractional_counting", 
+                                             cosine_normalized = TRUE)
+head(fractional_counting_cosine[order(Source)],10)
+  
+```
+
+# Incorporated data
+
+The biblionetwork package contains bibliometric data built by @goutsmedt2021a. These data gather the academic articles and books that endeavoured to explain the United States stagflation of the 1970s, published between 1975 and 2013. They also gather all the references cited by these articles and books on stagflation. The `Nodes_stagflation.rda` file contains information about the academic articles and books on stagflation (the staflation documents), as well as about the references cited at least by two of these stagflation documents. The `Ref_stagflation.rda` is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. The `Authors_stagflation.rda` is a data frame with the list of documents explaining the US stagflation, and all the authors of these documents (`Nodes_stagflation.rda` just takes the first author for each document).
+
+
+# References

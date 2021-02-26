@@ -31,6 +31,12 @@ coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_c
   #' another column. It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
   #' are using the tidygraph package then, where `from` and `to` values are modified when creating a graph.
   #'
+  #' @examples
+  #' library(biblionetwork)
+  #' coupling_strength(Ref_stagflation,
+  #' source = "Citing_ItemID_Ref",
+  #' ref = "ItemID_Ref")
+  #'
   #' @references
   #' \insertAllCited{}
   #'

@@ -49,6 +49,21 @@ or the coupling angle measure (see \code{\link[=biblio_coupling]{biblio_coupling
 at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than
 the second reference. This use of minimum shared reference for entities coupling comes from \insertCite{zhao2008b;textual}{biblionetwork}.
 }
+\examples{
+library(biblionetwork)
+# merging the references data with the citing author information in Nodes_stagflation
+entity_citations <- merge(Ref_stagflation,
+                          Nodes_stagflation,
+                          by.x = "Citing_ItemID_Ref",
+                          by.y = "ItemID_Ref")
+
+coupling_entity(entity_citations,
+                source = "Citing_ItemID_Ref",
+                ref = "ItemID_Ref",
+                entity = "Author.y",
+                method = "coupling_angle")
+
+}
 \references{
 \insertAllCited{}
 }

@@ -39,6 +39,13 @@ coauth_network <- function(dt, authors, articles, method = c("full_counting","fr
   #' whose values depend on the method chosen. It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
   #' are using the tidygraph package then, where `from` and `to` values are modified when creating a graph.
   #'
+  #' @examples
+  #' library(biblionetwork)
+  #' coauth_network(Authors_stagflation,
+  #' authors = "Author",
+  #' articles = "ItemID_Ref",
+  #' method = "fractional_counting")
+  #'
   #' @references
   #' \insertAllCited{}
   #'

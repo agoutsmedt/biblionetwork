@@ -39,6 +39,13 @@ it takes into account the frequency with which a reference shared by two article
 In other words, the most cited references are less important in the links between two articles, than references that have
 been rarely cited. To a certain extent, it is similar to the TF-IDF measure.
 }
+\examples{
+library(biblionetwork)
+coupling_strength(Ref_stagflation,
+source = "Citing_ItemID_Ref",
+ref = "ItemID_Ref")
+
+}
 \references{
 \insertAllCited{}
 }
