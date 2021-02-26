@@ -8,7 +8,7 @@ template:
   package: preferably
   params:
     toggle: manual
-    ganalytics:
+    ganalytics: G-F6FLB1LSK1
 #  opengraph:
  #   image:
   #    src:

@@ -27,7 +27,7 @@ You can cite this package as:
 ``` r
 citation("biblionetwork")
 #> 
-#> To cite package 'biblionetwork' in publications use:
+#> To cite biblionetwork in publications use:
 #> 
 #>   Aurélien Goutsmedt, François Claveau and Alexandre Truc (2021).
 #>   biblionetwork: A Package For Creating Different Types of Bibliometric
@@ -43,6 +43,9 @@ citation("biblionetwork")
 #>     note = {R package version 0.0.0.9000},
 #>     url = {https://github.com/agoutsmedt/biblionetwork},
 #>   }
+#> 
+#> As biblionetwork is continually evolving, you may want to cite its
+#> version number. Find it with 'help(package=biblionetwork)'.
 ```
 
 ## Installation

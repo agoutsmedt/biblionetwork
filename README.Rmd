@@ -71,5 +71,4 @@ biblio_coupling(Ref_stagflation,
 
 The biblionetwork package contains bibliometric data built by @goutsmedt2021a. These data gather the academic articles and books that endeavoured to explain the United States stagflation of the 1970s, published between 1975 and 2013. They also gather all the references cited by these articles and books on stagflation. The `Nodes_stagflation.rda` file contains information about the academic articles and books on stagflation (the staflation documents), as well as about the references cited at least by two of these stagflation documents. The `Ref_stagflation.rda` is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. The `Authors_stagflation.rda` is a data frame with the list of documents explaining the US stagflation, and all the authors of these documents (`Nodes_stagflation.rda` just takes the first author for each document).
 
-
 ## References

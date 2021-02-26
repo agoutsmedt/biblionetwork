@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://agoutsmedt.github.io/biblionetwork//index.html</loc>
+  </url>
+  <url>
+    <loc>https://agoutsmedt.github.io/biblionetwork//reference/Authors_stagflation.html</loc>
+  </url>
+  <url>
+    <loc>https://agoutsmedt.github.io/biblionetwork//reference/biblio_cocitation.html</loc>
+  </url>
+  <url>
+    <loc>https://agoutsmedt.github.io/biblionetwork//reference/biblio_coupling.html</loc>
+  </url>
+  <url>
+    <loc>https://agoutsmedt.github.io/biblionetwork//reference/coauth_network.html</loc>
+  </url>
+  <url>
+    <loc>https://agoutsmedt.github.io/biblionetwork//reference/coupling_entity.html</loc>
+  </url>
+  <url>
+    <loc>https://agoutsmedt.github.io/biblionetwork//reference/coupling_similarity.html</loc>
+  </url>
+  <url>
+    <loc>https://agoutsmedt.github.io/biblionetwork//reference/coupling_strength.html</loc>
+  </url>
+  <url>
+    <loc>https://agoutsmedt.github.io/biblionetwork//reference/Nodes_stagflation.html</loc>
+  </url>
+  <url>
+    <loc>https://agoutsmedt.github.io/biblionetwork//reference/Ref_stagflation.html</loc>
+  </url>
+  <url>
+    <loc>https://agoutsmedt.github.io/biblionetwork//articles/Using_biblionetwork.html</loc>
+  </url>
+</urlset>
