@@ -40,6 +40,20 @@ coupling_entity <- function(dt, source, ref, entity, weight_threshold = 1, outpu
   #' another column, as well as the method used. It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
   #' are using the tidygraph package then, where `from` and `to` values are modified when creating a graph.
   #'
+  #' @examples
+  #' library(biblionetwork)
+  #' # merging the references data with the citing author information in Nodes_stagflation
+  #' entity_citations <- merge(Ref_stagflation,
+  #'                           Nodes_stagflation,
+  #'                           by.x = "Citing_ItemID_Ref",
+  #'                           by.y = "ItemID_Ref")
+  #'
+  #' coupling_entity(entity_citations,
+  #'                 source = "Citing_ItemID_Ref",
+  #'                 ref = "ItemID_Ref",
+  #'                 entity = "Author.y",
+  #'                 method = "coupling_angle")
+  #'
   #' @references
   #' \insertAllCited{}
   #'

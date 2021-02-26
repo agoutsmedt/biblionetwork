@@ -65,6 +65,14 @@ number of co-authors an author has collaborated with on a period). For co-author
 rather use the \code{coauth_network} function.
 }
 }
+\examples{
+library(biblionetwork)
+biblio_coupling(Ref_stagflation,
+source = "Citing_ItemID_Ref",
+ref = "ItemID_Ref",
+weight_threshold = 3)
+
+}
 \references{
 \insertAllCited{}
 }

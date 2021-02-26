@@ -47,6 +47,13 @@ The function use the following formalisation:
 sum for each article of the normalized value of a citation.
 }
 }
+\examples{
+library(biblionetwork)
+coupling_similarity(Ref_stagflation,
+source = "Citing_ItemID_Ref",
+ref = "ItemID_Ref")
+
+}
 \references{
 \insertAllCited{}
 }
