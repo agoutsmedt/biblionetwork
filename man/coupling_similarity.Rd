@@ -2,7 +2,7 @@
 % Please edit documentation in R/coupling_similarity.R
 \name{coupling_similarity}
 \alias{coupling_similarity}
-\title{Calculating The Coupling Strength Measure For Edges}
+\title{Calculating The Coupling Similarity Measure For Edges}
 \usage{
 coupling_similarity(
   dt,

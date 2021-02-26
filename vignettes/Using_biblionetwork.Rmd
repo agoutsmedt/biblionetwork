@@ -1,7 +1,10 @@
 ---
 title: "How to use biblionetwork"
 author: "Aurélien Goutsmedt"
-output: rmarkdown::html_vignette
+description: "Introduction to the main features of the biblionetwork package"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
   %\VignetteIndexEntry{How to use biblionetwork}
   %\VignetteEngine{knitr::rmarkdown}
@@ -21,7 +24,7 @@ link-citations: true
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  #fig.path = "man/figures/README-",
+  fig.path = "man/figures/",
   out.width = "100%"
 )
 
@@ -72,7 +75,7 @@ biblio_coupling(Ref_stagflation,
 
 ```
 
-As explained above, you can use the `biblio_coupling` function for creating a co-citation network, you just have to put the references in the `source` column (they will be the nodes of your network) and the citing articles in `ref`. As it is likely to create some confusion, the package also integrates a `biblio_cocitation` function, which has a similar structure to the `biblio_coupling` one, but which is explicitly for co-citation: citing articles stay in `source` and references stay in `ref`. You can see in the next example that they produce the same results:
+As explained above, you can use the `biblio_coupling()` function for creating a co-citation network, you just have to put the references in the `source` column (they will be the nodes of your network) and the citing articles in `ref`. As it is likely to create some confusion, the package also integrates a `biblio_cocitation()` function, which has a similar structure to the `biblio_coupling()` one, but which is explicitly for co-citation: citing articles stay in `source` and references stay in `ref`. You can see in the next example that they produce the same results:
 
 ```{r cocitation}
 
@@ -135,7 +138,7 @@ coupling_entity(entity_citations,
 
 # A different world: building co-authorship network
 
-Even if co-authorship links weights can be calculated using the [`biblio_coupling`][The basic coupling angle (or cosine) function] function with authors as `source` and articles as `ref`, the method used is not necessarily the most appropriate for co-authorship networks. The `coauth_network` function implements different types of methods for calculating the weights linking different authors:^[I take as example authors here, but the function could also be used for calculating a co-authorship network with institutions or countries as nodes.]
+Even if co-authorship links weights can be calculated using the [`biblio_coupling()`][The basic coupling angle (or cosine) function] function with authors as `source` and articles as `ref`, the method used is not necessarily the most appropriate for co-authorship networks. The `coauth_network()` function implements different types of methods for calculating the weights linking different authors:^[I take as example authors here, but the function could also be used for calculating a co-authorship network with institutions or countries as nodes.]
 
 1. a "full counting" method;
 1. a "fractional counting" method [see @perianes-rodriguez2016b for an interesting comparison between full counting and fractional counting results];
