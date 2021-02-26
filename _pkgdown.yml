@@ -1,7 +1,8 @@
 home:
   title: A Package for Creating Different Types of Bibliometric Networks
   description: Build edges data for different types of networks with different weight measures. You just need a list of documents citing references.
-  url: https://agoutsmedt.github.io/biblionetwork/
+
+url: https://agoutsmedt.github.io/biblionetwork/
 
 template:
   package: preferably

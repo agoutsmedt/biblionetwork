@@ -25,7 +25,7 @@ Description: Functions to create bibliometric networks
     The weights of network edges can be calculated according to different methods, 
     depending on the type of networks, the type of nodes, and what you want to analyse. 
     These functions are optimized to be be used on very large dataset.
-URL: https://github.com/agoutsmedt/biblionetwork
+URL: https://github.com/agoutsmedt/biblionetwork, https://agoutsmedt.github.io/biblionetwork/
 BugReports: https://github.com/agoutsmedt/biblionetwork/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
