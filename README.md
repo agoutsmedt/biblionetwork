@@ -1,14 +1,7 @@
-
--   [biblionetwork](#biblionetwork)
-    -   [Installation](#installation)
-    -   [Example](#example)
-    -   [Incorporated data](#incorporated-data)
-    -   [References](#references)
+biblionetwork
+================
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-# biblionetwork
-
 <!-- badges: start -->
 <!-- badges: end -->
 
@@ -19,9 +12,9 @@ according to different methods, depending on the type of networks, the
 type of nodes, and what you want to analyse. These functions are
 optimized to be be used on very large dataset.
 
-The original function which uses data.table ([Dowle and Srinivasan
+The original function, which uses data.table ([Dowle and Srinivasan
 2020](#ref-datatable)) and allows the user to find edges and calculate
-weights for very large networks was developed by [François
+weights for very large networks, was developed by [François
 Claveau](https://www.usherbrooke.ca/philosophie/nous-joindre/personnel-enseignant/claveau-francois/).
 The different functions in this package have been developed, from
 Claveau’s original idea, by [Alexandre
@@ -33,21 +26,20 @@ You can cite this package as:
 
 ``` r
 citation("biblionetwork")
-#> Warning in citation("biblionetwork"): could not determine year for
-#> 'biblionetwork' from package DESCRIPTION file
 #> 
 #> To cite package 'biblionetwork' in publications use:
 #> 
-#>   Aurélien Goutsmedt, François Claveau and Alexandre Truc (NA).
-#>   biblionetwork: A Package for Creating Different Types of Bibliometric
+#>   Aurélien Goutsmedt, François Claveau and Alexandre Truc (2021).
+#>   biblionetwork: A Package For Creating Different Types of Bibliometric
 #>   Networks. R package version 0.0.0.9000.
 #>   https://github.com/agoutsmedt/biblionetwork
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
 #>   @Manual{,
-#>     title = {biblionetwork: A Package for Creating Different Types of Bibliometric Networks},
+#>     title = {biblionetwork: A Package For Creating Different Types of Bibliometric Networks},
 #>     author = {Aurélien Goutsmedt and François Claveau and Alexandre Truc},
+#>     year = {2021},
 #>     note = {R package version 0.0.0.9000},
 #>     url = {https://github.com/agoutsmedt/biblionetwork},
 #>   }
@@ -78,7 +70,11 @@ package.
 ``` r
 library(biblionetwork)
 
-biblio_coupling(Ref_stagflation, source = "Citing_ItemID_Ref", ref = "ItemID_Ref", normalized_weight_only = FALSE, weight_threshold = 1)
+biblio_coupling(Ref_stagflation, 
+                source = "Citing_ItemID_Ref", 
+                ref = "ItemID_Ref", 
+                normalized_weight_only = FALSE, 
+                weight_threshold = 1)
 #>             from         to     weight nb_shared_references     Source
 #>    1:     214927    2207578 0.14605935                    4     214927
 #>    2:     214927    5982867 0.04082483                    1     214927
@@ -158,5 +154,5 @@ Science and Documentation* 30 (2).
 [2] If you want to build a coupling network with entities larger than a
 document (meaning entities that have published several documents, and
 thus can cite a reference several time), we rather recommend the use of
-the `coupling_entity()` function. See the `How to use biblionetwork`
-vignette for examples.
+the `coupling_entity()` function. See the
+`vignette("using_biblionetwork")` vignette for examples.

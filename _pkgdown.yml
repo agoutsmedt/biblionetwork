@@ -1,0 +1,37 @@
+home:
+  title: A Package for Creating Different Types of Bibliometric Networks
+  description: Build edges data for different types of networks with different weight measures. You just need a list of documents citing references.
+
+template:
+  package: preferably
+  params:
+    toggle: manual
+    ganalytics:
+#  opengraph:
+ #   image:
+  #    src:
+   #   alt:
+   # twitter:
+  #    creator: "@AGoutsmedt"
+   #   site:
+    #  card:
+
+reference:
+- title: "Bibliographic Coupling"
+  desc: >
+    Functions for building coupling type networks.
+- contents:
+  - biblio_coupling
+  - starts_with("coupling")
+- title: "Bibliographic Co-citation"
+  desc: "Functions for building co-citation type networks."
+- contents:
+  - biblio_cocitation
+- title: "Co-authorship Network"
+  desc: "Functions for building co-authorship type networks."
+- contents:
+  - coauth_network
+- title: "Included Dataset"
+  desc: "Data on stagflation explanation"
+- contents:
+  - contains("stagflation")

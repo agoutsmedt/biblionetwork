@@ -2,7 +2,7 @@
 % Please edit documentation in R/coupling_entity.R
 \name{coupling_entity}
 \alias{coupling_entity}
-\title{function for edges of bibliographic coupling}
+\title{Creating Coupling Networks at Entity Level}
 \usage{
 coupling_entity(
   dt,

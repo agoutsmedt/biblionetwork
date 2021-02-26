@@ -1,6 +1,6 @@
 coupling_similarity <- function(dt, source, ref, weight_threshold = 1, output_in_character = FALSE)
 {
-  #' Calculating The Coupling Strength Measure For Edges
+  #' Calculating The Coupling Similarity Measure For Edges
   #'
   #' @description This function calculates a refined similarity measure of coupling links, from a direct citation data frame.
   #' It is sinpired by \insertCite{shen2019}{biblionetwork}. To a certain extent, it mixes the [coupling_strength()] function with

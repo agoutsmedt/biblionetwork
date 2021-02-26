@@ -1,0 +1,16 @@
+citHeader("To cite biblionetwork in publications use:")
+
+citEntry(
+  entry = "Manual",
+  title = "biblionetwork: A Package For Creating Different Types of Bibliometric Networks",
+  author = personList(as.person("Aurélien Goutsmedt"),as.person("François Claveau"),as.person("Alexandre Truc")),
+  year = 2021,
+  note = "R package version 0.0.0.9000",
+  url = "https://github.com/agoutsmedt/biblionetwork",
+  textVersion = paste(
+    "Aurélien Goutsmedt, François Claveau and Alexandre Truc (2021). biblionetwork: A Package For Creating Different Types of Bibliometric Networks. R package version 0.0.0.9000.",
+    "https://github.com/agoutsmedt/biblionetwork"
+  )
+)
+
+citFooter("As biblionetwork is continually evolving, you may want to cite its version number. Find it with 'help(package=biblionetwork)'.")

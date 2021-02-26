@@ -1,6 +1,6 @@
 coupling_entity <- function(dt, source, ref, entity, weight_threshold = 1, output_in_character = FALSE, method = c("coupling_strength","coupling_angle"))
 {
-  #' function for edges of bibliographic coupling
+  #' Creating Coupling Networks at Entity Level
   #'
   #' This function creates the edges of a network of entities from a direct citations data frame (i.e. documents citing references).
   #' Entities could be authors, affiliations, journals, etc. Consequently, Coupling links are calculated using the coupling angle measure or the coupling strength measure.
