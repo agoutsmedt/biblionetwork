@@ -41,6 +41,21 @@ Ref_stagflation$Journal <- str_replace_all(Ref_stagflation$Journal, "EVIDENCE AN
 Ref_stagflation$Journal <- str_replace_all(Ref_stagflation$Journal, "EVIDENCE AND SOME THEORYÂ€\u009d ","")
 Ref_stagflation$Journal <- str_replace_all(Ref_stagflation$Journal, "Â€ŒMEASURING MONETARY POLICYÂ€\u009d ","")
 
+# adding missing rows
+
+add <- data.frame("ItemID_Ref" = c("1111111190","1111111191","1111111192"),
+                  "Author" = c("KLEIN-PA","PARKIN-M","WITTEVEEN-H"),
+                  "Year" = c("1978","1980","1975"),
+                  "Author_date" = c("KLEIN-P-1978", "PARKIN-M-1980","WITTEVEEN-H-1975"),
+                  "Title" = c("STAGFLATION - REPLY", "OIL PUSH INFLATION?", "INFLATION AND THE INTERNATIONAL MONETARY SITUATION"),
+                  "Journal" = c("JOURNAL OF ECONOMIC ISSUES", "PSL QUARTERLY REVIEW", "THE AMERICAN ECONOMIC REVIEW"),
+                  "Type" = c("Stagflation","Stagflation","Stagflation")
+)
+
+Nodes_stagflation <- rbind(Nodes_stagflation, add)
+
 # saving in the package
 use_data(Nodes_stagflation, overwrite = TRUE)
 use_data(Ref_stagflation, overwrite = TRUE)
+
+
