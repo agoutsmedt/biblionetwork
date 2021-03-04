@@ -60,7 +60,7 @@ Ref_stagflation[Citing_ItemID_Ref == "111440961"]$Citing_ItemID_Ref = 20533251
 Ref_stagflation[Citing_ItemID_Ref == "1111111148"]$Citing_ItemID_Ref = 17355017
 
 # saving in the package
-use_data(Nodes_stagflation, overwrite = TRUE)
-use_data(Ref_stagflation, overwrite = TRUE)
+usethis::use_data(Nodes_stagflation, overwrite = TRUE)
+usethis::use_data(Ref_stagflation, overwrite = TRUE)
 
 
