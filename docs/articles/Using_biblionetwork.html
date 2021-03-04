@@ -131,16 +131,15 @@
 <div id="the-basic-coupling-angle-or-cosine-function" class="section level1">
 <h1 class="hasAnchor">
 <a href="#the-basic-coupling-angle-or-cosine-function" class="anchor"></a>The basic coupling angle (or cosine) function</h1>
-<p>The <code><a href="../reference/biblio_coupling.html">biblio_coupling()</a></code> function is the most general function of the package. This function calculates the number of references that different articles share together, as well as the coupling angle value of edges in a bibliographic coupling network <span class="citation">(<a href="#ref-sen1983" role="doc-biblioref">Sen and Gan 1983</a>)</span>, from a direct citation data frame. This is a standard way to build bibliographic coupling network using Salton’s cosine measure: it divides the number of references that two articles share by the rootsquare of the product of both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography. It looks like:<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<p>The <code><a href="../reference/biblio_coupling.html">biblio_coupling()</a></code> function is the most general function of the package. This function takes as an input a direct citation data frame (entities, like articles, authors or institutions, citing references) and produces an edge list for bibliographic coupling network, with the number of references that different articles share together, as well as the coupling angle value of edges <span class="citation">(<a href="#ref-sen1983" role="doc-biblioref">Sen and Gan 1983</a>)</span>. This is a standard way to build bibliographic coupling network using Salton’s cosine measure: it divides the number of references that two articles share by the square root of the product of both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography. It looks like:</p>
 <p><span class="math display">\[ 
 \frac{R(A) \bullet R(B)}{\sqrt{L(A).L(B)}} 
 \]</span></p>
-<p>with <span class="math inline">\(R(A)\)</span> and <span class="math inline">\(R(B)\)</span> the references of document A and document B, <span class="math inline">\(R(A) \bullet R(B)\)</span> being the number of shared references by A and B, and <span class="math inline">\(L(A)\)</span> and <span class="math inline">\(L(B)\)</span> the length of the bibliographies of document A and document B.</p>
-<p>The output is an edges data frame linking nodes together (see the <code>from</code> and <code>to</code> columns) with a weight for each edge being the coupling angle measure. If <code>normalized_weight_only</code> is set to be <code>FALSE</code>, another column displays the number of references shared by the two nodes.</p>
-<p>This example use the <a href="#incorporated-data"><code>Ref_stagflation.rda</code></a> file.</p>
+<p>with <span class="math inline">\(R(A)\)</span> and <span class="math inline">\(R(B)\)</span> the references of documents A and B, <span class="math inline">\(R(A) \bullet R(B)\)</span> being the number of shared references by A and B, and <span class="math inline">\(L(A)\)</span> and <span class="math inline">\(L(B)\)</span> the length of the bibliographies of documents A and B.</p>
+<p>The output is an edge list linking nodes together (see the <code>from</code> and <code>to</code> columns) with a weight for each edge being the coupling angle measure. If <code>normalized_weight_only</code> is set to be <code>FALSE</code>, another column displays the number of references shared by the two nodes.</p>
+<p>This example use the <a href="#incorporated-data"><code>Ref_stagflation</code></a> data frame.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/agoutsmedt/biblionetwork">biblionetwork</a></span><span class="op">)</span>
-
 <span class="fu"><a href="../reference/biblio_coupling.html">biblio_coupling</a></span><span class="op">(</span><span class="va">Ref_stagflation</span>, 
                 source <span class="op">=</span> <span class="st">"Citing_ItemID_Ref"</span>, 
                 ref <span class="op">=</span> <span class="st">"ItemID_Ref"</span>, 
@@ -172,14 +171,13 @@
 <span class="co">#&gt; 2716: 1111111183</span></code></pre></div>
 <p>This function is a relatively general function that can also be used:</p>
 <ol style="list-style-type: decimal">
-<li>for co-citation, just by inverting the <code>source</code>and <code>ref</code> columns;</li>
-<li>for title co-occurence networks (taking care of the lenght of the title thanks to the coupling angle measure);</li>
-<li>for co-authorship networks (taking care of the number of co-authors an author has collaborated with on a period)</li>
+<li>for co-citation, just by inverting the <code>source</code>and <code>ref</code> columns, but rather use the [biblio_cocitation()];</li>
+<li>for title co-occurence networks (taking care of the length of the title thanks to the coupling angle measure);</li>
+<li>for co-authorship networks (taking care of the number of co-authors an author has collaborated with on a period), but rather use the [coauth_network()].</li>
 </ol>
-<p>The function just keeps the edges that have a non-normalized weight superior to the <code>weight_threshold</code>. In a large bibliographic coupling network, you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together. This parameter could also be modified to avoid creating untractable networks with too many edges.</p>
+<p>The function just keeps the edges that have a non-normalized weight superior to the <code>weight_threshold</code>. In a large bibliographic coupling network, you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together. This parameter could also be modified to avoid creating intractable networks with too many edges.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu"><a href="../reference/biblio_coupling.html">biblio_coupling</a></span><span class="op">(</span><span class="va">Ref_stagflation</span>, 
+<code class="sourceCode R"><span class="fu"><a href="../reference/biblio_coupling.html">biblio_coupling</a></span><span class="op">(</span><span class="va">Ref_stagflation</span>, 
                 source <span class="op">=</span> <span class="st">"Citing_ItemID_Ref"</span>, 
                 ref <span class="op">=</span> <span class="st">"ItemID_Ref"</span>, 
                 weight_threshold <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
@@ -195,10 +193,9 @@
 <span class="co">#&gt; 960: 1111111156 1111111161 0.08580846 1111111156 1111111161</span>
 <span class="co">#&gt; 961: 1111111159 1111111171 0.24333213 1111111159 1111111171</span>
 <span class="co">#&gt; 962: 1111111182 1111111183 0.27060404 1111111182 1111111183</span></code></pre></div>
-<p>As explained above, you can use the <code><a href="../reference/biblio_coupling.html">biblio_coupling()</a></code> function for creating a co-citation network, you just have to put the references in the <code>source</code> column (they will be the nodes of your network) and the citing articles in <code>ref</code>. As it is likely to create some confusion, the package also integrates a <code><a href="../reference/biblio_cocitation.html">biblio_cocitation()</a></code> function, which has a similar structure to the <code><a href="../reference/biblio_coupling.html">biblio_coupling()</a></code> one, but which is explicitly for co-citation: citing articles stay in <code>source</code> and references stay in <code>ref</code>. You can see in the next example that they produce the same results:</p>
+<p>As explained above, you can use the <code><a href="../reference/biblio_coupling.html">biblio_coupling()</a></code> function for creating a co-citation network, you just have to put the references in the <code>source</code> column (they will be the nodes of your network) and the citing articles in <code>ref</code>. As it is likely to create some confusion, the package also integrates a <code><a href="../reference/biblio_cocitation.html">biblio_cocitation()</a></code> function, which has a similar structure to <code><a href="../reference/biblio_coupling.html">biblio_coupling()</a></code>, but which is explicitly for co-citation: citing articles stay in <code>source</code> and references stay in <code>ref</code>. You can see in the next example that they produce the same results:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu"><a href="../reference/biblio_coupling.html">biblio_coupling</a></span><span class="op">(</span><span class="va">Ref_stagflation</span>, 
+<code class="sourceCode R"><span class="fu"><a href="../reference/biblio_coupling.html">biblio_coupling</a></span><span class="op">(</span><span class="va">Ref_stagflation</span>, 
                 source <span class="op">=</span> <span class="st">"ItemID_Ref"</span>, 
                 ref <span class="op">=</span> <span class="st">"Citing_ItemID_Ref"</span><span class="op">)</span>
 <span class="co">#&gt;              from         to    weight     Source     Target</span>
@@ -208,11 +205,11 @@
 <span class="co">#&gt;     4:      49248    2031010 1.0000000      49248    2031010</span>
 <span class="co">#&gt;     5:      49248    3580645 0.7071068      49248    3580645</span>
 <span class="co">#&gt;    ---                                                      </span>
-<span class="co">#&gt; 87706: 1111112223 1111112225 1.0000000 1111112223 1111112225</span>
-<span class="co">#&gt; 87707: 1111112223 1111112227 1.0000000 1111112223 1111112227</span>
-<span class="co">#&gt; 87708: 1111112224 1111112225 1.0000000 1111112224 1111112225</span>
-<span class="co">#&gt; 87709: 1111112224 1111112227 1.0000000 1111112224 1111112227</span>
-<span class="co">#&gt; 87710: 1111112225 1111112227 1.0000000 1111112225 1111112227</span>
+<span class="co">#&gt; 87664: 1111112223 1111112225 1.0000000 1111112223 1111112225</span>
+<span class="co">#&gt; 87665: 1111112223 1111112227 1.0000000 1111112223 1111112227</span>
+<span class="co">#&gt; 87666: 1111112224 1111112225 1.0000000 1111112224 1111112225</span>
+<span class="co">#&gt; 87667: 1111112224 1111112227 1.0000000 1111112224 1111112227</span>
+<span class="co">#&gt; 87668: 1111112225 1111112227 1.0000000 1111112225 1111112227</span>
 
 <span class="fu"><a href="../reference/biblio_cocitation.html">biblio_cocitation</a></span><span class="op">(</span><span class="va">Ref_stagflation</span>, 
                   source <span class="op">=</span> <span class="st">"Citing_ItemID_Ref"</span>, 
@@ -224,23 +221,22 @@
 <span class="co">#&gt;     4:      49248    2031010 1.0000000      49248    2031010</span>
 <span class="co">#&gt;     5:      49248    3580645 0.7071068      49248    3580645</span>
 <span class="co">#&gt;    ---                                                      </span>
-<span class="co">#&gt; 87706: 1111112223 1111112225 1.0000000 1111112223 1111112225</span>
-<span class="co">#&gt; 87707: 1111112223 1111112227 1.0000000 1111112223 1111112227</span>
-<span class="co">#&gt; 87708: 1111112224 1111112225 1.0000000 1111112224 1111112225</span>
-<span class="co">#&gt; 87709: 1111112224 1111112227 1.0000000 1111112224 1111112227</span>
-<span class="co">#&gt; 87710: 1111112225 1111112227 1.0000000 1111112225 1111112227</span></code></pre></div>
+<span class="co">#&gt; 87664: 1111112223 1111112225 1.0000000 1111112223 1111112225</span>
+<span class="co">#&gt; 87665: 1111112223 1111112227 1.0000000 1111112223 1111112227</span>
+<span class="co">#&gt; 87666: 1111112224 1111112225 1.0000000 1111112224 1111112225</span>
+<span class="co">#&gt; 87667: 1111112224 1111112227 1.0000000 1111112224 1111112227</span>
+<span class="co">#&gt; 87668: 1111112225 1111112227 1.0000000 1111112225 1111112227</span></code></pre></div>
 </div>
 <div id="testing-another-method-the-coupling_strength-function" class="section level1">
 <h1 class="hasAnchor">
 <a href="#testing-another-method-the-coupling_strength-function" class="anchor"></a>Testing another method: the <code>coupling_strength()</code> function</h1>
-<p>This function calculates the coupling strength measure <span class="citation"><a href="#ref-shen2019" role="doc-biblioref">Shen et al.</a> (<a href="#ref-shen2019" role="doc-biblioref">2019</a>)</span> from a direct citation data frame. It is a refinement of <code><a href="../reference/biblio_coupling.html">biblio_coupling()</a></code>: it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus. In other words, the most cited references are less important in the links between two articles, than references that have been rarely cited. To a certain extent, it is similar to the TF-IDF measure. It looks like:</p>
+<p>This <code><a href="../reference/coupling_strength.html">coupling_strength()</a></code> calculates the coupling strength measure <span class="citation"><a href="#ref-shen2019" role="doc-biblioref">Shen et al.</a> (<a href="#ref-shen2019" role="doc-biblioref">2019</a>)</span> from a direct citation data frame. It is a refinement of <code><a href="../reference/biblio_coupling.html">biblio_coupling()</a></code>: it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus. In other words, the most cited references are less important in the links between two articles, than references that have been rarely cited. To a certain extent, it is similar to the <a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf">tf-idf</a> measure. It looks like:</p>
 <p><span class="math display">\[ 
 \frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j}(log({\frac{N}{freq(R_{j})}}))
 \]</span></p>
 <p>with <span class="math inline">\(N\)</span> the number of articles in the whole dataset and <span class="math inline">\(freq(R_{j})\)</span> the number of time the reference j (which is shared by documents A and B) is cited in the whole corpus.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu"><a href="../reference/coupling_strength.html">coupling_strength</a></span><span class="op">(</span><span class="va">Ref_stagflation</span>, 
+<code class="sourceCode R"><span class="fu"><a href="../reference/coupling_strength.html">coupling_strength</a></span><span class="op">(</span><span class="va">Ref_stagflation</span>, 
                   source <span class="op">=</span> <span class="st">"Citing_ItemID_Ref"</span>, 
                   ref <span class="op">=</span> <span class="st">"ItemID_Ref"</span>, 
                   weight_threshold <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
@@ -260,42 +256,56 @@
 <div id="aggregating-at-the-entity-level" class="section level1">
 <h1 class="hasAnchor">
 <a href="#aggregating-at-the-entity-level" class="anchor"></a>Aggregating at the “entity” level</h1>
-<p>Rather than focusing on documents, you can want to study the relationships between authors, institutions/affiliations or journals. The <code><a href="../reference/coupling_entity.html">coupling_entity()</a></code> function allows you to do that. Coupling links are calculated using the coupling angle measure or the coupling strength measure. Coupling links are calculated depending of the number references two authors share, taking into account the minimum number of times two authors are citing each references. For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles), the second one three times, the function takes two as the minimum value. In addition to the features of the <a href="#testing-another-method-the-coupling_strength-function">coupling strength measure</a> or the <a href="#the-basic-coupling-angle-or-cosine-function">coupling angle measure</a>, it means that, if two entities share two reference in common, the fact that the first reference is cited at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than the second reference. This use of minimum shared reference for entities coupling comes from <span class="citation"><a href="#ref-zhao2008b" role="doc-biblioref">Zhao and Strotmann</a> (<a href="#ref-zhao2008b" role="doc-biblioref">2008</a>)</span>. It looks like:</p>
+<p>Rather than focusing on documents, you can want to study the relationships between authors, institutions/affiliations or journals. The <code><a href="../reference/coupling_entity.html">coupling_entity()</a></code> function allows you to do that. Coupling links are calculated using the coupling angle measure (like <code><a href="../reference/biblio_coupling.html">biblio_coupling()</a></code>) or the coupling strength measure (like <code><a href="../reference/coupling_strength.html">coupling_strength()</a></code>). Coupling links are calculated depending of the number of references two authors share, taking into account the minimum number of times two authors are citing each reference. For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles), the second one three times, the function takes two as the minimum value. In addition to the features of the <a href="#testing-another-method-the-coupling_strength-function">coupling strength measure</a> or the <a href="#the-basic-coupling-angle-or-cosine-function">coupling angle measure</a>, it means that, if two entities share two references in common, the fact that the first reference is cited at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than the second reference. This use of minimum shared reference for entities coupling comes from <span class="citation"><a href="#ref-zhao2008b" role="doc-biblioref">Zhao and Strotmann</a> (<a href="#ref-zhao2008b" role="doc-biblioref">2008</a>)</span>. With the coupling strength measure, it looks like:</p>
 <p><span class="math display">\[ 
 \frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j} Min(C_{Aj},C_{Bj}).(log({\frac{N}{freq(R_{j})}}))
 \]</span></p>
 <p>with <span class="math inline">\(C_{Aj}\)</span> and <span class="math inline">\(C_{Bj}\)</span> the number of time documents A and B cite the reference <span class="math inline">\(j\)</span>.</p>
-<p>This example use the <a href="#incorporated-data"><code>Ref_stagflation.rda</code></a> and the <a href="#incorporated-data"><code>Nodes_stagflation.rda</code></a> files.</p>
+<p>This example use the <a href="#incorporated-data"><code>Ref_stagflation</code></a> and the <a href="#incorporated-data"><code>Authors_stagflation</code></a> data frames.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co"># merging the references data with the citing author information in Nodes_stagflation</span>
+<code class="sourceCode R"><span class="co"># merging the references data with the citing author information in Nodes_stagflation</span>
 <span class="va">entity_citations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html">merge</a></span><span class="op">(</span><span class="va">Ref_stagflation</span>, 
-                          <span class="va">Nodes_stagflation</span>, 
+                          <span class="va">Authors_stagflation</span>, 
                           by.x <span class="op">=</span> <span class="st">"Citing_ItemID_Ref"</span>, 
-                          by.y <span class="op">=</span> <span class="st">"ItemID_Ref"</span><span class="op">)</span>
+                          by.y <span class="op">=</span> <span class="st">"ItemID_Ref"</span>,
+                          allow.cartesian <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> 
+<span class="co"># allow.cartesian is needed as we have several authors per article, thus the merge results </span>
+<span class="co"># is longer than the longer merged data frame</span>
 
 <span class="fu"><a href="../reference/coupling_entity.html">coupling_entity</a></span><span class="op">(</span><span class="va">entity_citations</span>, 
                 source <span class="op">=</span> <span class="st">"Citing_ItemID_Ref"</span>, 
                 ref <span class="op">=</span> <span class="st">"ItemID_Ref"</span>, 
                 entity <span class="op">=</span> <span class="st">"Author.y"</span>, 
                 method <span class="op">=</span> <span class="st">"coupling_angle"</span><span class="op">)</span>
-<span class="co">#&gt;             from          to     weight     Source      Target Weighting_method</span>
-<span class="co">#&gt;    1: ALBANESI-S      BALL-L 0.02429648 ALBANESI-S      BALL-L   coupling_angle</span>
-<span class="co">#&gt;    2: ALBANESI-S ROTEMBERG-J 0.03045725 ALBANESI-S ROTEMBERG-J   coupling_angle</span>
-<span class="co">#&gt;    3: ALBANESI-S    BARSKY-R 0.02100729 ALBANESI-S    BARSKY-R   coupling_angle</span>
-<span class="co">#&gt;    4: ALBANESI-S     BEYER-A 0.03458572 ALBANESI-S     BEYER-A   coupling_angle</span>
-<span class="co">#&gt;    5: ALBANESI-S  CHAPPELL-H 0.04264014 ALBANESI-S  CHAPPELL-H   coupling_angle</span>
-<span class="co">#&gt;   ---                                                                          </span>
-<span class="co">#&gt; 1456:    VELDE-F     YOUNG-W 0.01601282    VELDE-F     YOUNG-W   coupling_angle</span>
-<span class="co">#&gt; 1457:    VELDE-F     WEISE-C 0.02282177    VELDE-F     WEISE-C   coupling_angle</span>
-<span class="co">#&gt; 1458:    VELDE-F   WACHTER-M 0.01883109    VELDE-F   WACHTER-M   coupling_angle</span>
-<span class="co">#&gt; 1459:    VELDE-F WEINTRAUB-S 0.12909944    VELDE-F WEINTRAUB-S   coupling_angle</span>
-<span class="co">#&gt; 1460:  WACHTER-M WEINTRAUB-S 0.14586499  WACHTER-M WEINTRAUB-S   coupling_angle</span></code></pre></div>
+<span class="co">#&gt;             from           to      weight     Source       Target</span>
+<span class="co">#&gt;    1: ALBANESI-S      CHARI-V 0.032897585 ALBANESI-S      CHARI-V</span>
+<span class="co">#&gt;    2: ALBANESI-S CHRISTIANO-L 0.025302270 ALBANESI-S CHRISTIANO-L</span>
+<span class="co">#&gt;    3: ALBANESI-S       BALL-L 0.024296477 ALBANESI-S       BALL-L</span>
+<span class="co">#&gt;    4: ALBANESI-S     MANKIW-G 0.038924947 ALBANESI-S     MANKIW-G</span>
+<span class="co">#&gt;    5: ALBANESI-S  ROTEMBERG-J 0.030457245 ALBANESI-S  ROTEMBERG-J</span>
+<span class="co">#&gt;   ---                                                            </span>
+<span class="co">#&gt; 3461: WILLIAMS-J      YOUNG-W 0.008684168 WILLIAMS-J      YOUNG-W</span>
+<span class="co">#&gt; 3462: WILLIAMS-J   WILLIAMS-N 0.014002801 WILLIAMS-J   WILLIAMS-N</span>
+<span class="co">#&gt; 3463: WILLIAMS-J        ZHA-T 0.014002801 WILLIAMS-J        ZHA-T</span>
+<span class="co">#&gt; 3464: WILLIAMS-N        ZHA-T 0.040000000 WILLIAMS-N        ZHA-T</span>
+<span class="co">#&gt; 3465: WOODFORD-M      YOUNG-W 0.020672456 WOODFORD-M      YOUNG-W</span>
+<span class="co">#&gt;       Weighting_method</span>
+<span class="co">#&gt;    1:   coupling_angle</span>
+<span class="co">#&gt;    2:   coupling_angle</span>
+<span class="co">#&gt;    3:   coupling_angle</span>
+<span class="co">#&gt;    4:   coupling_angle</span>
+<span class="co">#&gt;    5:   coupling_angle</span>
+<span class="co">#&gt;   ---                 </span>
+<span class="co">#&gt; 3461:   coupling_angle</span>
+<span class="co">#&gt; 3462:   coupling_angle</span>
+<span class="co">#&gt; 3463:   coupling_angle</span>
+<span class="co">#&gt; 3464:   coupling_angle</span>
+<span class="co">#&gt; 3465:   coupling_angle</span></code></pre></div>
 </div>
 <div id="a-different-world-building-co-authorship-network" class="section level1">
 <h1 class="hasAnchor">
 <a href="#a-different-world-building-co-authorship-network" class="anchor"></a>A different world: building co-authorship network</h1>
-<p>Even if co-authorship links weights can be calculated using the <a href="#the-basic-coupling-angle-or-cosine-function"><code>biblio_coupling()</code></a> function with authors as <code>source</code> and articles as <code>ref</code>, the method used is not necessarily the most appropriate for co-authorship networks. The <code><a href="../reference/coauth_network.html">coauth_network()</a></code> function implements different types of methods for calculating the weights linking different authors:<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<p>Even if the weights of co-authorship links can be calculated using the <code><a href="../reference/biblio_coupling.html">biblio_coupling()</a></code> function with authors as <code>source</code> and articles as <code>ref</code>, the method used is not necessarily the most appropriate for co-authorship networks. The <code><a href="../reference/coauth_network.html">coauth_network()</a></code> function implements different types of methods for calculating the weights linking different authors:<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <ol style="list-style-type: decimal">
 <li>a “full counting” method;</li>
 <li>a “fractional counting” method <span class="citation">(see <a href="#ref-perianes-rodriguez2016b" role="doc-biblioref">Perianes-Rodriguez, Waltman, and Van Eck 2016</a> for an interesting comparison between full counting and fractional counting results)</span>;</li>
@@ -360,7 +370,7 @@
 <div id="incorporated-data" class="section level1">
 <h1 class="hasAnchor">
 <a href="#incorporated-data" class="anchor"></a>Incorporated data</h1>
-<p>The biblionetwork package contains bibliometric data built by <span class="citation"><a href="#ref-goutsmedt2021a" role="doc-biblioref">Goutsmedt</a> (<a href="#ref-goutsmedt2021a" role="doc-biblioref">2021</a>)</span>. These data gather the academic articles and books that endeavoured to explain the United States stagflation of the 1970s, published between 1975 and 2013. They also gather all the references cited by these articles and books on stagflation. The <code>Nodes_stagflation.rda</code> file contains information about the academic articles and books on stagflation (the staflation documents), as well as about the references cited at least by two of these stagflation documents. The <code>Ref_stagflation.rda</code> is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. The <code>Authors_stagflation.rda</code> is a data frame with the list of documents explaining the US stagflation, and all the authors of these documents (<code>Nodes_stagflation.rda</code> just takes the first author for each document).</p>
+<p>The biblionetwork package contains bibliometric data built by <span class="citation"><a href="#ref-goutsmedt2021a" role="doc-biblioref">Goutsmedt</a> (<a href="#ref-goutsmedt2021a" role="doc-biblioref">2021</a>)</span>. These data gather the academic articles and books that endeavoured to explain the United States stagflation of the 1970s, published between 1975 and 2013. They also gather all the references cited by these articles and books on stagflation. The <code>Nodes_stagflation</code> file contains information about the academic articles and books on stagflation (the staflation documents), as well as about the references cited at least by two of these stagflation documents. The <code>Ref_stagflation</code> is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. The <code>Authors_stagflation</code> is a data frame with the list of documents explaining the US stagflation, and all the authors of these documents (<code>Nodes_stagflation</code> just takes the first author for each document).</p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
@@ -376,7 +386,7 @@ Leydesdorff, Loet, and Han Woo Park. 2017. <span>“Full and Fractional Counting
 Perianes-Rodriguez, Antonio, Ludo Waltman, and Nees Jan Van Eck. 2016. <span>“Constructing Bibliometric Networks: <span>A</span> Comparison Between Full and Fractional Counting.”</span> <em>Journal of Informetrics</em> 10 (4): 1178–95. <a href="https://www.sciencedirect.com/science/article/pii/S1751157716302036?casa_token=AtzjmZ-1QmYAAAAA:2mlBPZsjGUleYi9mnybHODFw2RmMh3GHvRAuMYXygRm63cQOv07M4ixbAmJXuGq71tx2ug29baTp">https://www.sciencedirect.com/science/article/pii/S1751157716302036?casa_token=AtzjmZ-1QmYAAAAA:2mlBPZsjGUleYi9mnybHODFw2RmMh3GHvRAuMYXygRm63cQOv07M4ixbAmJXuGq71tx2ug29baTp</a>.
 </div>
 <div id="ref-sen1983" class="csl-entry">
-Sen, Subir K., and Shymal K. Gan. 1983. <span>“A Mathematical Extension of the Idea of Bibliographic Coupling and Its Applications.”</span> <em>Annals of Library Science and Documentation</em> 30 (2). <a href="http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS">http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS</a>.
+Sen, Subir K., and Shymal K. Gan. 1983. <span>“A Mathematical Extension of the Idea of Bibliographic Coupling and Its Applications.”</span> <em>Annals of Library Science and Documentation</em> 30 (2). <a href="http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS%2030(2)%2078-82.pdf">http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS%2030(2)%2078-82.pdf</a>.
 </div>
 <div id="ref-shen2019" class="csl-entry">
 Shen, Si, Danhao Zhu, Ronald Rousseau, Xinning Su, and Dongbo Wang. 2019. <span>“A Refined Method for Computing Bibliographic Coupling Strengths.”</span> <em>Journal of Informetrics</em> 13 (2): 605–15. <a href="https://linkinghub.elsevier.com/retrieve/pii/S1751157716300244">https://linkinghub.elsevier.com/retrieve/pii/S1751157716300244</a>.
@@ -392,8 +402,7 @@ Zhao, Dangzhi, and Andreas Strotmann. 2008. <span>“Author Bibliographic Coupli
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>Github_document does not render properly math equations and I have decided to let them in a format that would allow proper computation in .html or .pdf documents.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>I take as example authors here, but the function could also be used for calculating a co-authorship network with institutions or countries as nodes.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>I take as example authors here, but the function could also be used for calculating a co-authorship network with institutions or countries as nodes.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>

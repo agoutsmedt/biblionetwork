@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Calculating The Coupling Strength Measure For Edges — coupling_strength • biblionetwork</title>
+<title>Calculating the Coupling Strength Measure for Edges — coupling_strength • biblionetwork</title>
 
 
 <!-- jquery -->
@@ -66,13 +66,13 @@
 
 
 
-<meta property="og:title" content="Calculating The Coupling Strength Measure For Edges — coupling_strength" />
+<meta property="og:title" content="Calculating the Coupling Strength Measure for Edges — coupling_strength" />
 <meta property="og:description" content="This function calculates the coupling strength measure (following Vladutz and Cook 1984 and Shen et al. 2019)
 
 from a direct citation data frame. It is a refinement of biblio_coupling():
 it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus.
 In other words, the most cited references are less important in the links between two articles, than references that have
-been rarely cited. To a certain extent, it is similar to the TF-IDF measure." />
+been rarely cited. To a certain extent, it is similar to the tf-idf measure." />
 
 
 
@@ -179,7 +179,7 @@ been rarely cited. To a certain extent, it is similar to the TF-IDF measure." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculating The Coupling Strength Measure For Edges</h1>
+    <h1>Calculating the Coupling Strength Measure for Edges</h1>
     <small class="dont-index">Source: <a href='https://github.com/agoutsmedt/biblionetwork/blob/master/R/coupling_strength.R'><code>R/coupling_strength.R</code></a></small>
     <div class="hidden name"><code>coupling_strength.Rd</code></div>
     </div>
@@ -190,7 +190,7 @@ been rarely cited. To a certain extent, it is similar to the TF-IDF measure." />
 from a direct citation data frame. It is a refinement of <code><a href='biblio_coupling.html'>biblio_coupling()</a></code>:
 it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus.
 In other words, the most cited references are less important in the links between two articles, than references that have
-been rarely cited. To a certain extent, it is similar to the TF-IDF measure.</p>
+been rarely cited. To a certain extent, it is similar to the <a href='https://en.wikipedia.org/wiki/Tf%E2%80%93idf'>tf-idf</a> measure.</p>
     </div>
 
     <pre class="usage"><span class='fu'>coupling_strength</span><span class='op'>(</span>
@@ -206,7 +206,7 @@ been rarely cited. To a certain extent, it is similar to the TF-IDF measure.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dt</th>
-      <td><p>The table with citing and cited documents.</p></td>
+      <td><p>The data frame with citing and cited documents.</p></td>
     </tr>
     <tr>
       <th>source</th>
@@ -218,10 +218,12 @@ been rarely cited. To a certain extent, it is similar to the TF-IDF measure.</p>
     </tr>
     <tr>
       <th>weight_threshold</th>
-      <td><p>Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
-that have a non-normalized weight superior to the <code>weight_threshold</code>. In a large bibliographic coupling network,
+      <td><p>Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
+that have a non-normalized weight superior to the <code>weight_threshold</code>. In other words, if you set the
+parameter to 2, the function keeps only the edges between nodes that share at least two references
+in common in their bibliography. In a large bibliographic coupling network,
 you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together.
-This parameter could also be modified to avoid creating untractable networks with too many edges.</p></td>
+This parameter could also be modified to avoid creating intractable networks with too many edges.</p></td>
     </tr>
     <tr>
       <th>output_in_character</th>

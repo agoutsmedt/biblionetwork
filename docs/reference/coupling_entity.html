@@ -68,14 +68,9 @@
 
 <meta property="og:title" content="Creating Coupling Networks at Entity Level — coupling_entity" />
 <meta property="og:description" content="This function creates the edges of a network of entities from a direct citations data frame (i.e. documents citing references).
-Entities could be authors, affiliations, journals, etc. Consequently, Coupling links are calculated using the coupling angle measure or the coupling strength measure.
-Coupling links are calculated depending of the number references two authors share, taking into account the minimum number of times two authors are citing
-each references. For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles),
-the second one three times, the function takes two as the minimum value. In addition to the features of the coupling strength measure (see coupling_strength())
-or the coupling angle measure (see biblio_coupling()), it means that, if two entities share two reference in common, the fact that the first reference is cited
-at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than
-the second reference. This use of minimum shared reference for entities coupling comes from Zhao and Strotmann (2008)
-." />
+Entities could be authors, affiliations, journals, etc. Consequently, coupling links are calculated using the coupling angle measure
+(like biblio_coupling()) or the coupling strength measure (like coupling_strength(). But it also takes into account the fact that
+an entity can cite several times a reference, and considers that citing 10 times a ref is more significant that citing it only once (see details)." />
 
 
 
@@ -189,14 +184,9 @@ the second reference. This use of minimum shared reference for entities coupling
 
     <div class="ref-description">
     <p>This function creates the edges of a network of entities from a direct citations data frame (i.e. documents citing references).
-Entities could be authors, affiliations, journals, etc. Consequently, Coupling links are calculated using the coupling angle measure or the coupling strength measure.
-Coupling links are calculated depending of the number references two authors share, taking into account the minimum number of times two authors are citing
-each references. For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles),
-the second one three times, the function takes two as the minimum value. In addition to the features of the coupling strength measure (see <code><a href='coupling_strength.html'>coupling_strength()</a></code>)
-or the coupling angle measure (see <code><a href='biblio_coupling.html'>biblio_coupling()</a></code>), it means that, if two entities share two reference in common, the fact that the first reference is cited
-at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than
-the second reference. This use of minimum shared reference for entities coupling comes from Zhao and Strotmann (2008)
-.</p>
+Entities could be authors, affiliations, journals, <em>etc</em>. Consequently, coupling links are calculated using the coupling angle measure
+(like <code><a href='biblio_coupling.html'>biblio_coupling()</a></code>) or the coupling strength measure (like <code><a href='coupling_strength.html'>coupling_strength()</a></code>. But it also takes into account the fact that
+an entity can cite several times a reference, and considers that citing 10 times a ref is more significant that citing it only once (see <a href='#details'>details</a>).</p>
     </div>
 
     <pre class="usage"><span class='fu'>coupling_entity</span><span class='op'>(</span>
@@ -218,32 +208,35 @@ the second reference. This use of minimum shared reference for entities coupling
     </tr>
     <tr>
       <th>source</th>
-      <td><p>the column name of the source identifiers, that is the documents that are citing.</p></td>
+      <td><p>The column name of the source identifiers, that is the documents that are citing.</p></td>
     </tr>
     <tr>
       <th>ref</th>
-      <td><p>the column name of the cited references identifiers.</p></td>
+      <td><p>The column name of the cited references identifiers.</p></td>
     </tr>
     <tr>
       <th>entity</th>
-      <td><p>the column name of the entity (authors, journals, institutions) that are citing.</p></td>
+      <td><p>The column name of the entity (authors, journals, institutions) that are citing.</p></td>
     </tr>
     <tr>
       <th>weight_threshold</th>
-      <td><p>Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
-that have a non-normalized weight superior to the <code>weight_threshold</code>. In a large bibliographic coupling network,
-you can consider for instance that sharing only one reference is not sufficient/significant for two articles (above all for two entities like authors or journals)
-to be linked together. This parameter could also be modified to avoid creating untractable networks with too many edges.</p></td>
+      <td><p>Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
+that have a non-normalized weight superior to the <code>weight_threshold</code>. In other words, if you set the
+parameter to 2, the function keeps only the edges between nodes that share at least two references
+in common in their bibliography. In a large bibliographic coupling network,
+you can consider for instance that sharing only one reference is not sufficient/significant
+for two entities (above all when large entities like journals and institutions) to be linked together.
+This parameter could also be modified to avoid creating intractable networks with too many edges.</p></td>
     </tr>
     <tr>
       <th>output_in_character</th>
       <td><p>If TRUE, the function ends by transforming the <code>from</code> and <code>to</code> columns in character, to make the
-creation of a <a href='https://tidygraph.data-imaginist.com/index.html'>tidygraph</a> graph easier.</p></td>
+creation of a <a href='https://tidygraph.data-imaginist.com/index.html'>tidygraph</a> network easier.</p></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>Choose the method you want to use for calculating the edges weights: either "coupling_strength" like in the <code><a href='coupling_strength.html'>coupling_strength()</a></code> function,
-or "coupling_angle" like in the <code><a href='biblio_coupling.html'>biblio_coupling()</a></code> function.</p></td>
+      <td><p>Choose the method you want to use for calculating the edges weights: either <code>"coupling_strength"</code> like in the
+<code><a href='coupling_strength.html'>coupling_strength()</a></code> function, or <code>"coupling_angle"</code> like in the <code><a href='biblio_coupling.html'>biblio_coupling()</a></code> function.</p></td>
     </tr>
     </table>
 
@@ -252,6 +245,19 @@ or "coupling_angle" like in the <code><a href='biblio_coupling.html'>biblio_coup
     <p>A data.table with the entity identifiers in <code>from</code> and <code>to</code> columns, with the coupling strength or coupling angle measures in
 another column, as well as the method used. It also keeps a copy of <code>from</code> and <code>to</code> in the <code>Source</code> and <code>Target</code> columns. This is useful is you
 are using the tidygraph package then, where <code>from</code> and <code>to</code> values are modified when creating a graph.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Coupling links are calculated depending of the number of references two authors (or any entity) share,
+taking into account the minimum number of times two authors are citing each references.
+For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles),
+the second one three times, the function takes two as the minimum value. In addition to the features of the coupling strength measure (see <code><a href='coupling_strength.html'>coupling_strength()</a></code>)
+or the coupling angle measure (see <code><a href='biblio_coupling.html'>biblio_coupling()</a></code>), it means that, if two entities share two reference in common, if the first reference is cited
+at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than
+the second reference. This use of minimum shared reference for entities coupling comes from Zhao and Strotmann (2008)
+. It looks like
+this for the coupling strength:</p>
+<p>$$\frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j} Min(C_{Aj},C_{Bj}).(log({\frac{N}{freq(R_{j})}}))$$</p>
+<p>with \(C_{Aj}\) and \(C_{Bj}\) the number of time documents A and B cite the reference j.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Zhao D, Strotmann A (2008).
@@ -261,6 +267,7 @@ are using the tidygraph package then, where <code>from</code> and <code>to</code
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/agoutsmedt/biblionetwork'>biblionetwork</a></span><span class='op'>)</span>
+<span class='va'>Ref_stagflation</span><span class='op'>$</span><span class='va'>Citing_ItemID_Ref</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>Ref_stagflation</span><span class='op'>$</span><span class='va'>Citing_ItemID_Ref</span><span class='op'>)</span>
 <span class='co'># merging the references data with the citing author information in Nodes_stagflation</span>
 <span class='va'>entity_citations</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span><span class='op'>(</span><span class='va'>Ref_stagflation</span>,
                           <span class='va'>Nodes_stagflation</span>,
@@ -279,11 +286,11 @@ are using the tidygraph package then, where <code>from</code> and <code>to</code
 #&gt;    4: ALBANESI-S     BEYER-A 0.03458572 ALBANESI-S     BEYER-A   coupling_angle
 #&gt;    5: ALBANESI-S  CHAPPELL-H 0.04264014 ALBANESI-S  CHAPPELL-H   coupling_angle
 #&gt;   ---                                                                          
-#&gt; 1456:    VELDE-F     YOUNG-W 0.01601282    VELDE-F     YOUNG-W   coupling_angle
-#&gt; 1457:    VELDE-F     WEISE-C 0.02282177    VELDE-F     WEISE-C   coupling_angle
-#&gt; 1458:    VELDE-F   WACHTER-M 0.01883109    VELDE-F   WACHTER-M   coupling_angle
-#&gt; 1459:    VELDE-F WEINTRAUB-S 0.12909944    VELDE-F WEINTRAUB-S   coupling_angle
-#&gt; 1460:  WACHTER-M WEINTRAUB-S 0.14586499  WACHTER-M WEINTRAUB-S   coupling_angle</div><div class='input'>
+#&gt; 1545:    VELDE-F     YOUNG-W 0.01601282    VELDE-F     YOUNG-W   coupling_angle
+#&gt; 1546:    VELDE-F     WEISE-C 0.02282177    VELDE-F     WEISE-C   coupling_angle
+#&gt; 1547:    VELDE-F   WACHTER-M 0.01883109    VELDE-F   WACHTER-M   coupling_angle
+#&gt; 1548:    VELDE-F WEINTRAUB-S 0.12909944    VELDE-F WEINTRAUB-S   coupling_angle
+#&gt; 1549:  WACHTER-M WEINTRAUB-S 0.14586499  WACHTER-M WEINTRAUB-S   coupling_angle</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

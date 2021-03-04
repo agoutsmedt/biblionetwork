@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Creating Co-Authorship Network With Different Measures For Weights — coauth_network • biblionetwork</title>
+<title>Creating Co-Authorship Network with Different Measures for Weights — coauth_network • biblionetwork</title>
 
 
 <!-- jquery -->
@@ -66,8 +66,8 @@
 
 
 
-<meta property="og:title" content="Creating Co-Authorship Network With Different Measures For Weights — coauth_network" />
-<meta property="og:description" content="This function creates a edges data table from a data frame with a list of authors and their publications.
+<meta property="og:title" content="Creating Co-Authorship Network with Different Measures for Weights — coauth_network" />
+<meta property="og:description" content="This function creates an edge list for co-authorship networks from a data frame with a list of entities and their publications.
 The weight of edges can be calculated following different methods. The nodes of the network could be indifferently authors,
 institutions or countries." />
 
@@ -176,13 +176,13 @@ institutions or countries." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Creating Co-Authorship Network With Different Measures For Weights</h1>
+    <h1>Creating Co-Authorship Network with Different Measures for Weights</h1>
     <small class="dont-index">Source: <a href='https://github.com/agoutsmedt/biblionetwork/blob/master/R/coauth_network.R'><code>R/coauth_network.R</code></a></small>
     <div class="hidden name"><code>coauth_network.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function creates a edges data table from a data frame with a list of authors and their publications.
+    <p>This function creates an edge list for co-authorship networks from a data frame with a list of entities and their publications.
 The weight of edges can be calculated following different methods. The nodes of the network could be indifferently authors,
 institutions or countries.</p>
     </div>
@@ -200,7 +200,7 @@ institutions or countries.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dt</th>
-      <td><p>The dataframe with authors (or institutions or countries) and the list of documents they have published.</p></td>
+      <td><p>The data frame with authors (or institutions or countries) and the list of documents they have published.</p></td>
     </tr>
     <tr>
       <th>authors</th>
@@ -216,7 +216,8 @@ institutions or countries.</p>
     </tr>
     <tr>
       <th>cosine_normalized</th>
-      <td><p>Possibility to take into account the total number of articles written by two linked authors and to normalize the weight of their link.</p></td>
+      <td><p>Possibility to take into account the total number of articles written by two linked authors and to normalize the weight of their link
+using Salton's cosine.</p></td>
     </tr>
     </table>
 
@@ -228,12 +229,12 @@ are using the tidygraph package then, where <code>from</code> and <code>to</code
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Weights can be calculated with:</p><ol>
-<li><p>the <code>full_counting</code> method: the linkds between authors correspond to their absolute number of collaborations</p></li>
-<li><p>the <code>fractional_counting</code> method which takes into account the number of authors in each article,
+<li><p>the <code>"full_counting"</code> method: the linkds between authors correspond to their absolute number of collaborations.</p></li>
+<li><p>the <code>"fractional_counting"</code> method which takes into account the number of authors in each article,
 following (Perianes-Rodriguez et al. 2016)
  equation:
-$$\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}}{n_{k}-1}$$ with M the total number of articles, $$a_{ik}.a_{jk}$$
-which takes 1 if author i and j have co-written the article k, and $$n_{k}$$ the number of authors for article k.</p></li>
+$$\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}}{n_{k}-1}$$ with M the total number of articles, \(a_{ik}.a_{jk}\)
+which takes 1 if author i and j have co-written the article k, and \(n_{k}\) the number of authors for article k.</p></li>
 <li><p>the <code>fractional_counting_refined</code> method, inspired by (Leydesdorff and Park 2017)
 
 which is similar to <code>fractional_counting</code> but which is formalised in a way
@@ -242,7 +243,7 @@ that allows the sum of weights to equal the number of articles in the corpus: $$
 
 <p>In addition, it is possible to take into account the total number of collaborations of two linked authors.
 If <code>cosine_normalized</code> is set to <code>True</code>, the weight calculated with one of the three methods above is divided by
-$$\sqrt{C_{i}.C_{j}}$$, with $$C_{i}$$ being the number of articles co-written by author i.</p>
+\(\sqrt{C_{i}.C_{j}}\), with \(C_{i}\) being the number of articles co-written by author i.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Leydesdorff L, Park HW (2017).

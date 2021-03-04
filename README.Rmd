@@ -30,9 +30,9 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of biblionetwork is to provide functions to create bibliometric networks like bibliographic coupling network, co-citation network and co-authorship network. The weights of network edges can be calculated according to different methods, depending on the type of networks, the type of nodes, and what you want to analyse. These functions are optimized to be be used on very large dataset.
+The goal of biblionetwork is to provide functions to create bibliometric networks like bibliographic coupling network, co-citation network and co-authorship network. It identifies edges and calculates the weights according to different methods, depending on the type of networks, the type of nodes, and what you want to analyse. These functions are optimized to be used on very large dataset.
 
-The original function, which uses data.table [@datatable] and allows the user to find edges and calculate weights for very large networks, was developed by [François Claveau](https://www.usherbrooke.ca/philosophie/nous-joindre/personnel-enseignant/claveau-francois/). The different functions in this package have been developed, from Claveau's original idea, by [Alexandre Truc](https://sites.google.com/view/alexandre-truc/home-and-contact) and [Aurélien Goutsmedt](https://aurelien-goutsmedt.com/). The package is maintained by Aurélien Goutsmedt.^[Contact: [agoutsmedt@hotmail.fr](agoutsmedt@hotmail.fr).]
+The original function, which uses data.table [@datatable] and allows the user to find edges and calculate weights for large networks, was developed by [François Claveau](https://www.usherbrooke.ca/philosophie/nous-joindre/personnel-enseignant/claveau-francois/). The different functions in this package have been developed, from Claveau's original idea, by [Alexandre Truc](https://sites.google.com/view/alexandre-truc/home-and-contact) and [Aurélien Goutsmedt](https://aurelien-goutsmedt.com/). The package is maintained by Aurélien Goutsmedt.^[Contact: [agoutsmedt@hotmail.fr](agoutsmedt@hotmail.fr).]
 
 You can cite this package as:
 ```{r}
@@ -51,7 +51,7 @@ devtools::install_github("agoutsmedt/biblionetwork")
 
 ## Example
 
-The basic function of the package is the `biblio_coupling()` function. This function calculates the number of references that different articles share together, as well as the coupling angle value of edges in a bibliographic coupling network [@sen1983]. What you need is just a file with entities (documents, authors, universities, _etc._) citing references.^[If you want to build a coupling network with entities larger than a document (meaning entities that have published several documents, and thus can cite a reference several time), we rather recommend the use of the `coupling_entity()` function. See the `vignette("using_biblionetwork")` vignette for examples.]
+The basic function of the package is the `biblio_coupling()` function. This function calculates the number of references that different articles share together, as well as the coupling angle value of edges in a bibliographic coupling network [@sen1983]. What you need is just a file with entities (documents, authors, universities, _etc._) citing references.^[If you want to build a coupling network with entities larger than a document (meaning entities that have published several documents, and thus can cite a reference several times), we rather recommend the use of the `coupling_entity()` function. See the `vignette("Using_biblionetwork")` for examples.] See the `vignette("Using_biblionetwork")` for a more in-depth presentation of the package. 
 
 This example use the [data incorporated][Incorporated data] in the package.
 
@@ -69,6 +69,6 @@ biblio_coupling(Ref_stagflation,
 
 ## Incorporated data
 
-The biblionetwork package contains bibliometric data built by @goutsmedt2021a. These data gather the academic articles and books that endeavoured to explain the United States stagflation of the 1970s, published between 1975 and 2013. They also gather all the references cited by these articles and books on stagflation. The `Nodes_stagflation.rda` file contains information about the academic articles and books on stagflation (the staflation documents), as well as about the references cited at least by two of these stagflation documents. The `Ref_stagflation.rda` is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. The `Authors_stagflation.rda` is a data frame with the list of documents explaining the US stagflation, and all the authors of these documents (`Nodes_stagflation.rda` just takes the first author for each document).
+The biblionetwork package contains bibliometric data built by @goutsmedt2021a. These data gather the academic articles and books, published between 1975 and 2013, that endeavoured to explain the United States stagflation of the 1970s. They also gather all the references cited by these articles and books on stagflation. The `Nodes_stagflation.rda` file contains information about the academic articles and books on stagflation (the staflation documents), as well as about the references cited at least by two of these stagflation documents. The `Ref_stagflation.rda` is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. The `Authors_stagflation.rda` is a data frame with the list of documents explaining the US stagflation, and all the authors of these documents (`Nodes_stagflation.rda` just takes the first author for each document).
 
 ## References

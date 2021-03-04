@@ -2,7 +2,7 @@
 % Please edit documentation in R/coupling_strength.R
 \name{coupling_strength}
 \alias{coupling_strength}
-\title{Calculating The Coupling Strength Measure For Edges}
+\title{Calculating the Coupling Strength Measure for Edges}
 \usage{
 coupling_strength(
   dt,
@@ -13,16 +13,18 @@ coupling_strength(
 )
 }
 \arguments{
-\item{dt}{The table with citing and cited documents.}
+\item{dt}{The data frame with citing and cited documents.}
 
 \item{source}{the column name of the source identifiers, that is the documents that are citing.}
 
 \item{ref}{the column name of the references that are cited.}
 
-\item{weight_threshold}{Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
-that have a non-normalized weight superior to the \code{weight_threshold}. In a large bibliographic coupling network,
+\item{weight_threshold}{Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
+that have a non-normalized weight superior to the \code{weight_threshold}. In other words, if you set the
+parameter to 2, the function keeps only the edges between nodes that share at least two references
+in common in their bibliography. In a large bibliographic coupling network,
 you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together.
-This parameter could also be modified to avoid creating untractable networks with too many edges.}
+This parameter could also be modified to avoid creating intractable networks with too many edges.}
 
 \item{output_in_character}{If TRUE, the function ends by transforming the \code{from} and \code{to} columns in character, to make the
 creation of a \href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} graph easier.}
@@ -37,7 +39,7 @@ This function calculates the coupling strength measure \insertCite{@following @v
 from a direct citation data frame. It is a refinement of \code{\link[=biblio_coupling]{biblio_coupling()}}:
 it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus.
 In other words, the most cited references are less important in the links between two articles, than references that have
-been rarely cited. To a certain extent, it is similar to the TF-IDF measure.
+been rarely cited. To a certain extent, it is similar to the \href{https://en.wikipedia.org/wiki/Tf\%E2\%80\%93idf}{tf-idf} measure.
 }
 \examples{
 library(biblionetwork)

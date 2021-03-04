@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Calculating The Coupling Angle Measure For Edges In A Co-citation Network — biblio_cocitation • biblionetwork</title>
+<title>Calculating the Coupling Angle Measure for Edges in a Co-citation Network — biblio_cocitation • biblionetwork</title>
 
 
 <!-- jquery -->
@@ -66,14 +66,14 @@
 
 
 
-<meta property="og:title" content="Calculating The Coupling Angle Measure For Edges In A Co-citation Network — biblio_cocitation" />
-<meta property="og:description" content="This function his basically the same as the biblio_coupling() function but it is explicitly framed
+<meta property="og:title" content="Calculating the Coupling Angle Measure for Edges in a Co-citation Network — biblio_cocitation" />
+<meta property="og:description" content="This function is basically the same as the biblio_coupling() function but it is explicitly framed
 for bibliographic co-citation network (and not for bibliographic coupling networks). It takes a data frame
 with direct citations, and calculates the number of times two references are citing together, and calculate a measure
 similar to the coupling angle value (Sen and Gan 1983)
 : it divides the number of times two references are
-cited together by the rootsquare of the product of the total number of citations (in the whole corpus) of each reference.
-The more two references are cited, the more they have to be cited together for their link to be important." />
+cited together by the square root of the product of the total number of citations (in the whole corpus) of each reference.
+The more two references are cited in general, the more they have to be cited together for their link to be important." />
 
 
 
@@ -180,19 +180,19 @@ The more two references are cited, the more they have to be cited together for t
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculating The Coupling Angle Measure For Edges In A Co-citation Network</h1>
+    <h1>Calculating the Coupling Angle Measure for Edges in a Co-citation Network</h1>
     <small class="dont-index">Source: <a href='https://github.com/agoutsmedt/biblionetwork/blob/master/R/biblio_cocitation.R'><code>R/biblio_cocitation.R</code></a></small>
     <div class="hidden name"><code>biblio_cocitation.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function his basically the same as the <code><a href='biblio_coupling.html'>biblio_coupling()</a></code> function but it is explicitly framed
+    <p>This function is basically the same as the <code><a href='biblio_coupling.html'>biblio_coupling()</a></code> function but it is explicitly framed
 for bibliographic co-citation network (and not for bibliographic coupling networks). It takes a data frame
 with direct citations, and calculates the number of times two references are citing together, and calculate a measure
 similar to the coupling angle value (Sen and Gan 1983)
 : it divides the number of times two references are
-cited together by the rootsquare of the product of the total number of citations (in the whole corpus) of each reference.
-The more two references are cited, the more they have to be cited together for their link to be important.</p>
+cited together by the square root of the product of the total number of citations (in the whole corpus) of each reference.
+The more two references are cited in general, the more they have to be cited together for their link to be important.</p>
     </div>
 
     <pre class="usage"><span class='fu'>biblio_cocitation</span><span class='op'>(</span>
@@ -209,19 +209,19 @@ The more two references are cited, the more they have to be cited together for t
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dt</th>
-      <td><p>The dataframe with citing and cited documents. It could also be used</p></td>
+      <td><p>The dataframe with citing and cited documents.</p></td>
     </tr>
     <tr>
       <th>source</th>
-      <td><p>the column name of the source identifiers, that is the documents that are citing.</p></td>
+      <td><p>The column name of the source identifiers, that is the documents that are citing.</p></td>
     </tr>
     <tr>
       <th>ref</th>
-      <td><p>the column name of the cited references identifiers. In co-citation network, these references are the nodes of the network.</p></td>
+      <td><p>The column name of the cited references identifiers. In co-citation network, these references are the nodes of the network.</p></td>
     </tr>
     <tr>
       <th>normalized_weight_only</th>
-      <td><p>if set to FALSE, the function returns the weights normalized by the cosine measure,
+      <td><p>If set to FALSE, the function returns the weights normalized by the cosine measure,
 but also simply the number of times two references are cited together.</p></td>
     </tr>
     <tr>
@@ -229,7 +229,7 @@ but also simply the number of times two references are cited together.</p></td>
       <td><p>Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
 that have a non-normalized weight superior to the <code>weight_threshold</code>. In a large bibliographic co-citation network,
 you can consider for instance that being cited only once together is not sufficient/significant for two references to be linked together.
-This parameter could also be modified to avoid creating untractable networks with too many edges.</p></td>
+This parameter could also be modified to avoid creating intractable networks with too many edges.</p></td>
     </tr>
     <tr>
       <th>output_in_character</th>
@@ -240,13 +240,14 @@ creation of a <a href='https://tidygraph.data-imaginist.com/index.html'>tidygrap
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A data.table with the articles (or authors) identifier in <code>from</code> and <code>to</code> columns, with one or two additional columns (the coupling angle measure and
+    <p>A data.table with the articles (or authors) identifier in <code>from</code> and <code>to</code> columns,
+with one or two additional columns (the coupling angle measure and
 the number of shared references). It also keeps a copy of <code>from</code> and <code>to</code> in the <code>Source</code> and <code>Target</code> columns. This is useful is you
 are using the tidygraph package then, where <code>from</code> and <code>to</code> values are modified when creating a graph.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>This function uses data.table package and is thus very fast. It allows the user to compute the coupling angle
-on a very large dataframe very quickly.</p>
+on a very large data frame quickly.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Sen SK, Gan SK (1983).
@@ -266,11 +267,27 @@ ref <span class='op'>=</span> <span class='st'>"ItemID_Ref"</span><span class='o
 #&gt;     4:      49248    2031010 1.0000000      49248    2031010
 #&gt;     5:      49248    3580645 0.7071068      49248    3580645
 #&gt;    ---                                                      
-#&gt; 87706: 1111112223 1111112225 1.0000000 1111112223 1111112225
-#&gt; 87707: 1111112223 1111112227 1.0000000 1111112223 1111112227
-#&gt; 87708: 1111112224 1111112225 1.0000000 1111112224 1111112225
-#&gt; 87709: 1111112224 1111112227 1.0000000 1111112224 1111112227
-#&gt; 87710: 1111112225 1111112227 1.0000000 1111112225 1111112227</div><div class='input'>
+#&gt; 87664: 1111112223 1111112225 1.0000000 1111112223 1111112225
+#&gt; 87665: 1111112223 1111112227 1.0000000 1111112223 1111112227
+#&gt; 87666: 1111112224 1111112225 1.0000000 1111112224 1111112225
+#&gt; 87667: 1111112224 1111112227 1.0000000 1111112224 1111112227
+#&gt; 87668: 1111112225 1111112227 1.0000000 1111112225 1111112227</div><div class='input'>
+<span class='co'># It is basically the same as:</span>
+<span class='fu'><a href='biblio_coupling.html'>biblio_coupling</a></span><span class='op'>(</span><span class='va'>Ref_stagflation</span>,
+source <span class='op'>=</span> <span class='st'>"ItemID_Ref"</span>,
+ref <span class='op'>=</span> <span class='st'>"Citing_ItemID_Ref"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;              from         to    weight     Source     Target
+#&gt;     1:      49248     180162 1.0000000      49248     180162
+#&gt;     2:      49248     804988 0.3162278      49248     804988
+#&gt;     3:      49248    1999903 1.0000000      49248    1999903
+#&gt;     4:      49248    2031010 1.0000000      49248    2031010
+#&gt;     5:      49248    3580645 0.7071068      49248    3580645
+#&gt;    ---                                                      
+#&gt; 87664: 1111112223 1111112225 1.0000000 1111112223 1111112225
+#&gt; 87665: 1111112223 1111112227 1.0000000 1111112223 1111112227
+#&gt; 87666: 1111112224 1111112225 1.0000000 1111112224 1111112225
+#&gt; 87667: 1111112224 1111112227 1.0000000 1111112224 1111112227
+#&gt; 87668: 1111112225 1111112227 1.0000000 1111112225 1111112227</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

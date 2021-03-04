@@ -2,7 +2,7 @@
 % Please edit documentation in R/coupling_similarity.R
 \name{coupling_similarity}
 \alias{coupling_similarity}
-\title{Calculating The Coupling Similarity Measure For Edges}
+\title{Calculating the Coupling Similarity Measure for Edges}
 \usage{
 coupling_similarity(
   dt,
@@ -19,13 +19,15 @@ coupling_similarity(
 
 \item{ref}{The column name of the references that are cited.}
 
-\item{weight_threshold}{Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
-that have a non-normalized weight superior to the \code{weight_threshold}. In a large bibliographic coupling network,
+\item{weight_threshold}{Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
+that have a non-normalized weight superior to the \code{weight_threshold}. In other words, if you set the
+parameter to 2, the function keeps only the edges between nodes that share at least two references
+in common in their bibliography. In a large bibliographic coupling network,
 you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together.
-This parameter could also be modified to avoid creating untractable networks with too many edges.}
+This parameter could also be modified to avoid creating intractable networks with too many edges.}
 
 \item{output_in_character}{If TRUE, the function ends by transforming the \code{from} and \code{to} columns in character, to make the
-creation of a \href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} graph easier.}
+creation of a \href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} network easier.}
 }
 \value{
 A data.table with the articles identifiers in \code{from} and \code{to} columns, with the similarity measure in
@@ -44,7 +46,8 @@ The function use the following formalisation:
 \enumerate{
 \item with \deqn{R_{S}(A) \bullet R_{S}(B) = \sum_{j}\sqrt{log({\frac{N}{freq(R_{j})}})}} that is a measure similar to the coupling strength measure;
 \item and \deqn{R_{S}(A).R_{S}(B) = \sum_{j}\sqrt{log({\frac{N}{freq(R_{j}(A))}})} . \sum_{j}\sqrt{log({\frac{N}{freq(R_{j}(B))}})}} which is the separated
-sum for each article of the normalized value of a citation.
+sum for each article of the normalized value of a citation. It is the cosine measure of documents A and B but adapted to the spirit of the
+coupling strength.
 }
 }
 \examples{

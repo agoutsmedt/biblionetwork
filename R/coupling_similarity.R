@@ -1,6 +1,6 @@
 coupling_similarity <- function(dt, source, ref, weight_threshold = 1, output_in_character = FALSE)
 {
-  #' Calculating The Coupling Similarity Measure For Edges
+  #' Calculating the Coupling Similarity Measure for Edges
   #'
   #' @description This function calculates a refined similarity measure of coupling links, from a direct citation data frame.
   #' It is sinpired by \insertCite{shen2019}{biblionetwork}. To a certain extent, it mixes the [coupling_strength()] function with
@@ -13,7 +13,8 @@ coupling_similarity <- function(dt, source, ref, weight_threshold = 1, output_in
   #' 1. with \deqn{R_{S}(A) \bullet R_{S}(B) = \sum_{j}\sqrt{log({\frac{N}{freq(R_{j})}})}} that is a measure similar to the coupling strength measure;
   #'
   #' 1. and \deqn{R_{S}(A).R_{S}(B) = \sum_{j}\sqrt{log({\frac{N}{freq(R_{j}(A))}})} . \sum_{j}\sqrt{log({\frac{N}{freq(R_{j}(B))}})}} which is the separated
-  #' sum for each article of the normalized value of a citation.
+  #' sum for each article of the normalized value of a citation. It is the cosine measure of documents A and B but adapted to the spirit of the
+  #' coupling strength.
   #'
   #' @param dt
   #' The table with citing and cited documents.
@@ -25,14 +26,16 @@ coupling_similarity <- function(dt, source, ref, weight_threshold = 1, output_in
   #' The column name of the references that are cited.
   #'
   #' @param weight_threshold
-  #' Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
-  #' that have a non-normalized weight superior to the `weight_threshold`. In a large bibliographic coupling network,
+  #' Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
+  #' that have a non-normalized weight superior to the `weight_threshold`. In other words, if you set the
+  #' parameter to 2, the function keeps only the edges between nodes that share at least two references
+  #' in common in their bibliography. In a large bibliographic coupling network,
   #' you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together.
-  #' This parameter could also be modified to avoid creating untractable networks with too many edges.
+  #' This parameter could also be modified to avoid creating intractable networks with too many edges.
   #'
   #' @param output_in_character
   #' If TRUE, the function ends by transforming the `from` and `to` columns in character, to make the
-  #' creation of a [tidygraph](https://tidygraph.data-imaginist.com/index.html) graph easier.
+  #' creation of a [tidygraph](https://tidygraph.data-imaginist.com/index.html) network easier.
   #'
   #' @return A data.table with the articles identifiers in `from` and `to` columns, with the similarity measure in
   #' another column. It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
@@ -56,12 +59,12 @@ coupling_similarity <- function(dt, source, ref, weight_threshold = 1, output_in
   id_ref <- id_art <- N <- Source <- Target <- weight <- nb_cit <- . <- Rs_Target <- Rs_Source <- Rs <-  NULL
 
   # Making sure the table is a datatable
-  dt <- data.table::data.table(dt)
+  dt <- data.table(dt)
 
   # Renaming and simplifying
-  data.table::setnames(dt, c(source,ref), c("id_art", "id_ref"))
+  setnames(dt, c(source,ref), c("id_art", "id_ref"))
   dt <- dt[,c("id_art","id_ref")]
-  data.table::setkey(dt,id_ref,id_art)
+  setkey(dt,id_ref,id_art)
 
   # removing duplicated citations with exactly the same source and target
   dt <- unique(dt)

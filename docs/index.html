@@ -120,8 +120,8 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 <!-- badges: end -->
-<p>The goal of biblionetwork is to provide functions to create bibliometric networks like bibliographic coupling network, co-citation network and co-authorship network. The weights of network edges can be calculated according to different methods, depending on the type of networks, the type of nodes, and what you want to analyse. These functions are optimized to be be used on very large dataset.</p>
-<p>The original function, which uses data.table (<a href="#ref-datatable">Dowle and Srinivasan 2020</a>) and allows the user to find edges and calculate weights for very large networks, was developed by <a href="https://www.usherbrooke.ca/philosophie/nous-joindre/personnel-enseignant/claveau-francois/">François Claveau</a>. The different functions in this package have been developed, from Claveau’s original idea, by <a href="https://sites.google.com/view/alexandre-truc/home-and-contact">Alexandre Truc</a> and <a href="https://aurelien-goutsmedt.com/">Aurélien Goutsmedt</a>. The package is maintained by Aurélien Goutsmedt.[1]</p>
+<p>The goal of biblionetwork is to provide functions to create bibliometric networks like bibliographic coupling network, co-citation network and co-authorship network. It identifies edges and calculates the weights according to different methods, depending on the type of networks, the type of nodes, and what you want to analyse. These functions are optimized to be used on very large dataset.</p>
+<p>The original function, which uses data.table (<a href="#ref-datatable">Dowle and Srinivasan 2020</a>) and allows the user to find edges and calculate weights for large networks, was developed by <a href="https://www.usherbrooke.ca/philosophie/nous-joindre/personnel-enseignant/claveau-francois/">François Claveau</a>. The different functions in this package have been developed, from Claveau’s original idea, by <a href="https://sites.google.com/view/alexandre-truc/home-and-contact">Alexandre Truc</a> and <a href="https://aurelien-goutsmedt.com/">Aurélien Goutsmedt</a>. The package is maintained by Aurélien Goutsmedt.[1]</p>
 <p>You can cite this package as:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/citation.html">citation</a></span><span class="op">(</span><span class="st">"biblionetwork"</span><span class="op">)</span>
@@ -156,7 +156,7 @@
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
-<p>The basic function of the package is the <code><a href="reference/biblio_coupling.html">biblio_coupling()</a></code> function. This function calculates the number of references that different articles share together, as well as the coupling angle value of edges in a bibliographic coupling network (<a href="#ref-sen1983">Sen and Gan 1983</a>). What you need is just a file with entities (documents, authors, universities, <em>etc.</em>) citing references.[2]</p>
+<p>The basic function of the package is the <code><a href="reference/biblio_coupling.html">biblio_coupling()</a></code> function. This function calculates the number of references that different articles share together, as well as the coupling angle value of edges in a bibliographic coupling network (<a href="#ref-sen1983">Sen and Gan 1983</a>). What you need is just a file with entities (documents, authors, universities, <em>etc.</em>) citing references.[2] See the <code><a href="articles/Using_biblionetwork.html">vignette("Using_biblionetwork")</a></code> for a more in-depth presentation of the package.</p>
 <p>This example use the <a href="#incorporated-data">data incorporated</a> in the package.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/agoutsmedt/biblionetwork">biblionetwork</a></span><span class="op">)</span>
@@ -194,10 +194,7 @@
 <div id="incorporated-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#incorporated-data" class="anchor"></a>Incorporated data</h2>
-<p>The biblionetwork package contains bibliometric data built by <a href="#ref-goutsmedt2021a">Goutsmedt</a> (<a href="#ref-goutsmedt2021a">2021</a>). These data gather the academic articles and books that endeavoured to explain the United States stagflation of the 1970s, published between 1975 and</p>
-<ol>
-<li>They also gather all the references cited by these articles and books on stagflation. The <code>Nodes_stagflation.rda</code> file contains information about the academic articles and books on stagflation (the staflation documents), as well as about the references cited at least by two of these stagflation documents. The <code>Ref_stagflation.rda</code> is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. The <code>Authors_stagflation.rda</code> is a data frame with the list of documents explaining the US stagflation, and all the authors of these documents (<code>Nodes_stagflation.rda</code> just takes the first author for each document).</li>
-</ol>
+<p>The biblionetwork package contains bibliometric data built by <a href="#ref-goutsmedt2021a">Goutsmedt</a> (<a href="#ref-goutsmedt2021a">2021</a>). These data gather the academic articles and books, published between 1975 and 2013, that endeavoured to explain the United States stagflation of the 1970s. They also gather all the references cited by these articles and books on stagflation. The <code>Nodes_stagflation.rda</code> file contains information about the academic articles and books on stagflation (the staflation documents), as well as about the references cited at least by two of these stagflation documents. The <code>Ref_stagflation.rda</code> is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. The <code>Authors_stagflation.rda</code> is a data frame with the list of documents explaining the US stagflation, and all the authors of these documents (<code>Nodes_stagflation.rda</code> just takes the first author for each document).</p>
 </div>
 <div id="references" class="section level2">
 <h2 class="hasAnchor">
@@ -207,14 +204,14 @@
 Dowle, Matt, and Arun Srinivasan. 2020. <em>Data.table: Extension of ‘Data.frame‘</em>. <a href="https://CRAN.R-project.org/package=data.table" class="uri">https://CRAN.R-project.org/package=data.table</a>.
 </div>
 <div id="ref-goutsmedt2021a" class="csl-entry">
-Goutsmedt, Aurélien. 2021. “From the Stagflation to the Great Inflation: Explaining the US Economy of the 1970s.” <em>Revue d’Economie Politique</em> Forthcoming. <a href="https://mega.nz/file/zfJ2QBbb#3OqXBIQRYmuQzptMyfvwW92IXhN-pWApKpILSs_w-pg" class="uri">https://mega.nz/file/zfJ2QBbb#3OqXBIQRYmuQzptMyfvwW92IXhN-pWApKpILSs_w-pg</a>.
+Goutsmedt, Aurélien. 2021. “From the Stagflation to the Great Inflation: Explaining the US Economy of the 1970s.” <em>Revue d’Economie Politique</em> Forthcoming. <a href="https://aurelien-goutsmedt.com/media/pdf/stagflation-great-inflation.pdf" class="uri">https://aurelien-goutsmedt.com/media/pdf/stagflation-great-inflation.pdf</a>.
 </div>
 <div id="ref-sen1983" class="csl-entry">
-Sen, Subir K., and Shymal K. Gan. 1983. “A Mathematical Extension of the Idea of Bibliographic Coupling and Its Applications.” <em>Annals of Library Science and Documentation</em> 30 (2). <a href="http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS" class="uri">http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS</a>.
+Sen, Subir K., and Shymal K. Gan. 1983. “A Mathematical Extension of the Idea of Bibliographic Coupling and Its Applications.” <em>Annals of Library Science and Documentation</em> 30 (2). <a href="http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS%2030(2)%2078-82.pdf" class="uri">http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS%2030(2)%2078-82.pdf</a>.
 </div>
 </div>
 <p>[1] Contact: <a href="agoutsmedt@hotmail.fr">agoutsmedt@hotmail.fr</a>.</p>
-<p>[2] If you want to build a coupling network with entities larger than a document (meaning entities that have published several documents, and thus can cite a reference several time), we rather recommend the use of the <code><a href="reference/coupling_entity.html">coupling_entity()</a></code> function. See the <code>vignette("using_biblionetwork")</code> vignette for examples.</p>
+<p>[2] If you want to build a coupling network with entities larger than a document (meaning entities that have published several documents, and thus can cite a reference several times), we rather recommend the use of the <code><a href="reference/coupling_entity.html">coupling_entity()</a></code> function. See the <code><a href="articles/Using_biblionetwork.html">vignette("Using_biblionetwork")</a></code> for examples.</p>
 </div>
 </div>
   </div>

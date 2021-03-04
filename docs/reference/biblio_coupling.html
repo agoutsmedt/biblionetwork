@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Calculating The Coupling Angle Measure For Edges — biblio_coupling • biblionetwork</title>
+<title>Calculating the Coupling Angle Measure for Edges — biblio_coupling • biblionetwork</title>
 
 
 <!-- jquery -->
@@ -66,12 +66,12 @@
 
 
 
-<meta property="og:title" content="Calculating The Coupling Angle Measure For Edges — biblio_coupling" />
+<meta property="og:title" content="Calculating the Coupling Angle Measure for Edges — biblio_coupling" />
 <meta property="og:description" content="This function calculates the number of references that different articles share together, as well as
 the coupling angle value of edges in a bibliographic coupling network (Sen and Gan 1983)
 , from a direct
 citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure:
-it divides the number of references that two articles share by the rootsquare of the product of
+it divides the number of references that two articles share by the square root of the product of
 both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography." />
 
 
@@ -179,7 +179,7 @@ both articles bibliography lengths. It avoids giving too much importance to arti
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculating The Coupling Angle Measure For Edges</h1>
+    <h1>Calculating the Coupling Angle Measure for Edges</h1>
     <small class="dont-index">Source: <a href='https://github.com/agoutsmedt/biblionetwork/blob/master/R/biblio_coupling.R'><code>R/biblio_coupling.R</code></a></small>
     <div class="hidden name"><code>biblio_coupling.Rd</code></div>
     </div>
@@ -189,7 +189,7 @@ both articles bibliography lengths. It avoids giving too much importance to arti
 the coupling angle value of edges in a bibliographic coupling network (Sen and Gan 1983)
 , from a direct
 citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure:
-it divides the number of references that two articles share by the rootsquare of the product of
+it divides the number of references that two articles share by the square root of the product of
 both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography.</p>
     </div>
 
@@ -216,49 +216,57 @@ with <code>source</code> being the authors, and <code>ref</code> the list of art
     </tr>
     <tr>
       <th>source</th>
-      <td><p>the column name of the source identifiers, that is the documents that are citing. In coupling network, these documents
+      <td><p>The column name of the source identifiers, that is the documents that are citing. In a coupling network, these documents
 are the nodes of the network.</p></td>
     </tr>
     <tr>
       <th>ref</th>
-      <td><p>the column name of the cited references identifiers.</p></td>
+      <td><p>The column name of the cited references identifiers.</p></td>
     </tr>
     <tr>
       <th>normalized_weight_only</th>
-      <td><p>if set to FALSE, the function returns the weights normalized by the cosine measure,
-but also simply the number of shared references.</p></td>
+      <td><p>If set to FALSE, the function returns the weights normalized by the cosine measure,
+but also the number of shared references.</p></td>
     </tr>
     <tr>
       <th>weight_threshold</th>
-      <td><p>Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
-that have a non-normalized weight superior to the <code>weight_threshold</code>. In a large bibliographic coupling network,
+      <td><p>Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
+that have a non-normalized weight superior to the <code>weight_threshold</code>. In other words, if you set the
+parameter to 2, the function keeps only the edges between nodes that share at least two references
+in common in their bibliography. In a large bibliographic coupling network,
 you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together.
-This parameter could also be modified to avoid creating untractable networks with too many edges.</p></td>
+This parameter could also be modified to avoid creating intractable networks with too many edges.</p></td>
     </tr>
     <tr>
       <th>output_in_character</th>
       <td><p>If TRUE, the function ends by transforming the <code>from</code> and <code>to</code> columns in character, to make the
-creation of a <a href='https://tidygraph.data-imaginist.com/index.html'>tidygraph</a> graph easier.</p></td>
+creation of a <a href='https://tidygraph.data-imaginist.com/index.html'>tidygraph</a> network easier.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A data.table with the articles (or authors) identifier in <code>from</code> and <code>to</code> columns, with one or two additional columns (the coupling angle measure and
-the number of shared references). It also keeps a copy of <code>from</code> and <code>to</code> in the <code>Source</code> and <code>Target</code> columns. This is useful is you
-are using the tidygraph package then, where <code>from</code> and <code>to</code> values are modified when creating a graph.</p>
+    <p>A data.table with the articles (or authors) identifiers in <code>from</code> and <code>to</code> columns,
+with one or two additional columns (the coupling angle measure and the number of shared references).
+It also keeps a copy of <code>from</code> and <code>to</code> in the <code>Source</code> and <code>Target</code> columns. This is useful is you
+are using the tidygraph package after, where <code>from</code> and <code>to</code> values are modified when creating a graph.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This function uses data.table package and is thus very fast. It allows the user to compute the coupling angle
-on a very large dataframe very quickly.</p>
+    <p>This function implements the following weight measure:</p>
+<p>$$\frac{R(A) \bullet R(B)}{\sqrt{L(A).L(B)}}$$</p>
+<p>with \(R(A)\) and \(R(B)\) the references of document A and document B, \(R(A) \bullet R(B)\)
+being the number of shared references by A and B, and \(L(A)\) and \(L(B)\)
+the length of the bibliographies of document A and document B.</p>
+<p>This function uses data.table package and is thus very fast. It allows the user to compute the coupling angle
+on a very large data frame quickly.</p>
 <p>This function is a relatively general function that can also be used</p><ol>
 <li><p>for co-citation networks (just by inversing the <code>source</code> and <code>ref</code> columns).
-If you want to avoid confusion, rather use the <code>biblio_cocit</code> function.</p></li>
+If you want to avoid confusion, rather use the <code><a href='biblio_cocitation.html'>biblio_cocitation()</a></code> function.</p></li>
 <li><p>for title co-occurence networks (taking care of
-the lenght of the title thanks to the coupling angle measure);</p></li>
+the length of the title thanks to the coupling angle measure);</p></li>
 <li><p>for co-authorship networks (taking care of the
 number of co-authors an author has collaborated with on a period). For co-authorship,
-rather use the <code>coauth_network</code> function.</p></li>
+rather use the <code><a href='coauth_network.html'>coauth_network()</a></code> function.</p></li>
 </ol>
 
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>

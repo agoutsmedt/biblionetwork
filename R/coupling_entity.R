@@ -3,38 +3,51 @@ coupling_entity <- function(dt, source, ref, entity, weight_threshold = 1, outpu
   #' Creating Coupling Networks at Entity Level
   #'
   #' This function creates the edges of a network of entities from a direct citations data frame (i.e. documents citing references).
-  #' Entities could be authors, affiliations, journals, etc. Consequently, Coupling links are calculated using the coupling angle measure or the coupling strength measure.
-  #' Coupling links are calculated depending of the number references two authors share, taking into account the minimum number of times two authors are citing
-  #' each references. For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles),
-  #' the second one three times, the function takes two as the minimum value. In addition to the features of the coupling strength measure (see [coupling_strength()])
-  #' or the coupling angle measure (see [biblio_coupling()]), it means that, if two entities share two reference in common, the fact that the first reference is cited
-  #' at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than
-  #' the second reference. This use of minimum shared reference for entities coupling comes from \insertCite{zhao2008b;textual}{biblionetwork}.
+  #' Entities could be authors, affiliations, journals, _etc_. Consequently, coupling links are calculated using the coupling angle measure
+  #' (like [biblio_coupling()]) or the coupling strength measure (like [coupling_strength()]. But it also takes into account the fact that
+  #' an entity can cite several times a reference, and considers that citing 10 times a ref is more significant that citing it only once (see [details](#details)).
   #'
   #' @param dt
   #' The table with citing and cited documents.
   #'
   #' @param source
-  #' the column name of the source identifiers, that is the documents that are citing.
+  #' The column name of the source identifiers, that is the documents that are citing.
   #'
   #' @param ref
-  #' the column name of the cited references identifiers.
+  #' The column name of the cited references identifiers.
   #'
   #' @param entity
-  #' the column name of the entity (authors, journals, institutions) that are citing.
+  #' The column name of the entity (authors, journals, institutions) that are citing.
   #'
   #' @param weight_threshold
-  #' Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
-  #' that have a non-normalized weight superior to the `weight_threshold`. In a large bibliographic coupling network,
-  #' you can consider for instance that sharing only one reference is not sufficient/significant for two articles (above all for two entities like authors or journals)
-  #' to be linked together. This parameter could also be modified to avoid creating untractable networks with too many edges.
+  #' Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
+  #' that have a non-normalized weight superior to the `weight_threshold`. In other words, if you set the
+  #' parameter to 2, the function keeps only the edges between nodes that share at least two references
+  #' in common in their bibliography. In a large bibliographic coupling network,
+  #' you can consider for instance that sharing only one reference is not sufficient/significant
+  #' for two entities (above all when large entities like journals and institutions) to be linked together.
+  #' This parameter could also be modified to avoid creating intractable networks with too many edges.
   #'
   #' @param output_in_character
   #' If TRUE, the function ends by transforming the `from` and `to` columns in character, to make the
-  #' creation of a [tidygraph](https://tidygraph.data-imaginist.com/index.html) graph easier.
+  #' creation of a [tidygraph](https://tidygraph.data-imaginist.com/index.html) network easier.
   #'
-  #' @param method Choose the method you want to use for calculating the edges weights: either "coupling_strength" like in the [coupling_strength()] function,
-  #' or "coupling_angle" like in the [biblio_coupling()] function.
+  #' @param method Choose the method you want to use for calculating the edges weights: either `"coupling_strength"` like in the
+  #' [coupling_strength()] function, or `"coupling_angle"` like in the [biblio_coupling()] function.
+  #'
+  #' @details
+  #' Coupling links are calculated depending of the number of references two authors (or any entity) share,
+  #' taking into account the minimum number of times two authors are citing each references.
+  #' For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles),
+  #' the second one three times, the function takes two as the minimum value. In addition to the features of the coupling strength measure (see [coupling_strength()])
+  #' or the coupling angle measure (see [biblio_coupling()]), it means that, if two entities share two reference in common, if the first reference is cited
+  #' at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than
+  #' the second reference. This use of minimum shared reference for entities coupling comes from \insertCite{zhao2008b;textual}{biblionetwork}. It looks like
+  #' this for the coupling strength:
+  #'
+  #' \deqn{\frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j} Min(C_{Aj},C_{Bj}).(log({\frac{N}{freq(R_{j})}}))}
+  #'
+  #' with \eqn{C_{Aj}} and \eqn{C_{Bj}} the number of time documents A and B cite the reference j.
   #'
   #' @return A data.table with the entity identifiers in `from` and `to` columns, with the coupling strength or coupling angle measures in
   #' another column, as well as the method used. It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
@@ -42,6 +55,7 @@ coupling_entity <- function(dt, source, ref, entity, weight_threshold = 1, outpu
   #'
   #' @examples
   #' library(biblionetwork)
+  #' Ref_stagflation$Citing_ItemID_Ref <- as.character(Ref_stagflation$Citing_ItemID_Ref)
   #' # merging the references data with the citing author information in Nodes_stagflation
   #' entity_citations <- merge(Ref_stagflation,
   #'                           Nodes_stagflation,

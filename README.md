@@ -7,14 +7,14 @@ biblionetwork
 
 The goal of biblionetwork is to provide functions to create bibliometric
 networks like bibliographic coupling network, co-citation network and
-co-authorship network. The weights of network edges can be calculated
+co-authorship network. It identifies edges and calculates the weights
 according to different methods, depending on the type of networks, the
 type of nodes, and what you want to analyse. These functions are
-optimized to be be used on very large dataset.
+optimized to be used on very large dataset.
 
 The original function, which uses data.table ([Dowle and Srinivasan
 2020](#ref-datatable)) and allows the user to find edges and calculate
-weights for very large networks, was developed by [François
+weights for large networks, was developed by [François
 Claveau](https://www.usherbrooke.ca/philosophie/nous-joindre/personnel-enseignant/claveau-francois/).
 The different functions in this package have been developed, from
 Claveau’s original idea, by [Alexandre
@@ -65,7 +65,9 @@ This function calculates the number of references that different
 articles share together, as well as the coupling angle value of edges in
 a bibliographic coupling network ([Sen and Gan 1983](#ref-sen1983)).
 What you need is just a file with entities (documents, authors,
-universities, *etc.*) citing references.[2]
+universities, *etc.*) citing references.[2] See the
+`vignette("Using_biblionetwork")` for a more in-depth presentation of
+the package.
 
 This example use the [data incorporated](#incorporated-data) in the
 package.
@@ -108,9 +110,9 @@ biblio_coupling(Ref_stagflation,
 
 The biblionetwork package contains bibliometric data built by
 [Goutsmedt](#ref-goutsmedt2021a) ([2021](#ref-goutsmedt2021a)). These
-data gather the academic articles and books that endeavoured to explain
-the United States stagflation of the 1970s, published between 1975 and
-2013. They also gather all the references cited by these articles and
+data gather the academic articles and books, published between 1975 and
+2013, that endeavoured to explain the United States stagflation of the
+1970s. They also gather all the references cited by these articles and
 books on stagflation. The `Nodes_stagflation.rda` file contains
 information about the academic articles and books on stagflation (the
 staflation documents), as well as about the references cited at least by
@@ -137,7 +139,7 @@ Dowle, Matt, and Arun Srinivasan. 2020. *Data.table: Extension of
 Goutsmedt, Aurélien. 2021. “From the Stagflation to the Great Inflation:
 Explaining the US Economy of the 1970s.” *Revue d’Economie Politique*
 Forthcoming.
-<https://mega.nz/file/zfJ2QBbb#3OqXBIQRYmuQzptMyfvwW92IXhN-pWApKpILSs_w-pg>.
+<https://aurelien-goutsmedt.com/media/pdf/stagflation-great-inflation.pdf>.
 
 </div>
 
@@ -146,7 +148,7 @@ Forthcoming.
 Sen, Subir K., and Shymal K. Gan. 1983. “A Mathematical Extension of the
 Idea of Bibliographic Coupling and Its Applications.” *Annals of Library
 Science and Documentation* 30 (2).
-<http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS>.
+<http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS%2030(2)%2078-82.pdf>.
 
 </div>
 
@@ -156,6 +158,6 @@ Science and Documentation* 30 (2).
 
 [2] If you want to build a coupling network with entities larger than a
 document (meaning entities that have published several documents, and
-thus can cite a reference several time), we rather recommend the use of
+thus can cite a reference several times), we rather recommend the use of
 the `coupling_entity()` function. See the
-`vignette("using_biblionetwork")` vignette for examples.
+`vignette("Using_biblionetwork")` for examples.

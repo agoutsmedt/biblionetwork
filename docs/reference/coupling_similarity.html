@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Calculating The Coupling Similarity Measure For Edges — coupling_similarity • biblionetwork</title>
+<title>Calculating the Coupling Similarity Measure for Edges — coupling_similarity • biblionetwork</title>
 
 
 <!-- jquery -->
@@ -66,7 +66,7 @@
 
 
 
-<meta property="og:title" content="Calculating The Coupling Similarity Measure For Edges — coupling_similarity" />
+<meta property="og:title" content="Calculating the Coupling Similarity Measure for Edges — coupling_similarity" />
 <meta property="og:description" content="This function calculates a refined similarity measure of coupling links, from a direct citation data frame.
 It is sinpired by (Shen et al. 2019)
 . To a certain extent, it mixes the coupling_strength() function with
@@ -177,7 +177,7 @@ the cosine measure of the biblio_coupling() function." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculating The Coupling Similarity Measure For Edges</h1>
+    <h1>Calculating the Coupling Similarity Measure for Edges</h1>
     <small class="dont-index">Source: <a href='https://github.com/agoutsmedt/biblionetwork/blob/master/R/coupling_similarity.R'><code>R/coupling_similarity.R</code></a></small>
     <div class="hidden name"><code>coupling_similarity.Rd</code></div>
     </div>
@@ -214,15 +214,17 @@ the cosine measure of the <code><a href='biblio_coupling.html'>biblio_coupling()
     </tr>
     <tr>
       <th>weight_threshold</th>
-      <td><p>Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
-that have a non-normalized weight superior to the <code>weight_threshold</code>. In a large bibliographic coupling network,
+      <td><p>Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
+that have a non-normalized weight superior to the <code>weight_threshold</code>. In other words, if you set the
+parameter to 2, the function keeps only the edges between nodes that share at least two references
+in common in their bibliography. In a large bibliographic coupling network,
 you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together.
-This parameter could also be modified to avoid creating untractable networks with too many edges.</p></td>
+This parameter could also be modified to avoid creating intractable networks with too many edges.</p></td>
     </tr>
     <tr>
       <th>output_in_character</th>
       <td><p>If TRUE, the function ends by transforming the <code>from</code> and <code>to</code> columns in character, to make the
-creation of a <a href='https://tidygraph.data-imaginist.com/index.html'>tidygraph</a> graph easier.</p></td>
+creation of a <a href='https://tidygraph.data-imaginist.com/index.html'>tidygraph</a> network easier.</p></td>
     </tr>
     </table>
 
@@ -237,7 +239,8 @@ are using the tidygraph package then, where <code>from</code> and <code>to</code
 <p>$$\frac{R_{S}(A) \bullet R_{S}(B)}{\sqrt{R_{S}(A).R_{S}(B)}}$$</p><ol>
 <li><p>with $$R_{S}(A) \bullet R_{S}(B) = \sum_{j}\sqrt{log({\frac{N}{freq(R_{j})}})}$$ that is a measure similar to the coupling strength measure;</p></li>
 <li><p>and $$R_{S}(A).R_{S}(B) = \sum_{j}\sqrt{log({\frac{N}{freq(R_{j}(A))}})} . \sum_{j}\sqrt{log({\frac{N}{freq(R_{j}(B))}})}$$ which is the separated
-sum for each article of the normalized value of a citation.</p></li>
+sum for each article of the normalized value of a citation. It is the cosine measure of documents A and B but adapted to the spirit of the
+coupling strength.</p></li>
 </ol>
 
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>

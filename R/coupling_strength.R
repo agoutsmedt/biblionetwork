@@ -1,15 +1,16 @@
 coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_character = FALSE)
 {
-  #' Calculating The Coupling Strength Measure For Edges
+  #' Calculating the Coupling Strength Measure for Edges
   #'
-  #' @description This function calculates the coupling strength measure \insertCite{@following @vladutz1984 and @shen2019}{biblionetwork}
+  #' @description
+  #' This function calculates the coupling strength measure \insertCite{@following @vladutz1984 and @shen2019}{biblionetwork}
   #' from a direct citation data frame. It is a refinement of [biblio_coupling()]:
   #' it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus.
   #' In other words, the most cited references are less important in the links between two articles, than references that have
-  #' been rarely cited. To a certain extent, it is similar to the TF-IDF measure.
+  #' been rarely cited. To a certain extent, it is similar to the \href{https://en.wikipedia.org/wiki/Tf%E2%80%93idf}{tf-idf} measure.
   #'
   #' @param dt
-  #' The table with citing and cited documents.
+  #' The data frame with citing and cited documents.
   #'
   #' @param source
   #' the column name of the source identifiers, that is the documents that are citing.
@@ -18,10 +19,12 @@ coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_c
   #'the column name of the references that are cited.
   #'
   #' @param weight_threshold
-  #' Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
-  #' that have a non-normalized weight superior to the `weight_threshold`. In a large bibliographic coupling network,
+  #' Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
+  #' that have a non-normalized weight superior to the `weight_threshold`. In other words, if you set the
+  #' parameter to 2, the function keeps only the edges between nodes that share at least two references
+  #' in common in their bibliography. In a large bibliographic coupling network,
   #' you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together.
-  #' This parameter could also be modified to avoid creating untractable networks with too many edges.
+  #' This parameter could also be modified to avoid creating intractable networks with too many edges.
   #'
   #' @param output_in_character
   #' If TRUE, the function ends by transforming the `from` and `to` columns in character, to make the
@@ -43,18 +46,19 @@ coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_c
   #' @export
   #' @import data.table
   #' @import Rdpack
+  #'
 
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()
   # See https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/
   id_ref <- id_art <- N <- Source <- Target <- weight <- nb_cit <- . <- nb_ref_Target <- nb_ref_Source <- NULL
 
   # Making sure the table is a datatable
-  dt <- data.table::data.table(dt)
+  dt <- data.table(dt)
 
   # Renaming and simplifying
-  data.table::setnames(dt, c(source,ref), c("id_art", "id_ref"))
+  setnames(dt, c(source,ref), c("id_art", "id_ref"))
   dt <- dt[,c("id_art","id_ref")]
-  data.table::setkey(dt,id_ref,id_art)
+  setkey(dt,id_ref,id_art)
 
   # removing duplicated citations with exactly the same source and target
   dt <- unique(dt)

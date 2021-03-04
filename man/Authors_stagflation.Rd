@@ -3,7 +3,7 @@
 \docType{data}
 \name{Authors_stagflation}
 \alias{Authors_stagflation}
-\title{List Of Authors Of The Articles and Books Explaining the 1970s US Stagflation.}
+\title{List of Authors of the Articles and Books Explaining the 1970s US Stagflation.}
 \format{
 A data frame with 558 rows and 7 variables:
 \describe{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/biblio_coupling.R
 \name{biblio_coupling}
 \alias{biblio_coupling}
-\title{Calculating The Coupling Angle Measure For Edges}
+\title{Calculating the Coupling Angle Measure for Edges}
 \usage{
 biblio_coupling(
   dt,
@@ -22,47 +22,58 @@ and \code{ref} being the list of words in articles titles;
 with \code{source} being the authors, and \code{ref} the list of articles.
 }}
 
-\item{source}{the column name of the source identifiers, that is the documents that are citing. In coupling network, these documents
+\item{source}{The column name of the source identifiers, that is the documents that are citing. In a coupling network, these documents
 are the nodes of the network.}
 
-\item{ref}{the column name of the cited references identifiers.}
+\item{ref}{The column name of the cited references identifiers.}
 
-\item{normalized_weight_only}{if set to FALSE, the function returns the weights normalized by the cosine measure,
-but also simply the number of shared references.}
+\item{normalized_weight_only}{If set to FALSE, the function returns the weights normalized by the cosine measure,
+but also the number of shared references.}
 
-\item{weight_threshold}{Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
-that have a non-normalized weight superior to the \code{weight_threshold}. In a large bibliographic coupling network,
+\item{weight_threshold}{Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
+that have a non-normalized weight superior to the \code{weight_threshold}. In other words, if you set the
+parameter to 2, the function keeps only the edges between nodes that share at least two references
+in common in their bibliography. In a large bibliographic coupling network,
 you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together.
-This parameter could also be modified to avoid creating untractable networks with too many edges.}
+This parameter could also be modified to avoid creating intractable networks with too many edges.}
 
 \item{output_in_character}{If TRUE, the function ends by transforming the \code{from} and \code{to} columns in character, to make the
-creation of a \href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} graph easier.}
+creation of a \href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} network easier.}
 }
 \value{
-A data.table with the articles (or authors) identifier in \code{from} and \code{to} columns, with one or two additional columns (the coupling angle measure and
-the number of shared references). It also keeps a copy of \code{from} and \code{to} in the \code{Source} and \code{Target} columns. This is useful is you
-are using the tidygraph package then, where \code{from} and \code{to} values are modified when creating a graph.
+A data.table with the articles (or authors) identifiers in \code{from} and \code{to} columns,
+with one or two additional columns (the coupling angle measure and the number of shared references).
+It also keeps a copy of \code{from} and \code{to} in the \code{Source} and \code{Target} columns. This is useful is you
+are using the tidygraph package after, where \code{from} and \code{to} values are modified when creating a graph.
 }
 \description{
 This function calculates the number of references that different articles share together, as well as
 the coupling angle value of edges in a bibliographic coupling network \insertCite{sen1983}{biblionetwork}, from a direct
 citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure:
-it divides the number of references that two articles share by the rootsquare of the product of
+it divides the number of references that two articles share by the square root of the product of
 both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography.
 }
 \details{
+This function implements the following weight measure:
+
+\deqn{\frac{R(A) \bullet R(B)}{\sqrt{L(A).L(B)}}}
+
+with \eqn{R(A)} and \eqn{R(B)} the references of document A and document B, \eqn{R(A) \bullet R(B)}
+being the number of shared references by A and B, and \eqn{L(A)} and \eqn{L(B)}
+the length of the bibliographies of document A and document B.
+
 This function uses data.table package and is thus very fast. It allows the user to compute the coupling angle
-on a very large dataframe very quickly.
+on a very large data frame quickly.
 
 This function is a relatively general function that can also be used
 \enumerate{
 \item for co-citation networks (just by inversing the \code{source} and \code{ref} columns).
-If you want to avoid confusion, rather use the \code{biblio_cocit} function.
+If you want to avoid confusion, rather use the \code{\link[=biblio_cocitation]{biblio_cocitation()}} function.
 \item for title co-occurence networks (taking care of
-the lenght of the title thanks to the coupling angle measure);
+the length of the title thanks to the coupling angle measure);
 \item for co-authorship networks (taking care of the
 number of co-authors an author has collaborated with on a period). For co-authorship,
-rather use the \code{coauth_network} function.
+rather use the \code{\link[=coauth_network]{coauth_network()}} function.
 }
 }
 \examples{

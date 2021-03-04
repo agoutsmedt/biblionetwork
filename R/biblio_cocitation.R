@@ -1,41 +1,42 @@
 biblio_cocitation <- function(dt, source, ref, normalized_weight_only=TRUE, weight_threshold = 1, output_in_character = TRUE)
 {
-  #' Calculating The Coupling Angle Measure For Edges In A Co-citation Network
+  #' Calculating the Coupling Angle Measure for Edges in a Co-citation Network
   #'
-  #' @description This function his basically the same as the [biblio_coupling()] function but it is explicitly framed
+  #' @description This function is basically the same as the [biblio_coupling()] function but it is explicitly framed
   #' for bibliographic co-citation network (and not for bibliographic coupling networks). It takes a data frame
   #' with direct citations, and calculates the number of times two references are citing together, and calculate a measure
   #' similar to the coupling angle value \insertCite{sen1983}{biblionetwork}: it divides the number of times two references are
-  #' cited together by the rootsquare of the product of the total number of citations (in the whole corpus) of each reference.
-  #' The more two references are cited, the more they have to be cited together for their link to be important.
+  #' cited together by the square root of the product of the total number of citations (in the whole corpus) of each reference.
+  #' The more two references are cited in general, the more they have to be cited together for their link to be important.
   #'
   #' @details This function uses data.table package and is thus very fast. It allows the user to compute the coupling angle
-  #' on a very large dataframe very quickly.
+  #' on a very large data frame quickly.
   #'
   #' @param dt
-  #' The dataframe with citing and cited documents. It could also be used
+  #' The dataframe with citing and cited documents.
   #'
   #' @param source
-  #' the column name of the source identifiers, that is the documents that are citing.
+  #' The column name of the source identifiers, that is the documents that are citing.
   #'
   #' @param ref
-  #' the column name of the cited references identifiers. In co-citation network, these references are the nodes of the network.
+  #' The column name of the cited references identifiers. In co-citation network, these references are the nodes of the network.
   #'
   #' @param normalized_weight_only
-  #' if set to FALSE, the function returns the weights normalized by the cosine measure,
+  #' If set to FALSE, the function returns the weights normalized by the cosine measure,
   #' but also simply the number of times two references are cited together.
   #'
   #' @param weight_threshold
   #' Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
   #' that have a non-normalized weight superior to the `weight_threshold`. In a large bibliographic co-citation network,
   #' you can consider for instance that being cited only once together is not sufficient/significant for two references to be linked together.
-  #' This parameter could also be modified to avoid creating untractable networks with too many edges.
+  #' This parameter could also be modified to avoid creating intractable networks with too many edges.
   #'
   #' @param output_in_character
   #' If TRUE, the function ends by transforming the `from` and `to` columns in character, to make the
   #' creation of a [tidygraph](https://tidygraph.data-imaginist.com/index.html) graph easier.
   #'
-  #' @return A data.table with the articles (or authors) identifier in `from` and `to` columns, with one or two additional columns (the coupling angle measure and
+  #' @return A data.table with the articles (or authors) identifier in `from` and `to` columns,
+  #' with one or two additional columns (the coupling angle measure and
   #' the number of shared references). It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
   #' are using the tidygraph package then, where `from` and `to` values are modified when creating a graph.
   #'
@@ -44,6 +45,11 @@ biblio_cocitation <- function(dt, source, ref, normalized_weight_only=TRUE, weig
   #' biblio_cocitation(Ref_stagflation,
   #' source = "Citing_ItemID_Ref",
   #' ref = "ItemID_Ref")
+  #'
+  #' # It is basically the same as:
+  #' biblio_coupling(Ref_stagflation,
+  #' source = "ItemID_Ref",
+  #' ref = "Citing_ItemID_Ref")
   #'
   #' @references
   #' \insertAllCited{}
@@ -58,12 +64,12 @@ biblio_cocitation <- function(dt, source, ref, normalized_weight_only=TRUE, weig
   id_ref <- id_art <- N <- .N <- Source <- Target <- weight <- nb_cit_Target <- nb_cit_Source <- NULL
 
   # Making sure the table is a datatable
-  dt <- data.table::data.table(dt)
+  dt <- data.table(dt)
 
   # Renaming and simplifying
-  data.table::setnames(dt, c(source,ref), c("id_art", "id_ref"))
+  setnames(dt, c(source,ref), c("id_art", "id_ref"))
   dt <- dt[,c("id_art","id_ref")]
-  data.table::setkey(dt,id_ref,id_art)
+  setkey(dt,id_ref,id_art)
 
   # removing duplicated citations with exactly the same source and target
   dt <- unique(dt)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/coauth_network.R
 \name{coauth_network}
 \alias{coauth_network}
-\title{Creating Co-Authorship Network With Different Measures For Weights}
+\title{Creating Co-Authorship Network with Different Measures for Weights}
 \usage{
 coauth_network(
   dt,
@@ -13,7 +13,7 @@ coauth_network(
 )
 }
 \arguments{
-\item{dt}{The dataframe with authors (or institutions or countries) and the list of documents they have published.}
+\item{dt}{The data frame with authors (or institutions or countries) and the list of documents they have published.}
 
 \item{authors}{The column name of the source identifiers, that is the authors (or institutions or countries).}
 
@@ -21,7 +21,8 @@ coauth_network(
 
 \item{method}{Method for calculating the edges weights, to be chosen among "full_counting","fractional_counting" or "fractional_counting_refined".}
 
-\item{cosine_normalized}{Possibility to take into account the total number of articles written by two linked authors and to normalize the weight of their link.}
+\item{cosine_normalized}{Possibility to take into account the total number of articles written by two linked authors and to normalize the weight of their link
+using Salton's cosine.}
 }
 \value{
 A data.table with the authors (or institutions or countries) identifier in \code{from} and \code{to} columns, with a \code{weight} column
@@ -29,18 +30,18 @@ whose values depend on the method chosen. It also keeps a copy of \code{from} an
 are using the tidygraph package then, where \code{from} and \code{to} values are modified when creating a graph.
 }
 \description{
-This function creates a edges data table from a data frame with a list of authors and their publications.
+This function creates an edge list for co-authorship networks from a data frame with a list of entities and their publications.
 The weight of edges can be calculated following different methods. The nodes of the network could be indifferently authors,
 institutions or countries.
 }
 \details{
 Weights can be calculated with:
 \enumerate{
-\item the \code{full_counting} method: the linkds between authors correspond to their absolute number of collaborations
-\item the \code{fractional_counting} method which takes into account the number of authors in each article,
+\item the \code{"full_counting"} method: the linkds between authors correspond to their absolute number of collaborations.
+\item the \code{"fractional_counting"} method which takes into account the number of authors in each article,
 following \insertCite{perianes-rodriguez2016b}{biblionetwork} equation:
-\deqn{\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}}{n_{k}-1}} with M the total number of articles, \deqn{a_{ik}.a_{jk}}
-which takes 1 if author i and j have co-written the article k, and \deqn{n_{k}} the number of authors for article k.
+\deqn{\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}}{n_{k}-1}} with M the total number of articles, \eqn{a_{ik}.a_{jk}}
+which takes 1 if author i and j have co-written the article k, and \eqn{n_{k}} the number of authors for article k.
 \item the \code{fractional_counting_refined} method, inspired by \insertCite{leydesdorff2017}{biblionetwork}
 which is similar to \code{fractional_counting} but which is formalised in a way
 that allows the sum of weights to equal the number of articles in the corpus: \deqn{\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}.2}{n_{k}.(n_{k}-1)}}.
@@ -48,7 +49,7 @@ that allows the sum of weights to equal the number of articles in the corpus: \d
 
 In addition, it is possible to take into account the total number of collaborations of two linked authors.
 If \code{cosine_normalized} is set to \code{True}, the weight calculated with one of the three methods above is divided by
-\deqn{\sqrt{C_{i}.C_{j}}}, with \deqn{C_{i}} being the number of articles co-written by author i.
+\eqn{\sqrt{C_{i}.C_{j}}}, with \eqn{C_{i}} being the number of articles co-written by author i.
 }
 \examples{
 library(biblionetwork)

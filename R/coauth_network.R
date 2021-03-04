@@ -1,27 +1,27 @@
 coauth_network <- function(dt, authors, articles, method = c("full_counting","fractional_counting","fractional_counting_refined"), cosine_normalized = FALSE)
 {
-  #' Creating Co-Authorship Network With Different Measures For Weights
+  #' Creating Co-Authorship Network with Different Measures for Weights
   #'
-  #' @description This function creates a edges data table from a data frame with a list of authors and their publications.
+  #' @description This function creates an edge list for co-authorship networks from a data frame with a list of entities and their publications.
   #' The weight of edges can be calculated following different methods. The nodes of the network could be indifferently authors,
   #' institutions or countries.
   #'
   #' @details Weights can be calculated with:
-  #' 1. the `full_counting` method: the linkds between authors correspond to their absolute number of collaborations
-  #' 1. the `fractional_counting` method which takes into account the number of authors in each article,
+  #' 1. the `"full_counting"` method: the linkds between authors correspond to their absolute number of collaborations.
+  #' 1. the `"fractional_counting"` method which takes into account the number of authors in each article,
   #' following \insertCite{perianes-rodriguez2016b}{biblionetwork} equation:
-  #' \deqn{\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}}{n_{k}-1}} with M the total number of articles, \deqn{a_{ik}.a_{jk}}
-  #' which takes 1 if author i and j have co-written the article k, and \deqn{n_{k}} the number of authors for article k.
+  #' \deqn{\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}}{n_{k}-1}} with M the total number of articles, \eqn{a_{ik}.a_{jk}}
+  #' which takes 1 if author i and j have co-written the article k, and \eqn{n_{k}} the number of authors for article k.
   #' 1. the `fractional_counting_refined` method, inspired by \insertCite{leydesdorff2017}{biblionetwork}
   #' which is similar to `fractional_counting` but which is formalised in a way
   #' that allows the sum of weights to equal the number of articles in the corpus: \deqn{\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}.2}{n_{k}.(n_{k}-1)}}.
   #'
   #' In addition, it is possible to take into account the total number of collaborations of two linked authors.
   #' If `cosine_normalized` is set to `True`, the weight calculated with one of the three methods above is divided by
-  #' \deqn{\sqrt{C_{i}.C_{j}}}, with \deqn{C_{i}} being the number of articles co-written by author i.
+  #' \eqn{\sqrt{C_{i}.C_{j}}}, with \eqn{C_{i}} being the number of articles co-written by author i.
   #'
   #' @param dt
-  #' The dataframe with authors (or institutions or countries) and the list of documents they have published.
+  #' The data frame with authors (or institutions or countries) and the list of documents they have published.
   #'
   #' @param authors
   #' The column name of the source identifiers, that is the authors (or institutions or countries).
@@ -33,7 +33,8 @@ coauth_network <- function(dt, authors, articles, method = c("full_counting","fr
   #' Method for calculating the edges weights, to be chosen among "full_counting","fractional_counting" or "fractional_counting_refined".
   #'
   #' @param cosine_normalized
-  #' Possibility to take into account the total number of articles written by two linked authors and to normalize the weight of their link.
+  #' Possibility to take into account the total number of articles written by two linked authors and to normalize the weight of their link
+  #' using Salton's cosine.
   #'
   #' @return A data.table with the authors (or institutions or countries) identifier in `from` and `to` columns, with a `weight` column
   #' whose values depend on the method chosen. It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
@@ -59,12 +60,12 @@ coauth_network <- function(dt, authors, articles, method = c("full_counting","fr
   id_ref <- id_art <- N <- .N <- Source <- Target <- weight <- nb_art_Target <- nb_art_Source <- nb_auth <-  NULL
 
   # Making sure the table is a datatable
-  dt <- data.table::data.table(dt)
+  dt <- data.table(dt)
 
   # Renaming and simplifying
-  data.table::setnames(dt, c(authors,articles), c("authors", "articles"))
+  setnames(dt, c(authors,articles), c("authors", "articles"))
   dt <- dt[,c("authors","articles")]
-  data.table::setkey(dt,authors,articles)
+  setkey(dt,authors,articles)
 
   # removing duplicated citations with exactly the same source and target
   dt <- unique(dt)

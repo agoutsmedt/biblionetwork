@@ -1,4 +1,4 @@
-#' List Of Authors Of The Articles and Books Explaining the 1970s US Stagflation.
+#' List of Authors of the Articles and Books Explaining the 1970s US Stagflation.
 #'
 #' A dataset associating the books and academic articles endeavouring to explain
 #' the US stagflation and their authors (`Nodes_stagflation` just takes the first author;
