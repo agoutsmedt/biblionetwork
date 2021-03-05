@@ -1,21 +1,10 @@
 ## Test environments
-* local OS X install, R 3.1.2
-* ubuntu 12.04 (on travis-ci), R 3.1.2
-* win-builder (devel and release)
 * local windows 10, R version 4.0.3
+* ubuntu 16.04.6 LTS (on travis-ci), R version 4.0.3
+* win-builder (devel)
 
 ## R CMD check results
 There were no ERRORs or WARNINGs or NOTEs. 
 
-There was 1 NOTE:
+This is the first submission.
 
-
-## Downstream dependencies
-I have also run R CMD check on downstream dependencies of httr 
-(https://github.com/wch/checkresults/blob/master/httr/r-release). 
-All packages that I could install passed except:
-
-* Ecoengine: this appears to be a failure related to config on 
-  that machine. I couldn't reproduce it locally, and it doesn't 
-  seem to be related to changes in httr (the same problem exists 
-  with httr 0.4).

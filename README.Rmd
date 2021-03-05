@@ -33,7 +33,7 @@ knitr::opts_chunk$set(
 
 The goal of biblionetwork is to provide functions to create bibliometric networks like bibliographic coupling network, co-citation network and co-authorship network. It identifies edges and calculates the weights according to different methods, depending on the type of networks, the type of nodes, and what you want to analyse. These functions are optimized to be used on very large dataset.
 
-The original function, which uses data.table [@datatable] and allows the user to find edges and calculate weights for large networks, was developed by [François Claveau](https://www.usherbrooke.ca/philosophie/nous-joindre/personnel-enseignant/claveau-francois/). The different functions in this package have been developed, from Claveau's original idea, by [Alexandre Truc](https://sites.google.com/view/alexandre-truc/home-and-contact) and [Aurélien Goutsmedt](https://aurelien-goutsmedt.com/). The package is maintained by Aurélien Goutsmedt.^[Contact: [agoutsmedt@hotmail.fr](agoutsmedt@hotmail.fr).]
+The original function, which uses data.table [@datatable] and allows the user to find edges and calculate weights for large networks, was developed by [François Claveau](https://www.usherbrooke.ca/philosophie/nous-joindre/personnel-enseignant/claveau-francois/). The different functions in this package have been developed, from Claveau's original idea, by [Alexandre Truc](https://sites.google.com/view/alexandre-truc/home-and-contact) and [Aurélien Goutsmedt](https://aurelien-goutsmedt.com/). The package is maintained by Aurélien Goutsmedt.^[Contact: [agoutsmedt@hotmail.fr](mailto:agoutsmedt@hotmail.fr).]
 
 You can cite this package as:
 ```{r}
