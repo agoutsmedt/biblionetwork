@@ -3,6 +3,9 @@ biblionetwork
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
+
+[![Travis build
+status](https://travis-ci.com/agoutsmedt/biblionetwork.svg?branch=main)](https://travis-ci.com/agoutsmedt/biblionetwork)
 <!-- badges: end -->
 
 The goal of biblionetwork is to provide functions to create bibliometric

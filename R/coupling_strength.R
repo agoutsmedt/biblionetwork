@@ -1,4 +1,4 @@
-coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_character = FALSE)
+coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_character = TRUE)
 {
   #' Calculating the Coupling Strength Measure for Edges
   #'

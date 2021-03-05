@@ -9,7 +9,7 @@ coupling_similarity(
   source,
   ref,
   weight_threshold = 1,
-  output_in_character = FALSE
+  output_in_character = TRUE
 )
 }
 \arguments{
