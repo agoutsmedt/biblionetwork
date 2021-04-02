@@ -1,7 +1,7 @@
 Package: biblionetwork
 Title: A Package for Creating Different Types of Bibliometric Networks
 Version: 0.1.0
-Date: 2021
+Date: 2021-03-05
 Authors@R: c(
     person(given = "Aurélien",
            family = "Goutsmedt",
@@ -18,7 +18,6 @@ Authors@R: c(
            role = c("aut"),
            email = "alexandre.truc77@gmail.com",
            comment = c(ORCID = "0000-0002-1328-7819")))
-#Author: François Claveau, Aurélien Goutsmedt and Alexandre Truc.
 Maintainer: Aurélien Goutsmedt <agoutsmedt@hotmail.fr>
 Description: Functions to find edges for bibliometric networks 
     like bibliographic coupling network, co-citation network and co-authorship network. 
