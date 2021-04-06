@@ -1,5 +1,5 @@
 Package: biblionetwork
-Title: A Package for Creating Different Types of Bibliometric Networks
+Title: Create Different Types of Bibliometric Networks
 Version: 0.1.0
 Date: 2021-03-05
 Authors@R: c(
@@ -19,11 +19,7 @@ Authors@R: c(
            email = "alexandre.truc77@gmail.com",
            comment = c(ORCID = "0000-0002-1328-7819")))
 Maintainer: Aurélien Goutsmedt <agoutsmedt@hotmail.fr>
-Description: Functions to find edges for bibliometric networks 
-    like bibliographic coupling network, co-citation network and co-authorship network. 
-    The weights of network edges can be calculated according to different methods, 
-    depending on the type of networks, the type of nodes, and what you want to analyse. 
-    These functions are optimized to be be used on large dataset.
+Description: Functions to find edges for bibliometric networks like bibliographic coupling network, co-citation network and co-authorship network. The weights of network edges can be calculated according to different methods, depending on the type of networks, the type of nodes, and what you want to analyse. These functions are optimized to be be used on large dataset. The package contains functions inspired by: Leydesdorff, Loet and Park, Han Woo (2017) <doi:10.1016/j.joi.2016.11.007>; Perianes-Rodriguez, Antonio, Ludo Waltman, and Nees Jan Van Eck (2016) <doi:10.1016/j.joi.2016.10.006>; Sen, Subir K. and Shymal K. Gan (1983) <http://nopr.niscair.res.in/handle/123456789/28008>; Shen, Si, Zhu, Danhao, Rousseau, Ronald, Su, Xinning and Wang, Dongbo (2019) <doi:10.1016/j.joi.2019.01.012>; Zhao, Dangzhi and Strotmann, Andreas (2008) <doi:10.1002/meet.2008.1450450292>.
 URL: https://github.com/agoutsmedt/biblionetwork, https://agoutsmedt.github.io/biblionetwork/
 BugReports: https://github.com/agoutsmedt/biblionetwork/issues
 License: MIT + file LICENSE
