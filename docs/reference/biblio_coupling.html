@@ -24,6 +24,13 @@
 
 <title>Calculating the Coupling Angle Measure for Edges — biblio_coupling • biblionetwork</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -73,6 +80,7 @@ the coupling angle value of edges in a bibliographic coupling network (Sen and G
 citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure:
 it divides the number of references that two articles share by the square root of the product of
 both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography." />
+<meta property="og:image" content="https://agoutsmedt.github.io/biblionetwork/logo.png" />
 
 
 
@@ -117,7 +125,7 @@ both articles bibliography lengths. It avoids giving too much importance to arti
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">biblionetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -144,8 +152,22 @@ both articles bibliography lengths. It avoids giving too much importance to arti
     </li>
   </ul>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    News
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Releases</li>
+    <li>
+      <a href="https://aurelien-goutsmedt.com/post/release-biblionetwork/">Version 0.1.1</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="../news/index.html">Changelog</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -306,7 +328,7 @@ weight_threshold <span class='op'>=</span> <span class='fl'>3</span><span class=
 
       <footer>
       <div class="copyright">
-  <p>Developed by Aurélien Goutsmedt, François Claveau, Alexandre Truc.</p>
+  <p>Developed by <a href='https://aurelien-goutsmedt.com'>Aurélien Goutsmedt</a>, François Claveau, Alexandre Truc.</p>
 </div>
 
 <div class="pkgdown">

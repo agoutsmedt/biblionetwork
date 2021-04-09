@@ -24,6 +24,13 @@
 
 <title>Calculating the Coupling Strength Measure for Edges — coupling_strength • biblionetwork</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -73,6 +80,7 @@ from a direct citation data frame. It is a refinement of biblio_coupling():
 it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus.
 In other words, the most cited references are less important in the links between two articles, than references that have
 been rarely cited. To a certain extent, it is similar to the tf-idf measure." />
+<meta property="og:image" content="https://agoutsmedt.github.io/biblionetwork/logo.png" />
 
 
 
@@ -117,7 +125,7 @@ been rarely cited. To a certain extent, it is similar to the tf-idf measure." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">biblionetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -144,8 +152,22 @@ been rarely cited. To a certain extent, it is similar to the tf-idf measure." />
     </li>
   </ul>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    News
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Releases</li>
+    <li>
+      <a href="https://aurelien-goutsmedt.com/post/release-biblionetwork/">Version 0.1.1</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="../news/index.html">Changelog</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -198,7 +220,7 @@ been rarely cited. To a certain extent, it is similar to the <a href='https://en
   <span class='va'>source</span>,
   <span class='va'>ref</span>,
   weight_threshold <span class='op'>=</span> <span class='fl'>1</span>,
-  output_in_character <span class='op'>=</span> <span class='cn'>FALSE</span>
+  output_in_character <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -275,7 +297,7 @@ ref <span class='op'>=</span> <span class='st'>"ItemID_Ref"</span><span class='o
 
       <footer>
       <div class="copyright">
-  <p>Developed by Aurélien Goutsmedt, François Claveau, Alexandre Truc.</p>
+  <p>Developed by <a href='https://aurelien-goutsmedt.com'>Aurélien Goutsmedt</a>, François Claveau, Alexandre Truc.</p>
 </div>
 
 <div class="pkgdown">

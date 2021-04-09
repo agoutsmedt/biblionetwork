@@ -1,11 +1,14 @@
-biblionetwork
-================
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# biblionetwork <img src="man/figures/logo.png" align="right" alt="" width="120" />
+
 <!-- badges: start -->
 
 [![Travis build
 status](https://travis-ci.com/agoutsmedt/biblionetwork.svg?branch=main)](https://travis-ci.com/agoutsmedt/biblionetwork)
+[![CRAN
+Status](https://www.r-pkg.org/badges/version/biblionetwork)](https://cran.r-project.org/package=biblionetwork)
 <!-- badges: end -->
 
 The goal of biblionetwork is to provide functions to create bibliometric
@@ -24,6 +27,16 @@ Claveau’s original idea, by [Alexandre
 Truc](https://sites.google.com/view/alexandre-truc/home-and-contact) and
 [Aurélien Goutsmedt](https://aurelien-goutsmedt.com/). The package is
 maintained by Aurélien Goutsmedt.[1]
+
+You can this package from CRAN:
+
+``` r
+# Install release version from CRAN
+install.packages("biblionetwork")
+#> Installing package into 'C:/Users/Public/Documents/Wondershare/CreatorTemp/Rtmp8mTY6s/temp_libpath52848cb50c1'
+#> (as 'lib' is unspecified)
+#> installing the source package 'biblionetwork'
+```
 
 You can cite this package as:
 

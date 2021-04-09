@@ -1,4 +1,4 @@
 
-# pkgdown 0.1.0de
+# biblionetwork 0.1.0
 
-* This is the first realease of the biblionetwork package
+* This is the first release of the biblionetwork package

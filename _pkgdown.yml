@@ -4,6 +4,10 @@ home:
 
 url: https://agoutsmedt.github.io/biblionetwork/
 
+authors:
+  Aurélien Goutsmedt:
+    href: https://aurelien-goutsmedt.com
+
 template:
   package: preferably
   params:
@@ -13,10 +17,10 @@ template:
  #   image:
   #    src:
    #   alt:
-   # twitter:
-  #    creator: "@AGoutsmedt"
+    twitter:
+      creator: "@AGoutsmedt"
    #   site:
-    #  card:
+      card: summary_large_image
 
 reference:
 - title: "Bibliographic Coupling"
@@ -37,3 +41,8 @@ reference:
   desc: "Data on stagflation explanation"
 - contents:
   - contains("stagflation")
+
+news:
+  releases:
+  - text: "Version 0.1.1"
+    href: https://aurelien-goutsmedt.com/post/release-biblionetwork/

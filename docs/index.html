@@ -19,6 +19,12 @@
     );
   }
 </script><title>A Package for Creating Different Types of Bibliometric Networks • biblionetwork</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- Flatly Theme - Light  --><link id="css-light" rel="stylesheet" href="https://bootswatch.com/3/flatly/bootstrap.css" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
 <!-- Darkly Theme - Dark --><link id="css-dark" rel="stylesheet" href="https://bootswatch.com/3/darkly/bootstrap.css" media="(prefers-color-scheme: dark)">
 <!-- preferably CSS --><link rel="stylesheet" href="preferably.css">
@@ -30,6 +36,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="A Package for Creating Different Types of Bibliometric Networks">
 <meta property="og:description" content="Build edges data for different types of networks with different weight measures. You just need a list of documents citing references.">
+<meta property="og:image" content="https://agoutsmedt.github.io/biblionetwork/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -54,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">biblionetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -81,8 +88,22 @@
     </li>
   </ul>
 </li>
-<li>
-  <a href="news/index.html">Changelog</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    News
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li class="dropdown-header">Releases</li>
+    <li>
+      <a href="https://aurelien-goutsmedt.com/post/release-biblionetwork/">Version 0.1.1</a>
+    </li>
+    <li class="divider">
+    <li>
+      <a href="news/index.html">Changelog</a>
+    </li>
+  </ul>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -114,16 +135,23 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="biblionetwork" class="section level1">
+<div id="biblionetwork-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#biblionetwork" class="anchor"></a>biblionetwork</h1></div>
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<a href="#biblionetwork-" class="anchor"></a>biblionetwork <img src="reference/figures/logo.png" align="right" alt="" width="120">
+</h1></div>
 <!-- badges: start -->
-<!-- badges: end -->
+
 <p>The goal of biblionetwork is to provide functions to create bibliometric networks like bibliographic coupling network, co-citation network and co-authorship network. It identifies edges and calculates the weights according to different methods, depending on the type of networks, the type of nodes, and what you want to analyse. These functions are optimized to be used on very large dataset.</p>
 <p>The original function, which uses data.table (<a href="#ref-datatable">Dowle and Srinivasan 2020</a>) and allows the user to find edges and calculate weights for large networks, was developed by <a href="https://www.usherbrooke.ca/philosophie/nous-joindre/personnel-enseignant/claveau-francois/">François Claveau</a>. The different functions in this package have been developed, from Claveau’s original idea, by <a href="https://sites.google.com/view/alexandre-truc/home-and-contact">Alexandre Truc</a> and <a href="https://aurelien-goutsmedt.com/">Aurélien Goutsmedt</a>. The package is maintained by Aurélien Goutsmedt.[1]</p>
-<p>You can cite this package as:</p>
+<p>You can this package from CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Install release version from CRAN</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"biblionetwork"</span><span class="op">)</span>
+<span class="co">#&gt; Installing package into 'C:/Users/Public/Documents/Wondershare/CreatorTemp/Rtmp8mTY6s/temp_libpath52848cb50c1'</span>
+<span class="co">#&gt; (as 'lib' is unspecified)</span>
+<span class="co">#&gt; installing the source package 'biblionetwork'</span></code></pre></div>
+<p>You can cite this package as:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/citation.html">citation</a></span><span class="op">(</span><span class="st">"biblionetwork"</span><span class="op">)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; To cite biblionetwork in publications use:</span>
@@ -149,7 +177,7 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>You can install the development version from <a href="https://github.com/">GitHub</a> with:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"agoutsmedt/biblionetwork"</span><span class="op">)</span></code></pre></div>
 </div>
@@ -158,7 +186,7 @@
 <a href="#example" class="anchor"></a>Example</h2>
 <p>The basic function of the package is the <code><a href="reference/biblio_coupling.html">biblio_coupling()</a></code> function. This function calculates the number of references that different articles share together, as well as the coupling angle value of edges in a bibliographic coupling network (<a href="#ref-sen1983">Sen and Gan 1983</a>). What you need is just a file with entities (documents, authors, universities, <em>etc.</em>) citing references.[2] See the <code><a href="articles/Using_biblionetwork.html">vignette("Using_biblionetwork")</a></code> for a more in-depth presentation of the package.</p>
 <p>This example use the <a href="#incorporated-data">data incorporated</a> in the package.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/agoutsmedt/biblionetwork">biblionetwork</a></span><span class="op">)</span>
 
 <span class="fu"><a href="reference/biblio_coupling.html">biblio_coupling</a></span><span class="op">(</span><span class="va">Ref_stagflation</span>, 
@@ -210,7 +238,7 @@ Goutsmedt, Aurélien. 2021. “From the Stagflation to the Great Inflation: Expl
 Sen, Subir K., and Shymal K. Gan. 1983. “A Mathematical Extension of the Idea of Bibliographic Coupling and Its Applications.” <em>Annals of Library Science and Documentation</em> 30 (2). <a href="http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS%2030(2)%2078-82.pdf" class="uri">http://nopr.niscair.res.in/bitstream/123456789/28008/1/ALIS%2030(2)%2078-82.pdf</a>.
 </div>
 </div>
-<p>[1] Contact: <a href="agoutsmedt@hotmail.fr">agoutsmedt@hotmail.fr</a>.</p>
+<p>[1] Contact: <a href="mailto:agoutsmedt@hotmail.fr" class="email">agoutsmedt@hotmail.fr</a>.</p>
 <p>[2] If you want to build a coupling network with entities larger than a document (meaning entities that have published several documents, and thus can cite a reference several times), we rather recommend the use of the <code><a href="reference/coupling_entity.html">coupling_entity()</a></code> function. See the <code><a href="articles/Using_biblionetwork.html">vignette("Using_biblionetwork")</a></code> for examples.</p>
 </div>
 </div>
@@ -220,6 +248,8 @@ Sen, Subir K., and Shymal K. Gan. 1983. “A Mathematical Extension of the Idea 
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=biblionetwork">https://​cloud.r-project.org/​package=biblionetwork</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/agoutsmedt/biblionetwork/">https://​github.com/​agoutsmedt/​biblionetwork/​</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/agoutsmedt/biblionetwork/issues">https://​github.com/​agoutsmedt/​biblionetwork/​issues</a>
@@ -242,18 +272,26 @@ Sen, Subir K., and Shymal K. Gan. 1983. “A Mathematical Extension of the Idea 
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>Aurélien Goutsmedt <br><small class="roles"> Maintainer, author </small> <a href="https://orcid.org/0000-0002-3788-7237" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>
+<a href="https://aurelien-goutsmedt.com">Aurélien Goutsmedt</a> <br><small class="roles"> Maintainer, author </small> <a href="https://orcid.org/0000-0002-3788-7237" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>François Claveau <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-7129-7794" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Alexandre Truc <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1328-7819" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://travis-ci.com/agoutsmedt/biblionetwork"><img src="https://travis-ci.com/agoutsmedt/biblionetwork.svg?branch=main" alt="Travis build status"></a></li>
+<li><a href="https://cran.r-project.org/package=biblionetwork"><img src="https://www.r-pkg.org/badges/version/biblionetwork" alt="CRAN Status"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Aurélien Goutsmedt, François Claveau, Alexandre Truc.</p>
+  <p>Developed by <a href="https://aurelien-goutsmedt.com">Aurélien Goutsmedt</a>, François Claveau, Alexandre Truc.</p>
 </div>
 
 <div class="pkgdown">

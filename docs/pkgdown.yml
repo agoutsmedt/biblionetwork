@@ -3,7 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   Using_biblionetwork: Using_biblionetwork.html
-last_built: 2021-03-03T22:10Z
+last_built: 2021-04-09T14:25Z
 urls:
   reference: https://agoutsmedt.github.io/biblionetwork//reference
   article: https://agoutsmedt.github.io/biblionetwork//articles
