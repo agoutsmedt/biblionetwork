@@ -13,6 +13,9 @@ template:
   params:
     toggle: manual
     ganalytics: G-F6FLB1LSK1
+    docsearch:
+      api_key: cc247f47f9194be41d67c72615a371cf
+      index_name: biblionetwork
 #  opengraph:
  #   image:
   #    src:
