@@ -2,6 +2,8 @@ coupling_entity <- function(dt, source, ref, entity, weight_threshold = 1, outpu
 {
   #' Creating Coupling Networks at Entity Level
   #'
+  #' `r lifecycle::badge("experimental")`
+  #'
   #' This function creates the edges of a network of entities from a direct citations data frame (i.e. documents citing references).
   #' Entities could be authors, affiliations, journals, _etc_. Consequently, coupling links are calculated using the coupling angle measure
   #' (like [biblio_coupling()]) or the coupling strength measure (like [coupling_strength()]. But it also takes into account the fact that
@@ -72,8 +74,6 @@ coupling_entity <- function(dt, source, ref, entity, weight_threshold = 1, outpu
   #' \insertAllCited{}
   #'
   #' @export
-  #' @import data.table
-  #' @import Rdpack
 
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()
   # See https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/

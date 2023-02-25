@@ -2,6 +2,8 @@ coauth_network <- function(dt, authors, articles, method = c("full_counting","fr
 {
   #' Creating Co-Authorship Network with Different Measures for Weights
   #'
+  #' `r lifecycle::badge("experimental")`
+  #'
   #' @description This function creates an edge list for co-authorship networks from a data frame with a list of entities and their publications.
   #' The weight of edges can be calculated following different methods. The nodes of the network could be indifferently authors,
   #' institutions or countries.
@@ -51,8 +53,7 @@ coauth_network <- function(dt, authors, articles, method = c("full_counting","fr
   #' \insertAllCited{}
   #'
   #' @export
-  #' @import data.table
-  #' @import Rdpack
+  #'
 
 
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()

@@ -43,12 +43,14 @@ another column, as well as the method used. It also keeps a copy of \code{from} 
 are using the tidygraph package then, where \code{from} and \code{to} values are modified when creating a graph.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+}
+\details{
 This function creates the edges of a network of entities from a direct citations data frame (i.e. documents citing references).
 Entities could be authors, affiliations, journals, \emph{etc}. Consequently, coupling links are calculated using the coupling angle measure
 (like \code{\link[=biblio_coupling]{biblio_coupling()}}) or the coupling strength measure (like \code{\link[=coupling_strength]{coupling_strength()}}. But it also takes into account the fact that
 an entity can cite several times a reference, and considers that citing 10 times a ref is more significant that citing it only once (see \href{#details}{details}).
-}
-\details{
+
 Coupling links are calculated depending of the number of references two authors (or any entity) share,
 taking into account the minimum number of times two authors are citing each references.
 For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles),

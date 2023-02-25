@@ -2,6 +2,8 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
 {
   #' Calculating the Coupling Angle Measure for Edges
   #'
+  #' `r lifecycle::badge("experimental")`
+  #'
   #' @description This function calculates the number of references that different articles share together, as well as
   #' the coupling angle value of edges in a bibliographic coupling network \insertCite{sen1983}{biblionetwork}, from a direct
   #' citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure:
@@ -74,8 +76,6 @@ biblio_coupling <- function(dt, source, ref, normalized_weight_only=TRUE, weight
   #' \insertAllCited{}
   #'
   #' @export
-  #' @import data.table
-  #' @import Rdpack
 
 
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()

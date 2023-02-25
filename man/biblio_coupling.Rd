@@ -54,6 +54,8 @@ it divides the number of references that two articles share by the square root o
 both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography.
 }
 \details{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 This function implements the following weight measure:
 
 \deqn{\frac{R(A) \bullet R(B)}{\sqrt{L(A).L(B)}}}

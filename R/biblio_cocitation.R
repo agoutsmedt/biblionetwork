@@ -2,6 +2,8 @@ biblio_cocitation <- function(dt, source, ref, normalized_weight_only=TRUE, weig
 {
   #' Calculating the Coupling Angle Measure for Edges in a Co-citation Network
   #'
+  #' `r lifecycle::badge("experimental")`
+  #'
   #' @description This function is basically the same as the [biblio_coupling()] function but it is explicitly framed
   #' for bibliographic co-citation network (and not for bibliographic coupling networks). It takes a data frame
   #' with direct citations, and calculates the number of times two references are citing together, and calculate a measure
@@ -55,8 +57,6 @@ biblio_cocitation <- function(dt, source, ref, normalized_weight_only=TRUE, weig
   #' \insertAllCited{}
   #'
   #' @export
-  #' @import data.table
-  #' @import Rdpack
 
 
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()

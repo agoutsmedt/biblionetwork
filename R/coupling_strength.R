@@ -2,6 +2,8 @@ coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_c
 {
   #' Calculating the Coupling Strength Measure for Edges
   #'
+  #' `r lifecycle::badge("experimental")`
+  #'
   #' @description
   #' This function calculates the coupling strength measure \insertCite{@following @vladutz1984 and @shen2019}{biblionetwork}
   #' from a direct citation data frame. It is a refinement of [biblio_coupling()]:
@@ -44,8 +46,6 @@ coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_c
   #' \insertAllCited{}
   #'
   #' @export
-  #' @import data.table
-  #' @import Rdpack
   #'
 
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()

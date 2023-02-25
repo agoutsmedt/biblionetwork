@@ -40,6 +40,8 @@ It is sinpired by \insertCite{shen2019}{biblionetwork}. To a certain extent, it 
 the cosine measure of the \code{\link[=biblio_coupling]{biblio_coupling()}} function.
 }
 \details{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 The function use the following formalisation:
 
 \deqn{\frac{R_{S}(A) \bullet R_{S}(B)}{\sqrt{R_{S}(A).R_{S}(B)}}}

@@ -2,6 +2,8 @@ coupling_similarity <- function(dt, source, ref, weight_threshold = 1, output_in
 {
   #' Calculating the Coupling Similarity Measure for Edges
   #'
+  #' `r lifecycle::badge("experimental")`
+  #'
   #' @description This function calculates a refined similarity measure of coupling links, from a direct citation data frame.
   #' It is sinpired by \insertCite{shen2019}{biblionetwork}. To a certain extent, it mixes the [coupling_strength()] function with
   #' the cosine measure of the [biblio_coupling()] function.
@@ -51,8 +53,6 @@ coupling_similarity <- function(dt, source, ref, weight_threshold = 1, output_in
   #' \insertAllCited{}
   #'
   #' @export
-  #' @import data.table
-  #' @import Rdpack
 
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()
   # See https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/

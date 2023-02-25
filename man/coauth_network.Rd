@@ -35,6 +35,8 @@ The weight of edges can be calculated following different methods. The nodes of 
 institutions or countries.
 }
 \details{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 Weights can be calculated with:
 \enumerate{
 \item the \code{"full_counting"} method: the linkds between authors correspond to their absolute number of collaborations.

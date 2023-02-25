@@ -41,6 +41,9 @@ it takes into account the frequency with which a reference shared by two article
 In other words, the most cited references are less important in the links between two articles, than references that have
 been rarely cited. To a certain extent, it is similar to the \href{https://en.wikipedia.org/wiki/Tf\%E2\%80\%93idf}{tf-idf} measure.
 }
+\details{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+}
 \examples{
 library(biblionetwork)
 coupling_strength(Ref_stagflation,

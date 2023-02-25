@@ -46,6 +46,8 @@ cited together by the square root of the product of the total number of citation
 The more two references are cited in general, the more they have to be cited together for their link to be important.
 }
 \details{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 This function uses data.table package and is thus very fast. It allows the user to compute the coupling angle
 on a very large data frame quickly.
 }

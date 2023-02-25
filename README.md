@@ -9,6 +9,8 @@
 status](https://travis-ci.com/agoutsmedt/biblionetwork.svg?branch=main)](https://travis-ci.com/agoutsmedt/biblionetwork)
 [![CRAN
 Status](https://www.r-pkg.org/badges/version/biblionetwork)](https://cran.r-project.org/package=biblionetwork)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 The goal of biblionetwork is to provide functions to create bibliometric
@@ -26,16 +28,19 @@ The different functions in this package have been developed, from
 Claveau’s original idea, by [Alexandre
 Truc](https://sites.google.com/view/alexandre-truc/home-and-contact) and
 [Aurélien Goutsmedt](https://aurelien-goutsmedt.com/). The package is
-maintained by Aurélien Goutsmedt.[1]
+maintained by Aurélien Goutsmedt.[^1]
 
 You can this package from CRAN:
 
 ``` r
 # Install release version from CRAN
 install.packages("biblionetwork")
-#> Installing package into 'C:/Users/Public/Documents/Wondershare/CreatorTemp/Rtmp8mTY6s/temp_libpath52848cb50c1'
-#> (as 'lib' is unspecified)
-#> installing the source package 'biblionetwork'
+#> Installation du package dans 'C:/Users/goutsmedt/AppData/Local/Temp/RtmpURICRg/temp_libpath81b07afc7970'
+#> (car 'lib' n'est pas spécifié)
+#> le package 'biblionetwork' a été décompressé et les sommes MD5 ont été vérifiées avec succés
+#> 
+#> Les packages binaires téléchargés sont dans
+#>  C:\Users\goutsmedt\AppData\Local\Temp\RtmpGwCK9M\downloaded_packages
 ```
 
 You can cite this package as:
@@ -50,7 +55,7 @@ citation("biblionetwork")
 #>   Networks. R package version 0.0.0.9000.
 #>   https://github.com/agoutsmedt/biblionetwork
 #> 
-#> A BibTeX entry for LaTeX users is
+#> Une entrée BibTeX pour les utilisateurs LaTeX est
 #> 
 #>   @Manual{,
 #>     title = {biblionetwork: A Package For Creating Different Types of Bibliometric Networks},
@@ -81,7 +86,7 @@ This function calculates the number of references that different
 articles share together, as well as the coupling angle value of edges in
 a bibliographic coupling network ([Sen and Gan 1983](#ref-sen1983)).
 What you need is just a file with entities (documents, authors,
-universities, *etc.*) citing references.[2] See the
+universities, *etc.*) citing references.[^2] See the
 `vignette("Using_biblionetwork")` for a more in-depth presentation of
 the package.
 
@@ -90,13 +95,16 @@ package.
 
 ``` r
 library(biblionetwork)
+#> Warning: le package 'biblionetwork' a été compilé avec la version R 4.2.2
 
 biblio_coupling(Ref_stagflation, 
                 source = "Citing_ItemID_Ref", 
                 ref = "ItemID_Ref", 
                 normalized_weight_only = FALSE, 
                 weight_threshold = 1)
+#> Key: <Source>
 #>             from         to     weight nb_shared_references     Source
+#>           <char>     <char>      <num>                <int>      <int>
 #>    1:     214927    2207578 0.14605935                    4     214927
 #>    2:     214927    5982867 0.04082483                    1     214927
 #>    3:     214927    8456979 0.09733285                    3     214927
@@ -109,6 +117,7 @@ biblio_coupling(Ref_stagflation,
 #> 2715: 1111111172 1111111180 0.03646625                    1 1111111172
 #> 2716: 1111111182 1111111183 0.27060404                    8 1111111182
 #>           Target
+#>            <int>
 #>    1:    2207578
 #>    2:    5982867
 #>    3:    8456979
@@ -124,20 +133,20 @@ biblio_coupling(Ref_stagflation,
 
 ## Incorporated data
 
-The biblionetwork package contains bibliometric data built by
-[Goutsmedt](#ref-goutsmedt2021a) ([2021](#ref-goutsmedt2021a)). These
-data gather the academic articles and books, published between 1975 and
-2013, that endeavoured to explain the United States stagflation of the
-1970s. They also gather all the references cited by these articles and
-books on stagflation. The `Nodes_stagflation.rda` file contains
-information about the academic articles and books on stagflation (the
-staflation documents), as well as about the references cited at least by
-two of these stagflation documents. The `Ref_stagflation.rda` is a data
-frame of direct citations, with the identifiers of citing documents, and
-the identifiers of cited documents. The `Authors_stagflation.rda` is a
-data frame with the list of documents explaining the US stagflation, and
-all the authors of these documents (`Nodes_stagflation.rda` just takes
-the first author for each document).
+The biblionetwork package contains bibliometric data built by Goutsmedt
+([2021](#ref-goutsmedt2021a)). These data gather the academic articles
+and books, published between 1975 and 2013, that endeavoured to explain
+the United States stagflation of the 1970s. They also gather all the
+references cited by these articles and books on stagflation. The
+`Nodes_stagflation.rda` file contains information about the academic
+articles and books on stagflation (the staflation documents), as well as
+about the references cited at least by two of these stagflation
+documents. The `Ref_stagflation.rda` is a data frame of direct
+citations, with the identifiers of citing documents, and the identifiers
+of cited documents. The `Authors_stagflation.rda` is a data frame with
+the list of documents explaining the US stagflation, and all the authors
+of these documents (`Nodes_stagflation.rda` just takes the first author
+for each document).
 
 ## References
 
@@ -170,10 +179,10 @@ Science and Documentation* 30 (2).
 
 </div>
 
-[1] Contact: <agoutsmedt@hotmail.fr>.
+[^1]: Contact: <agoutsmedt@hotmail.fr>.
 
-[2] If you want to build a coupling network with entities larger than a
-document (meaning entities that have published several documents, and
-thus can cite a reference several times), we rather recommend the use of
-the `coupling_entity()` function. See the
-`vignette("Using_biblionetwork")` for examples.
+[^2]: If you want to build a coupling network with entities larger than
+    a document (meaning entities that have published several documents,
+    and thus can cite a reference several times), we rather recommend
+    the use of the `coupling_entity()` function. See the
+    `vignette("Using_biblionetwork")` for examples.
