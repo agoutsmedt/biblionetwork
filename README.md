@@ -5,13 +5,11 @@
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.com/agoutsmedt/biblionetwork.svg?branch=main)](https://travis-ci.com/agoutsmedt/biblionetwork)
 [![CRAN
-Status](https://www.r-pkg.org/badges/version/biblionetwork)](https://cran.r-project.org/package=biblionetwork)
+Status](https://www.r-pkg.org/badges/version-last-release/biblionetwork)](https://cran.r-project.org/package=biblionetwork)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![DOI](zenodo.7677369.svg)](10.5281/zenodo.7677369)
+[![DOI](man/figures/zenodo.7677369.svg)](10.5281/zenodo.7677369)
 <!-- badges: end -->
 
 The goal of biblionetwork is to provide functions to create bibliometric
@@ -36,12 +34,12 @@ You can this package from CRAN:
 ``` r
 # Install release version from CRAN
 install.packages("biblionetwork")
-#> Installation du package dans 'C:/Users/goutsmedt/AppData/Local/Temp/RtmpMRTsQw/temp_libpath10947b474595'
+#> Installation du package dans 'C:/Users/goutsmedt/AppData/Local/Temp/RtmpMRTsQw/temp_libpath10943ab43a99'
 #> (car 'lib' n'est pas spécifié)
 #> le package 'biblionetwork' a été décompressé et les sommes MD5 ont été vérifiées avec succés
 #> 
 #> Les packages binaires téléchargés sont dans
-#>  C:\Users\goutsmedt\AppData\Local\Temp\Rtmps3l2if\downloaded_packages
+#>  C:\Users\goutsmedt\AppData\Local\Temp\Rtmp0q6PXl\downloaded_packages
 ```
 
 You can cite this package as:
