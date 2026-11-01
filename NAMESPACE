@@ -3,9 +3,23 @@
 export(biblio_cocitation)
 export(biblio_coupling)
 export(coauth_network)
+export(compute_couplings)
+export(correlate_weights)
+export(coupling_descriptive)
 export(coupling_entity)
+export(coupling_jaccard)
 export(coupling_similarity)
 export(coupling_strength)
+export(coupling_vladutz)
+export(descriptive_terms)
+export(merge_weights)
+export(overlap_top_weights)
+export(plot_weights)
+export(summarise_weights)
 import(Rdpack)
 import(data.table)
 importFrom(lifecycle,deprecated)
+importFrom(methods,
+  as,
+  is
+)

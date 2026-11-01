@@ -1,24 +1,21 @@
 Package: biblionetwork
 Title: Create Different Types of Bibliometric Networks
-Version: 0.1.1
-Date: 2023-02-25
+Version: 0.1.1.9000
 Authors@R: c(
     person(given = "Aurélien",
            family = "Goutsmedt",
            role = c("cre","aut"),
-           email = "agoutsmedt@hotmail.fr",
+           email = "aurelien.goutsmedt@ichec.be",
            comment = c(ORCID = "0000-0002-3788-7237")),
     person(given = "François",
            family = "Claveau",
            role = c("aut"),
-           email = "françois.claveau@usherbrooke.ca",
            comment = c(ORCID = "0000-0001-7129-7794")),
     person(given = "Alexandre",
            family = "Truc",
            role = c("aut"),
-           email = "alexandre.truc77@gmail.com",
            comment = c(ORCID = "0000-0002-1328-7819")))
-Maintainer: Aurélien Goutsmedt <agoutsmedt@hotmail.fr>
+Maintainer: Aurélien Goutsmedt <aurelien.goutsmedt@ichec.be>
 Description: Functions to find edges for bibliometric networks like bibliographic coupling network, co-citation network and co-authorship network. The weights of network edges can be calculated according to different methods, depending on the type of networks, the type of nodes, and what you want to analyse. These functions are optimized to be be used on large dataset. The package contains functions inspired by: Leydesdorff, Loet and Park, Han Woo (2017) <doi:10.1016/j.joi.2016.11.007>; Perianes-Rodriguez, Antonio, Ludo Waltman, and Nees Jan Van Eck (2016) <doi:10.1016/j.joi.2016.10.006>; Sen, Subir K. and Shymal K. Gan (1983) <http://nopr.niscair.res.in/handle/123456789/28008>; Shen, Si, Zhu, Danhao, Rousseau, Ronald, Su, Xinning and Wang, Dongbo (2019) <doi:10.1016/j.joi.2019.01.012>; Zhao, Dangzhi and Strotmann, Andreas (2008) <doi:10.1002/meet.2008.1450450292>.
 URL: https://github.com/agoutsmedt/biblionetwork, https://agoutsmedt.github.io/biblionetwork/
 BugReports: https://github.com/agoutsmedt/biblionetwork/issues
@@ -26,16 +23,30 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
-Imports: 
-    data.table,
+Imports:
+    cli,
+    data.table (>= 1.12.0),
     lifecycle,
-    Rdpack (>= 0.7)
-Depends: 
-    R (>= 2.10)
+    Matrix (>= 1.5-0),
+    methods,
+    Rdpack (>= 0.7),
+    rlang (>= 1.0.0),
+    stats,
+    utils
+Depends:
+    R (>= 4.1.0)
 RdMacros:
     Rdpack
-Suggests: 
+Suggests:
+    DBI,
+    duckdb,
+    ggplot2,
+    igraph,
     knitr,
-    rmarkdown
+    rmarkdown,
+    scico,
+    testthat (>= 3.0.0),
+    withr
+Config/testthat/edition: 3
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.1.1

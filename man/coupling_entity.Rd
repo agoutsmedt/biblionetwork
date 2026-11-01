@@ -2,7 +2,7 @@
 % Please edit documentation in R/coupling_entity.R
 \name{coupling_entity}
 \alias{coupling_entity}
-\title{Creating Coupling Networks at Entity Level}
+\title{Coupling edges between entities (authors, journals, institutions...)}
 \usage{
 coupling_entity(
   dt,
@@ -11,59 +11,121 @@ coupling_entity(
   entity,
   weight_threshold = 1,
   output_in_character = FALSE,
-  method = c("coupling_strength", "coupling_angle")
+  method = c("coupling_strength", "coupling_angle", "coupling_similarity")
 )
 }
 \arguments{
-\item{dt}{The table with citing and cited documents.}
+\item{dt}{A data frame or a \code{data.table} of direct citations, one row per
+link between a citing document and a cited reference. It is not modified.}
 
-\item{source}{The column name of the source identifiers, that is the documents that are citing.}
+\item{source}{Character scalar. The column of the citing documents.
+Needed to count the documents, not to define the nodes.}
 
-\item{ref}{The column name of the cited references identifiers.}
+\item{ref}{Character scalar. The column of the cited references.}
 
-\item{entity}{The column name of the entity (authors, journals, institutions) that are citing.}
+\item{entity}{Character scalar. The column of the entities that are the
+nodes of the network (authors, journals, institutions...). A document
+can appear with several entities (one row per entity and reference).}
 
-\item{weight_threshold}{Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
-that have a non-normalized weight superior to the \code{weight_threshold}. In other words, if you set the
-parameter to 2, the function keeps only the edges between nodes that share at least two references
-in common in their bibliography. In a large bibliographic coupling network,
-you can consider for instance that sharing only one reference is not sufficient/significant
-for two entities (above all when large entities like journals and institutions) to be linked together.
-This parameter could also be modified to avoid creating intractable networks with too many edges.}
+\item{weight_threshold}{Number. The minimum number of shared references
+for two entities to be linked (1 by default). With large entities such
+as journals, a higher value is advisable.}
 
-\item{output_in_character}{If TRUE, the function ends by transforming the \code{from} and \code{to} columns in character, to make the
-creation of a \href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} network easier.}
+\item{output_in_character}{Logical. If \code{TRUE}, \code{from} and \code{to} are
+character columns (\code{FALSE} by default for this function: they keep the
+type of the entity column).}
 
-\item{method}{Choose the method you want to use for calculating the edges weights: either \code{"coupling_strength"} like in the
-\code{\link[=coupling_strength]{coupling_strength()}} function, or \code{"coupling_angle"} like in the \code{\link[=biblio_coupling]{biblio_coupling()}} function.}
+\item{method}{\code{"coupling_strength"} (default), \code{"coupling_angle"} or
+\code{"coupling_similarity"}: the weight to compute (see the details).}
 }
 \value{
-A data.table with the entity identifiers in \code{from} and \code{to} columns, with the coupling strength or coupling angle measures in
-another column, as well as the method used. It also keeps a copy of \code{from} and \code{to} in the \code{Source} and \code{Target} columns. This is useful is you
-are using the tidygraph package then, where \code{from} and \code{to} values are modified when creating a graph.
+A \code{data.table} with one row per pair of entities: \code{from}, \code{to},
+the \code{weight}, the original identifiers in \code{Source} and \code{Target}, and the
+\code{Weighting_method}. Each pair appears once, with \code{Source < Target}.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+Builds the edges of a bibliographic coupling network whose nodes are not
+documents but \emph{entities} that cite through their documents: authors,
+journals, institutions, countries... Two entities are coupled when the
+documents they publish cite the same references. As entities publish
+several documents, they can cite the same reference several times, and
+the function takes this into account: citing a reference ten times is
+more significant than citing it once. The weight is either the coupling
+strength of \code{\link[=coupling_strength]{coupling_strength()}} or the coupling angle of
+\code{\link[=biblio_coupling]{biblio_coupling()}}, both adapted to entities following
+\insertCite{zhao2008b;textual}{biblionetwork}.
 }
 \details{
-This function creates the edges of a network of entities from a direct citations data frame (i.e. documents citing references).
-Entities could be authors, affiliations, journals, \emph{etc}. Consequently, coupling links are calculated using the coupling angle measure
-(like \code{\link[=biblio_coupling]{biblio_coupling()}}) or the coupling strength measure (like \code{\link[=coupling_strength]{coupling_strength()}}. But it also takes into account the fact that
-an entity can cite several times a reference, and considers that citing 10 times a ref is more significant that citing it only once (see \href{#details}{details}).
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-Coupling links are calculated depending of the number of references two authors (or any entity) share,
-taking into account the minimum number of times two authors are citing each references.
-For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles),
-the second one three times, the function takes two as the minimum value. In addition to the features of the coupling strength measure (see \code{\link[=coupling_strength]{coupling_strength()}})
-or the coupling angle measure (see \code{\link[=biblio_coupling]{biblio_coupling()}}), it means that, if two entities share two reference in common, if the first reference is cited
-at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than
-the second reference. This use of minimum shared reference for entities coupling comes from \insertCite{zhao2008b;textual}{biblionetwork}. It looks like
-this for the coupling strength:
+Write \eqn{C_{Aj}} for the number of times entity \eqn{A} cites reference
+\eqn{j} (the number of its documents citing \eqn{j}), \eqn{N} for the
+number of citing documents in the table, \eqn{f_j} for the number of
+documents citing \eqn{j}, and \eqn{L(A) = \sum_j C_{Aj}} for the
+total number of citations made by \eqn{A}. With \code{method = "coupling_strength"}, the weight of the tie between \eqn{A} and \eqn{B} is
 
-\deqn{\frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j} Min(C_{Aj},C_{Bj}).(log({\frac{N}{freq(R_{j})}}))}
+\deqn{w_{AB} = \frac{\sum_{j} \min(C_{Aj}, C_{Bj}) \, \log(N / f_j)}{L(A) \, L(B)}}
 
-with \eqn{C_{Aj}} and \eqn{C_{Bj}} the number of time documents A and B cite the reference j.
+and with \code{method = "coupling_angle"},
+
+\deqn{w_{AB} = \frac{\sum_{j} \min(C_{Aj}, C_{Bj})}{\sqrt{L(A) \, L(B)}}}
+
+and with \code{method = "coupling_similarity"},
+
+\deqn{w_{AB} = \frac{\sum_{j} \min(C_{Aj}, C_{Bj}) \, \log(N / f_j)}{\sqrt{S(A) \, S(B)}}, \qquad S(A) = \sum_{j} C_{Aj} \log(N / f_j)}
+
+the sums of the numerators running over the references cited by both
+entities, and the sum defining \eqn{S(A)} over all the references of
+\eqn{A}. The last variant is not proposed in the literature as such: it is
+the cosine of \insertCite{shen2019}{biblionetwork} (see
+\code{\link[=coupling_similarity]{coupling_similarity()}}) with the minimum rule of
+\insertCite{zhao2008b;textual}{biblionetwork} for the counts. It is
+bounded by 1, since \eqn{\min(C_{Aj}, C_{Bj}) \leq \sqrt{C_{Aj} C_{Bj}}}
+and by the Cauchy-Schwarz inequality. The minimum
+of the two counts is the number of times the two entities cite the
+reference "together" \insertCite{zhao2008b}{biblionetwork}. \eqn{f_j}
+counts citing documents, not entities, so that a document with several
+authors is not counted several times. References cited by a single entity
+cannot create a tie and are ignored in the sums, but they count in
+\eqn{L}.
+
+The \code{weight_threshold} applies to the number of references shared by two
+entities (each counted once, whatever the number of times it is cited).
+The table of the user is not modified, rows with a missing identifier are
+dropped with a warning, and a zero-row table is returned, with a warning, if no reference
+is shared (or if no pair reaches \code{weight_threshold}). The memory warning of \code{\link[=coupling_strength]{coupling_strength()}} applies.
 }
+\section{Why use it in research}{
+
+Coupling at the level of authors (author bibliographic coupling,
+\insertCite{zhao2008b}{biblionetwork}), journals or institutions maps
+who relies on the same literature, whatever the documents they publish.
+It is a way to study the structure of a discipline through its journals
+or its authors, with fewer and denser nodes than the document-level
+network. Because entities are aggregates of documents, check that they
+are not too heterogeneous (a generalist journal citing everything is
+coupled with everyone), and that the number of documents per entity
+is large enough to give a stable bibliography. An article with several
+authors appears once for each of its authors: the same citing document
+then contributes to several entities.
+}
+
+\section{Intuition}{
+
+Think of an entity (say a journal) as one big bibliography made of the
+bibliographies of all its documents, in which a reference appears as many
+times as the entity's documents cite it. Two journals are close when their
+big bibliographies overlap. Overlap is measured reference by reference by
+the \emph{smaller} of the two counts: if journal A cites a reference 10 times and
+journal B twice, they share it twice (B is the limit). The three methods
+differ in what they do with these overlaps, as their document-level
+counterparts: \code{"coupling_angle"} only counts them and normalises by the
+sizes of the two big bibliographies; \code{"coupling_strength"} counts a
+shared rare reference more than a shared classic; \code{"coupling_similarity"}
+does the same but normalises by the "informational size" of each big
+bibliography, to give a cosine that cannot exceed 1.
+}
+
 \examples{
 library(biblionetwork)
 Ref_stagflation$Citing_ItemID_Ref <- as.character(Ref_stagflation$Citing_ItemID_Ref)
@@ -83,3 +145,14 @@ coupling_entity(entity_citations,
 \references{
 \insertAllCited{}
 }
+\seealso{
+Other coupling measures:
+\code{\link[=biblio_coupling]{biblio_coupling()}},
+\code{\link[=coupling_descriptive]{coupling_descriptive()}},
+\code{\link[=coupling_jaccard]{coupling_jaccard()}},
+\code{\link[=coupling_similarity]{coupling_similarity()}},
+\code{\link[=coupling_strength]{coupling_strength()}},
+\code{\link[=coupling_vladutz]{coupling_vladutz()}},
+\code{\link[=descriptive_terms]{descriptive_terms()}}
+}
+\concept{coupling measures}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/biblio_cocitation.R
 \name{biblio_cocitation}
 \alias{biblio_cocitation}
-\title{Calculating the Coupling Angle Measure for Edges in a Co-citation Network}
+\title{Co-citation edges, with the same weights as the coupling measures}
 \usage{
 biblio_cocitation(
   dt,
@@ -10,59 +10,155 @@ biblio_cocitation(
   ref,
   normalized_weight_only = TRUE,
   weight_threshold = 1,
-  output_in_character = TRUE
+  output_in_character = TRUE,
+  method = c("angle", "strength", "similarity", "jaccard", "vladutz")
 )
 }
 \arguments{
-\item{dt}{The dataframe with citing and cited documents.}
+\item{dt}{A data frame or a \code{data.table} of direct citations, one row per
+link between a citing document and a cited reference. It is not modified.}
 
-\item{source}{The column name of the source identifiers, that is the documents that are citing.}
+\item{source}{Character scalar. The column of the citing documents: they
+are the nodes of the coupling network.}
 
-\item{ref}{The column name of the cited references identifiers. In co-citation network, these references are the nodes of the network.}
+\item{ref}{Character scalar. The column of the cited references: they are
+the nodes of the co-citation network.}
 
-\item{normalized_weight_only}{If set to FALSE, the function returns the weights normalized by the cosine measure,
-but also simply the number of times two references are cited together.}
+\item{normalized_weight_only}{Logical. If \code{FALSE}, the number of
+documents citing both references is returned in addition to the
+normalised \code{weight}.}
 
-\item{weight_threshold}{Correspond to the value of the non-normalized weights of edges. The function just keeps the edges
-that have a non-normalized weight superior to the \code{weight_threshold}. In a large bibliographic co-citation network,
-you can consider for instance that being cited only once together is not sufficient/significant for two references to be linked together.
-This parameter could also be modified to avoid creating intractable networks with too many edges.}
+\item{weight_threshold}{Number. The minimum number of documents that must
+cite two references together for them to be linked (1 by default).}
 
-\item{output_in_character}{If TRUE, the function ends by transforming the \code{from} and \code{to} columns in character, to make the
-creation of a \href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} graph easier.}
+\item{output_in_character}{Logical. If \code{TRUE} (default), the identifiers
+are also returned as character columns \code{from} and \code{to}, to build a
+\href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} graph more
+easily.}
+
+\item{method}{The weight: \code{"angle"} (default, the co-citation angle),
+\code{"strength"}, \code{"similarity"}, \code{"jaccard"} or \code{"vladutz"} (see above).}
 }
 \value{
-A data.table with the articles (or authors) identifier in \code{from} and \code{to} columns,
-with one or two additional columns (the coupling angle measure and
-the number of shared references). It also keeps a copy of \code{from} and \code{to} in the \code{Source} and \code{Target} columns. This is useful is you
-are using the tidygraph package then, where \code{from} and \code{to} values are modified when creating a graph.
+A \code{data.table} with one row per pair of references: the
+identifiers in \code{from} and \code{to} (if \code{output_in_character = TRUE}), the
+\code{weight} and, if \code{normalized_weight_only = FALSE},
+\code{nb_shared_citations}. The original identifiers are kept in \code{Source}
+and \code{Target}. Each pair appears once, with \code{Source < Target}.
 }
 \description{
-This function is basically the same as the \code{\link[=biblio_coupling]{biblio_coupling()}} function but it is explicitly framed
-for bibliographic co-citation network (and not for bibliographic coupling networks). It takes a data frame
-with direct citations, and calculates the number of times two references are citing together, and calculate a measure
-similar to the coupling angle value \insertCite{sen1983}{biblionetwork}: it divides the number of times two references are
-cited together by the square root of the product of the total number of citations (in the whole corpus) of each reference.
-The more two references are cited in general, the more they have to be cited together for their link to be important.
+Builds the edges of a \emph{co-citation} network from a table of direct
+citations (one row per citing document and cited reference). Two
+references are co-cited when at least one document cites both of them
+\insertCite{small1973}{biblionetwork}. By default the weight is the
+co-citation angle \insertCite{sen1983}{biblionetwork}: the number of
+documents citing both references, divided by the geometric mean of the
+numbers of citations received by each of them. With \code{method}, the
+co-citation can also be weighted like the coupling measures
+(\code{\link[=coupling_strength]{coupling_strength()}}, \code{\link[=coupling_similarity]{coupling_similarity()}}, \code{\link[=coupling_jaccard]{coupling_jaccard()}},
+\code{\link[=coupling_vladutz]{coupling_vladutz()}}): see the section on the idf weights below.
 }
 \details{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-This function uses data.table package and is thus very fast. It allows the user to compute the coupling angle
-on a very large data frame quickly.
+Write \eqn{C(A)} for the set of documents citing reference \eqn{A}. The
+weight of the tie between references \eqn{A} and \eqn{B} with the default
+\code{method = "angle"} is
+
+\deqn{w_{AB} = \frac{|C(A) \cap C(B)|}{\sqrt{|C(A)| \, |C(B)|}}}
+
+The numerator is the number of documents citing both references (returned
+as \code{nb_shared_citations} when \code{normalized_weight_only = FALSE}). The
+other methods are those of the coupling functions, applied to the
+references as nodes: see the documentation of each, replacing "document"
+by "reference" and "reference" by "citing document".
+
+Computing choices:
+\itemize{
+\item \eqn{|C(A)|} is the number of citations received in the \emph{whole} table,
+including from documents that cite only one reference;
+\item documents citing a single reference cannot co-cite anything and are
+ignored in the numerator;
+\item duplicated rows are counted once, and rows with a missing identifier
+are dropped with a warning;
+\item the table of the user is not modified;
+\item if no pair of references is co-cited (or none reaches \code{weight_threshold}),
+a zero-row table is returned with a warning explaining why.
 }
+
+Memory and speed: the pairs are computed with sparse matrices, as in
+\code{\link[=biblio_coupling]{biblio_coupling()}}; a few documents with extremely long bibliographies
+still create many pairs. Consider removing them first.
+}
+\section{Why use it in research}{
+
+Where bibliographic coupling looks at what documents \emph{use}, co-citation
+looks at how the community \emph{perceives} cited documents: references that
+are regularly cited together are considered by citing authors as belonging
+to the same body of work. Co-citation networks are the classic tool to
+map the intellectual base of a field (schools, paradigms, canonical
+references) and to identify the key texts of each cluster
+\insertCite{boyack2005,boyack2010,yan2012}{biblionetwork}. Unlike
+coupling, a co-citation network is not fixed at the date of publication
+of the cited documents: it depends on later citations, and thus changes
+as the corpus of citing documents grows. This is a feature if you want to
+study how the reception of texts evolves, but it must be kept in mind
+when comparing time windows. A reference that is rarely cited has a very
+uncertain position, hence the interest of \code{weight_threshold}.
+}
+
+\section{Intuition}{
+
+Imagine that each citing document is a reading list. Two references that
+appear together on many lists are probably about related things. The
+weight with \code{method = "angle"} asks: among all the lists where \emph{one} of
+the two references appears, how often is the other one there too? A
+reference cited a thousand times appears on many lists by default, so it
+must be seen with another reference much more often to be considered
+close to it: that is what the division by the number of citations does.
+}
+
+\section{Weighting the co-citing documents (the idf methods)}{
+
+The idf measures of the coupling functions give more weight to a
+rare shared item. In coupling, the shared items are references, and a
+reference cited by few documents is rare. Co-citation is the mirror
+image \insertCite{rousseau2010}{biblionetwork}: the shared items are the
+\emph{citing documents}, and a citing document is "rare" when it cites few
+references. The intuition is again about reading lists: a document that
+cites only 8 references and puts A and B among them tells much more
+about the closeness of A and B than a review that cites 300 references
+and puts A and B among them by completeness. With \code{method = "strength"}
+(and \code{"similarity"}), the co-citation of A and B by a document \eqn{d} is
+weighted by \eqn{\log(M / L_d)}, with \eqn{M} the number of references in
+the table and \eqn{L_d} the number of references of \eqn{d}. This is a
+direct transposition of the formulas of \code{\link[=coupling_strength]{coupling_strength()}} and
+\code{\link[=coupling_similarity]{coupling_similarity()}} (swapping the two columns of the table): it is
+not a measure proposed in the literature as such, so compare it with the
+default on your corpus (\code{\link[=compute_couplings]{compute_couplings()}} with
+\code{network = "cocitation"}).
+}
+
 \examples{
 library(biblionetwork)
-biblio_cocitation(Ref_stagflation,
-source = "Citing_ItemID_Ref",
-ref = "ItemID_Ref")
+# Co-citation network of the references of the stagflation corpus,
+# keeping the pairs co-cited at least three times
+edges <- biblio_cocitation(Ref_stagflation,
+                           source = "Citing_ItemID_Ref",
+                           ref = "ItemID_Ref",
+                           weight_threshold = 3)
+head(edges)
 
-# It is basically the same as:
-biblio_coupling(Ref_stagflation,
-source = "ItemID_Ref",
-ref = "Citing_ItemID_Ref")
+# The same pairs, weighted by the specificity of the co-citing documents
+head(biblio_cocitation(Ref_stagflation, "Citing_ItemID_Ref", "ItemID_Ref",
+                       weight_threshold = 3, method = "strength"))
 
 }
 \references{
 \insertAllCited{}
 }
+\seealso{
+Other co-citation and co-authorship measures:
+\code{\link[=coauth_network]{coauth_network()}}
+}
+\concept{co-citation and co-authorship measures}

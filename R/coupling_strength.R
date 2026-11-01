@@ -1,126 +1,123 @@
 coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_character = TRUE)
 {
-  #' Calculating the Coupling Strength Measure for Edges
+  #' Bibliographic coupling edges, weighted by the coupling strength
   #'
   #' `r lifecycle::badge("experimental")`
   #'
   #' @description
-  #' This function calculates the coupling strength measure \insertCite{@following @vladutz1984 and @shen2019}{biblionetwork}
-  #' from a direct citation data frame. It is a refinement of [biblio_coupling()]:
-  #' it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus.
-  #' In other words, the most cited references are less important in the links between two articles, than references that have
-  #' been rarely cited. To a certain extent, it is similar to the \href{https://en.wikipedia.org/wiki/Tf%E2%80%93idf}{tf-idf} measure.
+  #' Builds the edges of a bibliographic coupling network in which the shared
+  #' references are not all equal: sharing a reference that few documents cite
+  #' says more about the proximity of two documents than sharing a reference
+  #' that the whole corpus cites. The weight is the *coupling strength*
+  #' \insertCite{vladutz1984,shen2019}{biblionetwork}, a refinement of the
+  #' coupling angle of [biblio_coupling()] that gives each shared reference a
+  #' weight decreasing with its number of citations, in the spirit of the
+  #' inverse document frequency of information retrieval
+  #' \insertCite{sparckjones1972,salton1988}{biblionetwork} (see
+  #' [tf-idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf)).
   #'
-  #' @param dt
-  #' The data frame with citing and cited documents.
+  #' @section Why use it in research:
+  #' In a corpus built around a topic (the stagflation literature, a journal,
+  #' a decade of central-banking research), a few references are cited by most
+  #' documents: they define the field but do not distinguish the
+  #' documents within it. With the coupling angle, two documents sharing only
+  #' such classics are as close as two documents sharing equally many rare
+  #' references. The coupling strength corrects this, and makes the resulting
+  #' network more suited to detecting sub-specialities. The cost is a measure
+  #' that depends on the whole corpus: the weight of a tie changes if documents
+  #' are added to the table, and is not comparable across corpora of different
+  #' sizes (see below).
   #'
-  #' @param source
-  #' the column name of the source identifiers, that is the documents that are citing.
+  #' @section Intuition:
+  #' Two economists who both cite the most famous paper of their field are not
+  #' necessarily working on the same question; two who both cite an obscure
+  #' working paper probably are. The coupling strength measures how *surprising*
+  #' a shared reference is: a reference cited by a fraction \eqn{f/N} of the
+  #' corpus has a surprise of \eqn{\log(N/f)}, which is 0 for a reference
+  #' cited by everybody and grows as the reference gets rarer. The tie is the
+  #' total surprise of what two documents share, divided (as for the coupling
+  #' angle) by the lengths of the two bibliographies. It is the same logic as
+  #' the tf-idf of search engines, where a word found in every text does not
+  #' help to find a particular one.
   #'
-  #' @param ref
-  #'the column name of the references that are cited.
+  #' @details
+  #' Write \eqn{N} for the number of citing documents in the table,
+  #' \eqn{f_j} for the number of documents citing reference \eqn{j},
+  #' \eqn{R(A)} for the references of document \eqn{A} and \eqn{L(A) = |R(A)|}
+  #' for the length of its bibliography. The weight of the tie between \eqn{A}
+  #' and \eqn{B} is
   #'
-  #' @param weight_threshold
-  #' Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
-  #' that have a non-normalized weight superior to the `weight_threshold`. In other words, if you set the
-  #' parameter to 2, the function keeps only the edges between nodes that share at least two references
-  #' in common in their bibliography. In a large bibliographic coupling network,
-  #' you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together.
-  #' This parameter could also be modified to avoid creating intractable networks with too many edges.
+  #' \deqn{w_{AB} = \frac{\sum_{j \in R(A) \cap R(B)} \log(N / f_j)}{L(A) \, L(B)}}
   #'
-  #' @param output_in_character
-  #' If TRUE, the function ends by transforming the `from` and `to` columns in character, to make the
-  #' creation of a [tidygraph](https://tidygraph.data-imaginist.com/index.html) graph easier.
+  #' A reference cited by every document has weight \eqn{\log(1) = 0}; a
+  #' reference cited by two documents has weight \eqn{\log(N/2)}. Contrary to
+  #' the coupling angle, the denominator is the product (not the square root
+  #' of the product) of the lengths, and the weight is not bounded by 1; the
+  #' scale of the weights depends on \eqn{N}, so that the weights are
+  #' meaningful relative to each other within one call, not across calls.
+  #' This is Eq. 7 of \insertCite{shen2019}{biblionetwork}, who use base-10
+  #' logarithms; the natural logarithm used here multiplies all the weights by
+  #' the same constant (\eqn{\ln 10}), which changes no ranking and no
+  #' correlation. Unlike [coupling_similarity()], the lengths \eqn{L} are simple
+  #' counts of references, not sums of idf weights.
   #'
-  #' @return A data.table with the articles identifiers in `from` and `to` columns, with the coupling strength measure in
-  #' another column. It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
-  #' are using the tidygraph package then, where `from` and `to` values are modified when creating a graph.
+  #' Computing choices:
+  #'
+  #' * \eqn{N} is the number of distinct citing documents in the table,
+  #'   *including* those that share no reference with any other document;
+  #' * \eqn{L(A)} counts all the references of \eqn{A}, including those
+  #'   cited by no other document;
+  #' * duplicated rows are counted once, a document citing itself is ignored,
+  #'   and rows with a missing identifier are dropped with a warning;
+  #' * the table of the user is not modified;
+  #' * if no reference is shared (or if no pair reaches `weight_threshold`), a
+  #'   zero-row table is returned, with a warning that says why.
+  #'
+  #' Memory: like all the coupling functions, it first lists all the pairs of
+  #' documents citing a same reference. A reference cited by \eqn{n} documents
+  #' creates \eqn{n (n - 1) / 2} pairs, and very popular references can
+  #' exhaust the memory. Since such references have the smallest weights, they
+  #' can often be removed before the call with little effect on the result.
+  #'
+  #' @inheritParams biblio_coupling
+  #' @param weight_threshold Number. The minimum number of shared references
+  #'   for two documents to be linked (1 by default). It applies to the number
+  #'   of shared references, not to the weight.
+  #'
+  #' @return A `data.table` with one row per pair of documents sharing at
+  #'   least `weight_threshold` references: the identifiers in `from` and `to`
+  #'   (character if `output_in_character = TRUE`), the coupling strength in
+  #'   `weight`, and the original identifiers in `Source` and `Target`. Each
+  #'   pair appears once, with `Source < Target`.
+  #'
+  #' @family coupling measures
   #'
   #' @examples
   #' library(biblionetwork)
   #' coupling_strength(Ref_stagflation,
-  #' source = "Citing_ItemID_Ref",
-  #' ref = "ItemID_Ref")
+  #'                   source = "Citing_ItemID_Ref",
+  #'                   ref = "ItemID_Ref")
+  #'
+  #' # A toy example: d1 and d2 share r1 and r2, each cited by 2 of the
+  #' # 4 documents, so w = 2 * log(4 / 2) / (3 * 2)
+  #' toy <- data.frame(doc = c("d1", "d1", "d1", "d2", "d2", "d3", "d3", "d4", "d4"),
+  #'                   ref = c("r1", "r2", "r3", "r1", "r2", "r3", "r4", "r4", "r5"))
+  #' coupling_strength(toy, source = "doc", ref = "ref")
   #'
   #' @references
   #' \insertAllCited{}
   #'
   #' @export
-  #'
 
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()
   # See https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/
-  id_ref <- id_art <- N <- Source <- Target <- weight <- nb_cit <- . <- nb_ref_Target <- nb_ref_Source <- NULL
+  weight <- sum_idf <- nb_ref_Target <- nb_ref_Source <- NULL
 
-  # Making sure the table is a datatable
-  dt <- data.table(dt)
+  check_bool(output_in_character, "output_in_character")
+  check_threshold(weight_threshold)
 
-  # Renaming and simplifying
-  setnames(dt, c(source,ref), c("id_art", "id_ref"))
-  dt <- dt[,c("id_art","id_ref")]
-  setkey(dt,id_ref,id_art)
+  bib_coup <- coupling_core(dt, source, ref, weight_threshold, needs = "idf")
+  bib_coup[, weight := coupling_weights(bib_coup, "strength")]
 
-  # removing duplicated citations with exactly the same source and target
-  dt <- unique(dt)
-
-  # remove loop
-  dt <- dt[id_art!=id_ref]
-
-  # Computing how many items each citing document has (necessary for normalization later)
-  id_nb_ref <-  dt[,list(nb_ref = .N),by=id_art]
-
-  # Removing references cited only once:
-  dt <- dt[,N := .N, by = id_ref][N > 1][, list(id_art,id_ref)]
-
-  # Computing how many times each reference is cited
-  ref_nb_cit <-  dt[,list(nb_cit = .N),by=id_ref]
-
-  # Computing the total number of documents in the corpus.
-  nb_doc <-  dt[unique(id_art)][,list(n_document = .N)]
-
-  # Creating every combinaison of articles per references
-  bib_coup <- dt[,list(Target = rep(id_art[1:(length(id_art)-1)],(length(id_art)-1):1),
-                       Source = rev(id_art)[sequence((length(id_art)-1):1)]),
-                 by= id_ref]
-
-  # remove loop
-  bib_coup <- bib_coup[Source!=Target]
-
-  # Inverse Source and Target so that couple of Source/Target are always on the same side
-  bib_coup <- unique(bib_coup[Source > Target, c("Target", "Source") := list(Source, Target)]) # exchanging
-
-  ###### Add columns with info for weighting
-  #Calculating the number of references in common and deleting the links between articles that share less than weight_threshold
-  bib_coup <- bib_coup[,N:= .N,by=list(Target,Source)][N>=weight_threshold]
-
-  # integrating the number of documents
-  bib_coup[,nb_doc:=nb_doc]
-
-  # merge the number of occurence of a ref in a document
-  bib_coup <-  merge(bib_coup, ref_nb_cit, by = "id_ref")
-
-  # merge the lenght of reference list
-  bib_coup <-  merge(bib_coup, id_nb_ref, by.x = "Target",by.y = "id_art" )
-  setnames(bib_coup,"nb_ref", "nb_ref_Target")
-  bib_coup <-  merge(bib_coup, id_nb_ref, by.x = "Source",by.y = "id_art" )
-  setnames(bib_coup,"nb_ref", "nb_ref_Source")
-
-  # CS
-  bib_coup[,weight := (sum(log(nb_doc/nb_cit))) / (nb_ref_Target*nb_ref_Source), .(Source,Target)]
-
-  # Keep only unique couple
-  bib_coup <- unique(bib_coup)
-
-  # copying the Source and Target columns in case of using Tidygraph later
-  bib_coup[, `:=` (from = Source, to = Target)]
-
-  #Transforming in character
-  if(output_in_character == TRUE){
-      bib_coup$from <- as.character(bib_coup$from)
-      bib_coup$to <- as.character(bib_coup$to)
-  }
-
- return (unique(bib_coup[, c("from","to","weight","Source","Target")]))
-
-  }
-
+  finalise_edges(bib_coup, output_in_character = output_in_character)
+}

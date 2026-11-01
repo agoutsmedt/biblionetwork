@@ -1,120 +1,161 @@
-coauth_network <- function(dt, authors, articles, method = c("full_counting","fractional_counting","fractional_counting_refined"), cosine_normalized = FALSE)
+coauth_network <- function(dt, authors, articles, method = c("full_counting", "fractional_counting", "fractional_counting_refined"), cosine_normalized = FALSE)
 {
-  #' Creating Co-Authorship Network with Different Measures for Weights
+  #' Co-authorship edges, with full or fractional counting
   #'
   #' `r lifecycle::badge("experimental")`
   #'
-  #' @description This function creates an edge list for co-authorship networks from a data frame with a list of entities and their publications.
-  #' The weight of edges can be calculated following different methods. The nodes of the network could be indifferently authors,
-  #' institutions or countries.
+  #' @description
+  #' Builds the edges of a co-authorship network from a table with one row per
+  #' author (or institution, or country) and document. Two authors are linked
+  #' when they have co-signed documents. The weight of the tie can count each
+  #' collaboration fully, or share it between the pairs of co-authors of a
+  #' document (*fractional counting*), following
+  #' \insertCite{perianes-rodriguez2016b,leydesdorff2017}{biblionetwork}, and
+  #' can be normalised by the productivity of the two authors with a cosine.
   #'
-  #' @details Weights can be calculated with:
-  #' 1. the `"full_counting"` method: the linkds between authors correspond to their absolute number of collaborations.
-  #' 1. the `"fractional_counting"` method which takes into account the number of authors in each article,
-  #' following \insertCite{perianes-rodriguez2016b}{biblionetwork} equation:
-  #' \deqn{\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}}{n_{k}-1}} with M the total number of articles, \eqn{a_{ik}.a_{jk}}
-  #' which takes 1 if author i and j have co-written the article k, and \eqn{n_{k}} the number of authors for article k.
-  #' 1. the `fractional_counting_refined` method, inspired by \insertCite{leydesdorff2017}{biblionetwork}
-  #' which is similar to `fractional_counting` but which is formalised in a way
-  #' that allows the sum of weights to equal the number of articles in the corpus: \deqn{\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}.2}{n_{k}.(n_{k}-1)}}.
+  #' @section Why use it in research:
+  #' Co-authorship networks describe the social structure of a research
+  #' community: who collaborates with whom, the existence of collaborative
+  #' cliques, the central or bridging positions. The way collaborations are
+  #' counted changes the picture. With full counting, a document signed by ten
+  #' authors creates 45 ties of weight 1 and weighs much more in the network
+  #' than a document signed by two authors; fractional counting corrects this
+  #' by giving a document a total weight that does not depend on its number of
+  #' authors. Normalising by productivity prevents very prolific authors from
+  #' being linked to everybody. Perianes-Rodriguez et al.
+  #' \insertCite{perianes-rodriguez2016b}{biblionetwork} compare full and
+  #' fractional counting for bibliometric networks: read it before choosing.
+  #' The nodes can be authors, institutions or countries, the latter being the
+  #' basis of studies of international collaboration.
   #'
-  #' In addition, it is possible to take into account the total number of collaborations of two linked authors.
-  #' If `cosine_normalized` is set to `True`, the weight calculated with one of the three methods above is divided by
-  #' \eqn{\sqrt{C_{i}.C_{j}}}, with \eqn{C_{i}} being the number of articles co-written by author i.
+  #' @section Intuition:
+  #' Think of each document as a pie of value 1 to share among the pairs of its
+  #' authors. With full counting, every pair of co-authors receives a full pie:
+  #' a document with ten authors distributes 45 pies, a document with two
+  #' authors distributes one. With fractional counting, a document always
+  #' distributes the same total (one pie in the refined version, or one pie per
+  #' author in the other), so that large collaborations do not dominate. The
+  #' cosine then asks whether two authors collaborate much *relative to* how
+  #' much each of them collaborates in general.
   #'
-  #' @param dt
-  #' The data frame with authors (or institutions or countries) and the list of documents they have published.
+  #' @details
+  #' Write \eqn{a_{ik} = 1} if author \eqn{i} signed document \eqn{k}, and
+  #' \eqn{n_k = \sum_i a_{ik}} for its number of authors. The weight of the tie
+  #' between \eqn{i} and \eqn{j} is, according to `method`:
   #'
-  #' @param authors
-  #' The column name of the source identifiers, that is the authors (or institutions or countries).
+  #' * `"full_counting"`: the number of documents they co-signed,
+  #'   \deqn{w_{ij} = \sum_{k} a_{ik} a_{jk}}
+  #' * `"fractional_counting"`
+  #'   \insertCite{perianes-rodriguez2016b}{biblionetwork}: each document
+  #'   gives \eqn{1/(n_k - 1)} to each pair,
+  #'   \deqn{w_{ij} = \sum_{k} \frac{a_{ik} a_{jk}}{n_k - 1}}
+  #'   so that the weights of the ties of an author in a document sum to 1;
+  #' * `"fractional_counting_refined"`, inspired by
+  #'   \insertCite{leydesdorff2017}{biblionetwork}: each document gives
+  #'   \eqn{2 / (n_k (n_k - 1))} to each pair,
+  #'   \deqn{w_{ij} = \sum_{k} \frac{2 \, a_{ik} a_{jk}}{n_k (n_k - 1)}}
+  #'   so that each document has a total weight of 1 in the network: the sum
+  #'   of all the weights equals the number of (multi-authored) documents.
   #'
-  #' @param articles
-  #' The column name of the documents identifiers.
+  #' If `cosine_normalized = TRUE`, the weight is divided by
+  #' \eqn{\sqrt{P_i P_j}}, with \eqn{P_i} the number of co-authored documents
+  #' of author \eqn{i} (documents with a single author are ignored in the
+  #' whole function, since they create no tie).
   #'
-  #' @param method
-  #' Method for calculating the edges weights, to be chosen among "full_counting","fractional_counting" or "fractional_counting_refined".
+  #' Duplicated rows are counted once, rows with a missing identifier are
+  #' dropped with a warning, the table of the user is not modified, and a
+  #' zero-row table is returned, with a warning, if nobody co-authored a document.
   #'
-  #' @param cosine_normalized
-  #' Possibility to take into account the total number of articles written by two linked authors and to normalize the weight of their link
-  #' using Salton's cosine.
+  #' @param dt A data frame or a `data.table` with one row per author and
+  #'   document. It is not modified.
+  #' @param authors Character scalar. The column of the authors (or
+  #'   institutions, or countries), the nodes of the network.
+  #' @param articles Character scalar. The column of the documents.
+  #' @param method `"full_counting"` (default), `"fractional_counting"` or
+  #'   `"fractional_counting_refined"` (see the details).
+  #' @param cosine_normalized Logical. If `TRUE`, divides the weight by the
+  #'   geometric mean of the numbers of co-authored documents of the two
+  #'   authors (Salton's cosine).
   #'
-  #' @return A data.table with the authors (or institutions or countries) identifier in `from` and `to` columns, with a `weight` column
-  #' whose values depend on the method chosen. It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
-  #' are using the tidygraph package then, where `from` and `to` values are modified when creating a graph.
+  #' @return A `data.table` with one row per pair of authors: `from` and `to`
+  #'   (copies of `Source` and `Target`, with the type of the `authors`
+  #'   column), the `weight`, and the original identifiers in `Source` and
+  #'   `Target`. Each pair appears once, with `Source > Target` (the orientation of
+  #'   the previous versions of the package).
+  #'
+  #' @family co-citation and co-authorship measures
   #'
   #' @examples
   #' library(biblionetwork)
   #' coauth_network(Authors_stagflation,
-  #' authors = "Author",
-  #' articles = "ItemID_Ref",
-  #' method = "fractional_counting")
+  #'                authors = "Author",
+  #'                articles = "ItemID_Ref",
+  #'                method = "fractional_counting")
+  #'
+  #' # Toy example: three authors sign document 1, two sign document 2.
+  #' # With fractional counting, a-b gets 1/2 + 1/1 = 1.5
+  #' toy <- data.frame(author = c("a", "b", "c", "a", "b"),
+  #'                   paper = c(1, 1, 1, 2, 2))
+  #' coauth_network(toy, authors = "author", articles = "paper",
+  #'                method = "fractional_counting")
   #'
   #' @references
   #' \insertAllCited{}
   #'
   #' @export
-  #'
-
 
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()
   # See https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/
-  id_ref <- id_art <- N <- .N <- Source <- Target <- weight <- nb_art_Target <- nb_art_Source <- nb_auth <-  NULL
+  N <- Source <- Target <- weight <- nb_art_Target <- nb_art_Source <- nb_auth <- nb_art <- NULL
 
-  # Making sure the table is a datatable
-  dt <- data.table(dt)
+  method <- rlang::arg_match(method)
+  check_bool(cosine_normalized, "cosine_normalized")
 
-  # Renaming and simplifying
-  setnames(dt, c(authors,articles), c("authors", "articles"))
-  dt <- dt[,c("authors","articles")]
-  setkey(dt,authors,articles)
+  # A cleaned copy: the loops (an author with herself) are not an issue here
+  dt <- prepare_links(dt, authors, articles, new_names = c("authors", "articles"),
+                      remove_loops = FALSE, arg_names = c("authors", "articles"))
 
-  # removing duplicated citations with exactly the same source and target
-  dt <- unique(dt)
+  # Single-author documents create no tie
+  dt <- dt[, nb_auth := .N, by = "articles"][nb_auth > 1]
 
-  # Removing articles with only one author:
-  dt <- dt[,nb_auth := .N, by = articles][nb_auth > 1]
-
-  # Calculating a "share" of contribution depending on the number of author
-  nb_art <-  dt[, nb_art := .N, by = "authors"]
-
-  # copying the file for later
-  dt_reduce <- dt[,c("authors","articles")]
-
-  #Creating every combinaison of articles per references
-  coauth <- dt_reduce[,list(Target = rep(authors[1:(length(authors)-1)],(length(authors)-1):1),
-                       Source = rev(authors)[sequence((length(authors)-1):1)]),
-                 by= articles]
-
-  # remove loop
-  coauth <- coauth[Source!=Target]
-
-  #Calculating the links between authors with the full counting method
-  coauth <- coauth[,N := .N, by=c("Source","Target")]
-
-  # We merge with the number of authors per article
-  coauth <-  merge(coauth, unique(dt[,c("articles","nb_auth")]), by = "articles" )
-
-  # using the standard fractionnal counting method or the refined one
-
-  if(method == "full_counting"){
-    coauth <- unique(coauth[, weight := N][,c("Source","Target","weight")])
-  } else { if(method == "fractional_counting"){
-    coauth <- unique(coauth[, weight := sum(1/(nb_auth-1)), c("Source","Target")][,c("Source","Target","weight")])
-  } else {
-    coauth <- unique(coauth[, weight := sum(2/(nb_auth*(nb_auth-1))), c("Source","Target")][,c("Source","Target","weight")])
-  }
-    }
-
-  if(cosine_normalized == TRUE){
-    coauth <-  merge(coauth, unique(nb_art[,c("authors","nb_art")]), by.x = "Target",by.y = "authors" )
-    data.table::setnames(coauth,"nb_art", "nb_art_Target")
-    coauth <-  merge(coauth, unique(nb_art[,c("authors","nb_art")]), by.x = "Source",by.y = "authors" )
-    data.table::setnames(coauth,"nb_art", "nb_art_Source")
-    coauth[,weight := weight/sqrt(nb_art_Target*nb_art_Source)][, c("Source","Target","weight")]
+  if (nrow(dt) == 0) {
+    warn_no_edges(
+      0L, 1,
+      none = "No document has more than one author: there is no co-authorship tie.",
+      unit = "co-authored documents",
+      hint = "Check that {.arg authors} and {.arg articles} are not inverted."
+    )
   }
 
-  # copying the Source and Target columns in case of using Tidygraph later
-  coauth <- coauth[, `:=` (from = Source, to = Target)][, c("from","to","weight","Source","Target")]
+  # The nodes (sorted authors) and the links author -> document
+  authors_id <- sort(unique(dt$authors))
+  i <- match(dt$authors, authors_id)
+  j <- match(dt$articles, unique(dt$articles))
 
-  return(coauth)
+  # The weight of each document, shared by every pair of its authors
+  document_weight <- switch(
+    method,
+    full_counting = rep(1, nrow(dt)),
+    fractional_counting = 1 / (dt$nb_auth - 1),
+    fractional_counting_refined = 2 / (dt$nb_auth * (dt$nb_auth - 1))
+  )
+
+  # Sum of the weights of the documents co-signed by each pair (sparse
+  # cross-product: see coupling_core())
+  coauth <- sparse_product(i, j, document_weight, length(authors_id), max(j, 0L))
+  coauth <- data.table::data.table(Source = authors_id[coauth$i], Target = authors_id[coauth$j],
+                                   weight = coauth$x, i = coauth$i, j = coauth$j)
+
+  if (cosine_normalized) {
+    # P_i: number of co-authored documents of each author
+    nb_art <- tabulate(i, nbins = length(authors_id))
+    coauth[, weight := weight / sqrt(nb_art[i] * nb_art[j])]
+  }
+  coauth[, c("i", "j") := NULL]
+
+  # Orientation kept from  # Orientation kept from the previous versions of the package (Source > Target),
+  # unlike the coupling functions
+  coauth[, c("Source", "Target") := list(Target, Source)]
+
+  finalise_edges(coauth, output_in_character = FALSE)
 }

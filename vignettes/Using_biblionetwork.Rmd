@@ -91,10 +91,10 @@ biblio_cocitation(Ref_stagflation,
 This `coupling_strength()` calculates the coupling strength measure [following @vladutz1984 and @shen2019] from a direct citation data frame. It is a refinement of `biblio_coupling()`: it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus. In other words, the most cited references are less important in the links between two articles, than references that have been rarely cited. To a certain extent, it is similar to the [tf-idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) measure. It looks like:
 
 $$ 
-\frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j}(log({\frac{N}{freq(R_{j})}}))
+w_{AB} = \frac{1}{L(A) \, L(B)} \sum_{j \in R(A) \cap R(B)} \log\left(\frac{N}{f_j}\right)
 $$
 
-with $N$ the number of articles in the whole dataset and $freq(R_{j})$ the number of time the reference j (which is shared by documents A and B) is cited in the whole corpus.
+with $N$ the number of citing documents in the whole dataset, $f_j$ the number of times the reference $j$ (which is shared by documents A and B) is cited in the whole corpus, and $L(A)$ the length of the bibliography of $A$. Use it when a few references are cited by most documents of your corpus (the classics of the field): sharing them does not say much about the proximity of two documents, and the coupling angle gives them as much weight as rare references. The price is a measure that depends on the whole corpus, and whose scale (not bounded by 1) is not comparable across corpora.
 
 ```{r coupling strength}
 coupling_strength(Ref_stagflation, 
@@ -103,6 +103,61 @@ coupling_strength(Ref_stagflation,
                   weight_threshold = 1)
 
 ```
+
+# The cosine variant: the `coupling_similarity()` function
+
+`coupling_similarity()` is the idf-weighted cosine of @shen2019: each document is described by a vector whose components are the (square roots of the) weights $\log(N/f_j)$ of its references, and the weight of a tie is the cosine of the vectors of two documents. It generalises the coupling angle, and is bounded by 1.
+
+$$ 
+w_{AB} = \frac{\sum_{j \in R(A) \cap R(B)} \log(N/f_j)}{\sqrt{S(A) \, S(B)}} \quad \text{with} \quad S(A) = \sum_{j \in R(A)} \log(N/f_j)
+$$
+
+```{r coupling similarity}
+coupling_similarity(Ref_stagflation, 
+                    source = "Citing_ItemID_Ref", 
+                    ref = "ItemID_Ref", 
+                    weight_threshold = 1)
+
+```
+
+# Two other classic measures
+
+`coupling_jaccard()` divides the number of shared references by the size of the *union* of the two bibliographies (the relative coupling strength of @sen1983, a Jaccard index), and `coupling_vladutz()` implements the first formula weighting references by their rarity [@vladutz1984], which @shen2019 correct with the idf. They are mostly useful for comparison.
+
+# Comparing the measures on your corpus
+
+The measures do not have the same scale (a cosine is bounded by 1, the coupling strength is not), so comparing them requires looking at distributions and rankings. `compute_couplings()` computes several measures at once (listing the pairs of documents only once), and the comparison functions work on the resulting list.
+
+```{r compare}
+edges <- compute_couplings(Ref_stagflation, 
+                           source = "Citing_ItemID_Ref", 
+                           ref = "ItemID_Ref", 
+                           weight_threshold = 2)
+# Distribution of the weights of each measure
+summarise_weights(edges)
+# Rank correlation between the measures (1 = the same ranking of the pairs)
+round(correlate_weights(edges), 2)
+# Share of the 10% strongest edges that two measures have in common
+round(overlap_top_weights(edges, top = 0.1), 2)
+```
+
+```{r plot compare, eval = requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("scico", quietly = TRUE), fig.height = 6, fig.width = 8}
+plot_weights(edges)
+plot_weights(edges, type = "scatter", x = "angle", y = "strength")
+```
+
+# Which measure for which research question?
+
+| Question | Nodes | Function |
+|---|---|---|
+| Which documents rely on the same literature? Which research fronts? [@kessler1963; @boyack2010] | citing documents | `biblio_coupling()` |
+| Same, but not driven by the classics of the corpus [@shen2019] | citing documents | `coupling_strength()`, `coupling_similarity()` |
+| Does the choice of the measure matter on my corpus? | citing documents | `compute_couplings()`, then `correlate_weights()`, `plot_weights()`... |
+| Which authors, journals or institutions rely on the same literature? [@zhao2008b] | entities | `coupling_entity()` |
+| Which cited texts are perceived as belonging together? [@small1973] | cited references | `biblio_cocitation()` |
+| Who collaborates with whom? [@perianes-rodriguez2016b; @leydesdorff2017] | authors, institutions, countries | `coauth_network()` |
+
+Coupling ties are fixed once documents are published (they depend only on their own bibliographies), which makes coupling networks well suited to the comparison of successive time windows. Co-citation ties depend on later citations and change as the corpus grows. All the functions return undirected edges (one row per pair), never modify the table you give them, and return an empty table when no pair of nodes is linked.
 
 # Aggregating at the "entity" level
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/coupling_strength.R
 \name{coupling_strength}
 \alias{coupling_strength}
-\title{Calculating the Coupling Strength Measure for Edges}
+\title{Bibliographic coupling edges, weighted by the coupling strength}
 \usage{
 coupling_strength(
   dt,
@@ -13,44 +13,136 @@ coupling_strength(
 )
 }
 \arguments{
-\item{dt}{The data frame with citing and cited documents.}
+\item{dt}{A data frame or a \code{data.table} of direct citations, one row per
+link between a citing document and a cited reference. It is not modified.}
 
-\item{source}{the column name of the source identifiers, that is the documents that are citing.}
+\item{source}{Character scalar. The column of the citing documents: they
+are the nodes of the coupling network.}
 
-\item{ref}{the column name of the references that are cited.}
+\item{ref}{Character scalar. The column of the cited references.}
 
-\item{weight_threshold}{Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
-that have a non-normalized weight superior to the \code{weight_threshold}. In other words, if you set the
-parameter to 2, the function keeps only the edges between nodes that share at least two references
-in common in their bibliography. In a large bibliographic coupling network,
-you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together.
-This parameter could also be modified to avoid creating intractable networks with too many edges.}
+\item{weight_threshold}{Number. The minimum number of shared references
+for two documents to be linked (1 by default). It applies to the number
+of shared references, not to the weight.}
 
-\item{output_in_character}{If TRUE, the function ends by transforming the \code{from} and \code{to} columns in character, to make the
-creation of a \href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} graph easier.}
+\item{output_in_character}{Logical. If \code{TRUE} (default), the identifiers
+are also returned as character columns \code{from} and \code{to}, to build a
+\href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} graph more
+easily.}
 }
 \value{
-A data.table with the articles identifiers in \code{from} and \code{to} columns, with the coupling strength measure in
-another column. It also keeps a copy of \code{from} and \code{to} in the \code{Source} and \code{Target} columns. This is useful is you
-are using the tidygraph package then, where \code{from} and \code{to} values are modified when creating a graph.
+A \code{data.table} with one row per pair of documents sharing at
+least \code{weight_threshold} references: the identifiers in \code{from} and \code{to}
+(character if \code{output_in_character = TRUE}), the coupling strength in
+\code{weight}, and the original identifiers in \code{Source} and \code{Target}. Each
+pair appears once, with \code{Source < Target}.
 }
 \description{
-This function calculates the coupling strength measure \insertCite{@following @vladutz1984 and @shen2019}{biblionetwork}
-from a direct citation data frame. It is a refinement of \code{\link[=biblio_coupling]{biblio_coupling()}}:
-it takes into account the frequency with which a reference shared by two articles has been cited in the whole corpus.
-In other words, the most cited references are less important in the links between two articles, than references that have
-been rarely cited. To a certain extent, it is similar to the \href{https://en.wikipedia.org/wiki/Tf\%E2\%80\%93idf}{tf-idf} measure.
+Builds the edges of a bibliographic coupling network in which the shared
+references are not all equal: sharing a reference that few documents cite
+says more about the proximity of two documents than sharing a reference
+that the whole corpus cites. The weight is the \emph{coupling strength}
+\insertCite{vladutz1984,shen2019}{biblionetwork}, a refinement of the
+coupling angle of \code{\link[=biblio_coupling]{biblio_coupling()}} that gives each shared reference a
+weight decreasing with its number of citations, in the spirit of the
+inverse document frequency of information retrieval
+\insertCite{sparckjones1972,salton1988}{biblionetwork} (see
+\href{https://en.wikipedia.org/wiki/Tf\%E2\%80\%93idf}{tf-idf}).
 }
 \details{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
+Write \eqn{N} for the number of citing documents in the table,
+\eqn{f_j} for the number of documents citing reference \eqn{j},
+\eqn{R(A)} for the references of document \eqn{A} and \eqn{L(A) = |R(A)|}
+for the length of its bibliography. The weight of the tie between \eqn{A}
+and \eqn{B} is
+
+\deqn{w_{AB} = \frac{\sum_{j \in R(A) \cap R(B)} \log(N / f_j)}{L(A) \, L(B)}}
+
+A reference cited by every document has weight \eqn{\log(1) = 0}; a
+reference cited by two documents has weight \eqn{\log(N/2)}. Contrary to
+the coupling angle, the denominator is the product (not the square root
+of the product) of the lengths, and the weight is not bounded by 1; the
+scale of the weights depends on \eqn{N}, so that the weights are
+meaningful relative to each other within one call, not across calls.
+This is Eq. 7 of \insertCite{shen2019}{biblionetwork}, who use base-10
+logarithms; the natural logarithm used here multiplies all the weights by
+the same constant (\eqn{\ln 10}), which changes no ranking and no
+correlation. Unlike \code{\link[=coupling_similarity]{coupling_similarity()}}, the lengths \eqn{L} are simple
+counts of references, not sums of idf weights.
+
+Computing choices:
+\itemize{
+\item \eqn{N} is the number of distinct citing documents in the table,
+\emph{including} those that share no reference with any other document;
+\item \eqn{L(A)} counts all the references of \eqn{A}, including those
+cited by no other document;
+\item duplicated rows are counted once, a document citing itself is ignored,
+and rows with a missing identifier are dropped with a warning;
+\item the table of the user is not modified;
+\item if no reference is shared (or if no pair reaches \code{weight_threshold}), a
+zero-row table is returned, with a warning that says why.
 }
+
+Memory: like all the coupling functions, it first lists all the pairs of
+documents citing a same reference. A reference cited by \eqn{n} documents
+creates \eqn{n (n - 1) / 2} pairs, and very popular references can
+exhaust the memory. Since such references have the smallest weights, they
+can often be removed before the call with little effect on the result.
+}
+\section{Why use it in research}{
+
+In a corpus built around a topic (the stagflation literature, a journal,
+a decade of central-banking research), a few references are cited by most
+documents: they define the field but do not distinguish the
+documents within it. With the coupling angle, two documents sharing only
+such classics are as close as two documents sharing equally many rare
+references. The coupling strength corrects this, and makes the resulting
+network more suited to detecting sub-specialities. The cost is a measure
+that depends on the whole corpus: the weight of a tie changes if documents
+are added to the table, and is not comparable across corpora of different
+sizes (see below).
+}
+
+\section{Intuition}{
+
+Two economists who both cite the most famous paper of their field are not
+necessarily working on the same question; two who both cite an obscure
+working paper probably are. The coupling strength measures how \emph{surprising}
+a shared reference is: a reference cited by a fraction \eqn{f/N} of the
+corpus has a surprise of \eqn{\log(N/f)}, which is 0 for a reference
+cited by everybody and grows as the reference gets rarer. The tie is the
+total surprise of what two documents share, divided (as for the coupling
+angle) by the lengths of the two bibliographies. It is the same logic as
+the tf-idf of search engines, where a word found in every text does not
+help to find a particular one.
+}
+
 \examples{
 library(biblionetwork)
 coupling_strength(Ref_stagflation,
-source = "Citing_ItemID_Ref",
-ref = "ItemID_Ref")
+                  source = "Citing_ItemID_Ref",
+                  ref = "ItemID_Ref")
+
+# A toy example: d1 and d2 share r1 and r2, each cited by 2 of the
+# 4 documents, so w = 2 * log(4 / 2) / (3 * 2)
+toy <- data.frame(doc = c("d1", "d1", "d1", "d2", "d2", "d3", "d3", "d4", "d4"),
+                  ref = c("r1", "r2", "r3", "r1", "r2", "r3", "r4", "r4", "r5"))
+coupling_strength(toy, source = "doc", ref = "ref")
 
 }
 \references{
 \insertAllCited{}
 }
+\seealso{
+Other coupling measures:
+\code{\link[=biblio_coupling]{biblio_coupling()}},
+\code{\link[=coupling_descriptive]{coupling_descriptive()}},
+\code{\link[=coupling_entity]{coupling_entity()}},
+\code{\link[=coupling_jaccard]{coupling_jaccard()}},
+\code{\link[=coupling_similarity]{coupling_similarity()}},
+\code{\link[=coupling_vladutz]{coupling_vladutz()}},
+\code{\link[=descriptive_terms]{descriptive_terms()}}
+}
+\concept{coupling measures}

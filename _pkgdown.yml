@@ -32,6 +32,16 @@ reference:
 - contents:
   - biblio_coupling
   - starts_with("coupling")
+  - descriptive_terms
+- title: "Comparing Coupling Measures"
+  desc: "Compute several measures at once and compare the distributions and rankings of their weights."
+- contents:
+  - compute_couplings
+  - merge_weights
+  - summarise_weights
+  - correlate_weights
+  - overlap_top_weights
+  - plot_weights
 - title: "Bibliographic Co-citation"
   desc: "Functions for building co-citation type networks."
 - contents:

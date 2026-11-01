@@ -180,7 +180,7 @@ Science and Documentation* 30 (2).
 
 </div>
 
-[^1]: Contact: <agoutsmedt@hotmail.fr>.
+[^1]: Contact: <aurelien.goutsmedt@ichec.be>.
 
 [^2]: If you want to build a coupling network with entities larger than
     a document (meaning entities that have published several documents,

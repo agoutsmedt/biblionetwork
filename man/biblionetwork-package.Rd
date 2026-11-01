@@ -4,11 +4,65 @@
 \name{biblionetwork-package}
 \alias{biblionetwork}
 \alias{biblionetwork-package}
-\title{biblionetwork: Create Different Types of Bibliometric Networks}
+\title{biblionetwork: edges of bibliometric networks}
 \description{
-\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+Bibliometric networks are built from tables of links between two kinds of
+items: documents and the references they cite, authors and the documents
+they sign. \code{biblionetwork} turns such a table into the \emph{edges} of a
+one-mode network, whose nodes are one of the two kinds of items, with
+several ways of weighting the ties. It returns plain tables (\code{data.table}),
+ready to be turned into a graph with
+\href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} or
+\href{https://r.igraph.org/}{igraph}, and is the first step of the
+\href{https://agoutsmedt.github.io/networkflow/}{networkflow} pipeline, which
+projects, clusters and draws the networks.
+}
+\section{Which function for which question?}{
+\tabular{lll}{
+   Nodes \tab Tie \tab Function \cr
+   citing documents \tab share references \insertCite{kessler1963}{biblionetwork} \tab \code{\link[=biblio_coupling]{biblio_coupling()}} (cosine \insertCite{sen1983}{biblionetwork}) \cr
+   citing documents \tab share \emph{rare} references \tab \code{\link[=coupling_strength]{coupling_strength()}}, \code{\link[=coupling_similarity]{coupling_similarity()}} \insertCite{shen2019}{biblionetwork} \cr
+   citing documents \tab other classic normalisations \tab \code{\link[=coupling_jaccard]{coupling_jaccard()}} \insertCite{sen1983}{biblionetwork}, \code{\link[=coupling_vladutz]{coupling_vladutz()}} \insertCite{vladutz1984}{biblionetwork} \cr
+   citing documents \tab cite different but related references (similar titles) \tab \code{\link[=coupling_descriptive]{coupling_descriptive()}} \insertCite{liu2017}{biblionetwork} \cr
+   entities (authors, journals...) \tab their documents share references \tab \code{\link[=coupling_entity]{coupling_entity()}} \cr
+   cited references \tab are cited together \insertCite{small1973}{biblionetwork} \tab \code{\link[=biblio_cocitation]{biblio_cocitation()}} \cr
+   authors, institutions, countries \tab co-sign documents \tab \code{\link[=coauth_network]{coauth_network()}} \cr
+}
 
-Functions to find edges for bibliometric networks like bibliographic coupling network, co-citation network and co-authorship network. The weights of network edges can be calculated according to different methods, depending on the type of networks, the type of nodes, and what you want to analyse. These functions are optimized to be be used on large dataset. The package contains functions inspired by: Leydesdorff, Loet and Park, Han Woo (2017) \doi{10.1016/j.joi.2016.11.007}; Perianes-Rodriguez, Antonio, Ludo Waltman, and Nees Jan Van Eck (2016) \doi{10.1016/j.joi.2016.10.006}; Sen, Subir K. and Shymal K. Gan (1983) \url{http://nopr.niscair.res.in/handle/123456789/28008}; Shen, Si, Zhu, Danhao, Rousseau, Ronald, Su, Xinning and Wang, Dongbo (2019) \doi{10.1016/j.joi.2019.01.012}; Zhao, Dangzhi and Strotmann, Andreas (2008) \doi{10.1002/meet.2008.1450450292}.
+
+The measures of coupling do not give the same weights: \code{\link[=compute_couplings]{compute_couplings()}}
+computes several of them at once, and \code{\link[=summarise_weights]{summarise_weights()}},
+\code{\link[=correlate_weights]{correlate_weights()}}, \code{\link[=overlap_top_weights]{overlap_top_weights()}} and \code{\link[=plot_weights]{plot_weights()}} compare
+the distributions and the rankings of their weights.
+
+Coupling ties are fixed when documents are published, so they suit the
+comparison of successive time windows; co-citation ties depend on later
+citations and describe the reception of the cited documents. The
+vignette \code{vignette("Using_biblionetwork")} illustrates all the functions
+on the data of the package (the literature explaining the US stagflation of
+the 1970s, \insertCite{goutsmedt2021a}{biblionetwork}).
+}
+
+\section{Conventions shared by all the functions}{
+
+\itemize{
+\item the input is a table of links with the names of two columns; it is never
+modified;
+\item networks are undirected: each pair of nodes appears once, in the columns
+\code{Source} and \code{Target}; \code{from} and \code{to} are copies, because tidygraph
+modifies them;
+\item duplicated rows are counted once; rows with missing identifiers are
+dropped with a warning;
+\item if no pair of nodes is linked, a warning explains why (nothing shared, or
+a \code{weight_threshold} that is too high) and a table with zero rows and the
+usual columns is returned;
+\item all the measures are computed from the whole table: the weights depend on
+the corpus.
+}
+}
+
+\references{
+\insertAllCited{}
 }
 \seealso{
 Useful links:
@@ -20,12 +74,13 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Aurélien Goutsmedt \email{agoutsmedt@hotmail.fr} (\href{https://orcid.org/0000-0002-3788-7237}{ORCID})
+\strong{Maintainer}: Aurélien Goutsmedt \email{aurelien.goutsmedt@ichec.be} (\href{https://orcid.org/0000-0002-3788-7237}{ORCID})
 
 Authors:
 \itemize{
-  \item François Claveau \email{françois.claveau@usherbrooke.ca} (\href{https://orcid.org/0000-0001-7129-7794}{ORCID})
-  \item Alexandre Truc \email{alexandre.truc77@gmail.com} (\href{https://orcid.org/0000-0002-1328-7819}{ORCID})
+  \item Aurélien Goutsmedt \email{aurelien.goutsmedt@ichec.be} (\href{https://orcid.org/0000-0002-3788-7237}{ORCID})
+  \item François Claveau (\href{https://orcid.org/0000-0001-7129-7794}{ORCID})
+  \item Alexandre Truc (\href{https://orcid.org/0000-0002-1328-7819}{ORCID})
 }
 
 }

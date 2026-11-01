@@ -1,59 +1,107 @@
-coupling_entity <- function(dt, source, ref, entity, weight_threshold = 1, output_in_character = FALSE, method = c("coupling_strength","coupling_angle"))
+coupling_entity <- function(dt, source, ref, entity, weight_threshold = 1, output_in_character = FALSE, method = c("coupling_strength", "coupling_angle", "coupling_similarity"))
 {
-  #' Creating Coupling Networks at Entity Level
+  #' Coupling edges between entities (authors, journals, institutions...)
   #'
   #' `r lifecycle::badge("experimental")`
   #'
-  #' This function creates the edges of a network of entities from a direct citations data frame (i.e. documents citing references).
-  #' Entities could be authors, affiliations, journals, _etc_. Consequently, coupling links are calculated using the coupling angle measure
-  #' (like [biblio_coupling()]) or the coupling strength measure (like [coupling_strength()]. But it also takes into account the fact that
-  #' an entity can cite several times a reference, and considers that citing 10 times a ref is more significant that citing it only once (see [details](#details)).
+  #' @description
+  #' Builds the edges of a bibliographic coupling network whose nodes are not
+  #' documents but *entities* that cite through their documents: authors,
+  #' journals, institutions, countries... Two entities are coupled when the
+  #' documents they publish cite the same references. As entities publish
+  #' several documents, they can cite the same reference several times, and
+  #' the function takes this into account: citing a reference ten times is
+  #' more significant than citing it once. The weight is either the coupling
+  #' strength of [coupling_strength()] or the coupling angle of
+  #' [biblio_coupling()], both adapted to entities following
+  #' \insertCite{zhao2008b;textual}{biblionetwork}.
   #'
-  #' @param dt
-  #' The table with citing and cited documents.
+  #' @section Why use it in research:
+  #' Coupling at the level of authors (author bibliographic coupling,
+  #' \insertCite{zhao2008b}{biblionetwork}), journals or institutions maps
+  #' who relies on the same literature, whatever the documents they publish.
+  #' It is a way to study the structure of a discipline through its journals
+  #' or its authors, with fewer and denser nodes than the document-level
+  #' network. Because entities are aggregates of documents, check that they
+  #' are not too heterogeneous (a generalist journal citing everything is
+  #' coupled with everyone), and that the number of documents per entity
+  #' is large enough to give a stable bibliography. An article with several
+  #' authors appears once for each of its authors: the same citing document
+  #' then contributes to several entities.
   #'
-  #' @param source
-  #' The column name of the source identifiers, that is the documents that are citing.
-  #'
-  #' @param ref
-  #' The column name of the cited references identifiers.
-  #'
-  #' @param entity
-  #' The column name of the entity (authors, journals, institutions) that are citing.
-  #'
-  #' @param weight_threshold
-  #' Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
-  #' that have a non-normalized weight superior to the `weight_threshold`. In other words, if you set the
-  #' parameter to 2, the function keeps only the edges between nodes that share at least two references
-  #' in common in their bibliography. In a large bibliographic coupling network,
-  #' you can consider for instance that sharing only one reference is not sufficient/significant
-  #' for two entities (above all when large entities like journals and institutions) to be linked together.
-  #' This parameter could also be modified to avoid creating intractable networks with too many edges.
-  #'
-  #' @param output_in_character
-  #' If TRUE, the function ends by transforming the `from` and `to` columns in character, to make the
-  #' creation of a [tidygraph](https://tidygraph.data-imaginist.com/index.html) network easier.
-  #'
-  #' @param method Choose the method you want to use for calculating the edges weights: either `"coupling_strength"` like in the
-  #' [coupling_strength()] function, or `"coupling_angle"` like in the [biblio_coupling()] function.
+  #' @section Intuition:
+  #' Think of an entity (say a journal) as one big bibliography made of the
+  #' bibliographies of all its documents, in which a reference appears as many
+  #' times as the entity's documents cite it. Two journals are close when their
+  #' big bibliographies overlap. Overlap is measured reference by reference by
+  #' the *smaller* of the two counts: if journal A cites a reference 10 times and
+  #' journal B twice, they share it twice (B is the limit). The three methods
+  #' differ in what they do with these overlaps, as their document-level
+  #' counterparts: `"coupling_angle"` only counts them and normalises by the
+  #' sizes of the two big bibliographies; `"coupling_strength"` counts a
+  #' shared rare reference more than a shared classic; `"coupling_similarity"`
+  #' does the same but normalises by the "informational size" of each big
+  #' bibliography, to give a cosine that cannot exceed 1.
   #'
   #' @details
-  #' Coupling links are calculated depending of the number of references two authors (or any entity) share,
-  #' taking into account the minimum number of times two authors are citing each references.
-  #' For instance, if two entities share a reference in common, the first one citing it twice (in other words, citing it in two different articles),
-  #' the second one three times, the function takes two as the minimum value. In addition to the features of the coupling strength measure (see [coupling_strength()])
-  #' or the coupling angle measure (see [biblio_coupling()]), it means that, if two entities share two reference in common, if the first reference is cited
-  #' at least four times by the two entities, whereas the second reference is cited at least only once, the first reference contributes more to the edge weight than
-  #' the second reference. This use of minimum shared reference for entities coupling comes from \insertCite{zhao2008b;textual}{biblionetwork}. It looks like
-  #' this for the coupling strength:
+  #' Write \eqn{C_{Aj}} for the number of times entity \eqn{A} cites reference
+  #' \eqn{j} (the number of its documents citing \eqn{j}), \eqn{N} for the
+  #' number of citing documents in the table, \eqn{f_j} for the number of
+  #' documents citing \eqn{j}, and \eqn{L(A) = \sum_j C_{Aj}} for the
+  #' total number of citations made by \eqn{A}. With `method =
+  #' "coupling_strength"`, the weight of the tie between \eqn{A} and \eqn{B} is
   #'
-  #' \deqn{\frac{1}{L(A)}.\frac{1}{L(A)}\sum_{j} Min(C_{Aj},C_{Bj}).(log({\frac{N}{freq(R_{j})}}))}
+  #' \deqn{w_{AB} = \frac{\sum_{j} \min(C_{Aj}, C_{Bj}) \, \log(N / f_j)}{L(A) \, L(B)}}
   #'
-  #' with \eqn{C_{Aj}} and \eqn{C_{Bj}} the number of time documents A and B cite the reference j.
+  #' and with `method = "coupling_angle"`,
   #'
-  #' @return A data.table with the entity identifiers in `from` and `to` columns, with the coupling strength or coupling angle measures in
-  #' another column, as well as the method used. It also keeps a copy of `from` and `to` in the `Source` and `Target` columns. This is useful is you
-  #' are using the tidygraph package then, where `from` and `to` values are modified when creating a graph.
+  #' \deqn{w_{AB} = \frac{\sum_{j} \min(C_{Aj}, C_{Bj})}{\sqrt{L(A) \, L(B)}}}
+  #'
+  #' and with `method = "coupling_similarity"`,
+  #'
+  #' \deqn{w_{AB} = \frac{\sum_{j} \min(C_{Aj}, C_{Bj}) \, \log(N / f_j)}{\sqrt{S(A) \, S(B)}}, \qquad S(A) = \sum_{j} C_{Aj} \log(N / f_j)}
+  #'
+  #' the sums of the numerators running over the references cited by both
+  #' entities, and the sum defining \eqn{S(A)} over all the references of
+  #' \eqn{A}. The last variant is not proposed in the literature as such: it is
+  #' the cosine of \insertCite{shen2019}{biblionetwork} (see
+  #' [coupling_similarity()]) with the minimum rule of
+  #' \insertCite{zhao2008b;textual}{biblionetwork} for the counts. It is
+  #' bounded by 1, since \eqn{\min(C_{Aj}, C_{Bj}) \leq \sqrt{C_{Aj} C_{Bj}}}
+  #' and by the Cauchy-Schwarz inequality. The minimum
+  #' of the two counts is the number of times the two entities cite the
+  #' reference "together" \insertCite{zhao2008b}{biblionetwork}. \eqn{f_j}
+  #' counts citing documents, not entities, so that a document with several
+  #' authors is not counted several times. References cited by a single entity
+  #' cannot create a tie and are ignored in the sums, but they count in
+  #' \eqn{L}.
+  #'
+  #' The `weight_threshold` applies to the number of references shared by two
+  #' entities (each counted once, whatever the number of times it is cited).
+  #' The table of the user is not modified, rows with a missing identifier are
+  #' dropped with a warning, and a zero-row table is returned, with a warning, if no reference
+  #' is shared (or if no pair reaches `weight_threshold`). The memory warning of [coupling_strength()] applies.
+  #'
+  #' @inheritParams biblio_coupling
+  #' @param source Character scalar. The column of the citing documents.
+  #'   Needed to count the documents, not to define the nodes.
+  #' @param entity Character scalar. The column of the entities that are the
+  #'   nodes of the network (authors, journals, institutions...). A document
+  #'   can appear with several entities (one row per entity and reference).
+  #' @param weight_threshold Number. The minimum number of shared references
+  #'   for two entities to be linked (1 by default). With large entities such
+  #'   as journals, a higher value is advisable.
+  #' @param output_in_character Logical. If `TRUE`, `from` and `to` are
+  #'   character columns (`FALSE` by default for this function: they keep the
+  #'   type of the entity column).
+  #' @param method `"coupling_strength"` (default), `"coupling_angle"` or
+  #'   `"coupling_similarity"`: the weight to compute (see the details).
+  #'
+  #' @return A `data.table` with one row per pair of entities: `from`, `to`,
+  #'   the `weight`, the original identifiers in `Source` and `Target`, and the
+  #'   `Weighting_method`. Each pair appears once, with `Source < Target`.
+  #'
+  #' @family coupling measures
   #'
   #' @examples
   #' library(biblionetwork)
@@ -77,79 +125,103 @@ coupling_entity <- function(dt, source, ref, entity, weight_threshold = 1, outpu
 
   # Listing the variables not in the global environment to avoid a "note" saying "no visible binding for global variable ..." when using check()
   # See https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/
-  id_ref <- id_art <- N <- Source <- Target <- weight <- nb_cit <- . <- nb_ref_Target <- nb_ref_Source <- nb_ref <- nb_cit_entity <- nb_entity <- nb_cit <- nb_cit_entity_Target <- nb_cit_entity_Source <- NULL
+  id_ref <- id_art <- N <- Source <- Target <- weight <- nb_cit <- nb_ref <- nb_ref_Target <- nb_ref_Source <-
+    nb_cit_entity <- nb_entity <- nb_cit_entity_Target <- nb_cit_entity_Source <- contribution <- Weighting_method <- idf <- Rs <- Rs_Target <- Rs_Source <- NULL
 
-  # Making sure the table is a datatable
-  dt <- data.table(dt)
-
-  # Renaming, calculating number of articles and simplifying
-  setnames(dt, c(source,entity,ref), c("id_art","entity", "id_ref"))
-
-  # Calculating the total number of articles in the data frame
-  nb_doc <-  length(unique(dt[,id_art]))
-
-  # Computing how many times each document is cited (by citing article, not by entity, to avoid double-counting)
-  ref_nb_cit <-  unique(unique(dt[,c("id_art","id_ref")])[,list(nb_cit = .N),by=id_ref])
-
-  # cleaning and setting the key
-  dt <- dt[,list(entity,id_ref)]
-  setkey(dt,id_ref,entity)
-
-  # calculating the number of ref per-entity and the number of time a ref is cited by an entity
-  dt <- unique(dt[, nb_ref := .N, by = "entity"][, nb_cit_entity := .N, by = c("entity","id_ref")])
-
-  # calculating the number of entities citing a ref and removing refs cited by only one entity
-  dt <- dt[,nb_entity := .N, by = id_ref][nb_entity > 1]
-
-  # Creating every combinaison of articles per references
-  dt_reduce <- dt[, list(entity,id_ref)]
-  bib_coup <- dt_reduce[,list(Target = rep(entity[1:(length(entity)-1)],(length(entity)-1):1),
-                              Source = rev(entity)[sequence((length(entity)-1):1)]),
-                        by= id_ref]
-  # remove loop
-  bib_coup <- bib_coup[Source!=Target]
-  # Inverse Source and Target so that couple of Source/Target are always on the same side
-  bib_coup <- bib_coup[Source > Target, c("Target", "Source") := list(Source, Target)] # exchanging
-
-  ###### Add columns with info for weighting
-  #Calculating the number of references in common and deleting the links between articles that share less than weight_threshold
-  bib_coup <- bib_coup[,N:= .N,by=list(Target,Source)][N>=weight_threshold]
-
-  # nb_doc
-  bib_coup[,nb_doc:=nb_doc]
-  # merge the number of occurence of a ref in a document
-  bib_coup <-  merge(bib_coup, ref_nb_cit, by = "id_ref")
-  # merge the lenght of reference list
-  bib_coup <-  merge(bib_coup, unique(dt[,c("entity","nb_ref")]), by.x = "Target",by.y = "entity" )
-  setnames(bib_coup,"nb_ref", "nb_ref_Target")
-  bib_coup <-  merge(bib_coup, unique(dt[,c("entity","nb_ref")]), by.x = "Source",by.y = "entity" )
-  setnames(bib_coup,"nb_ref", "nb_ref_Source")
-
-  # merge the number of times a ref is cited by an author
-  bib_coup <-  merge(bib_coup, unique(dt[,c("entity","id_ref","nb_cit_entity")]), by.x = c("Target","id_ref"),by.y = c("entity","id_ref"))
-  setnames(bib_coup,"nb_cit_entity", "nb_cit_entity_Target")
-  bib_coup <-  merge(bib_coup, unique(dt[,c("entity","id_ref","nb_cit_entity")]), by.x = c("Source","id_ref"),by.y = c("entity","id_ref"))
-  setnames(bib_coup,"nb_cit_entity", "nb_cit_entity_Source")
-
-  # CS
-
-  if(method == "coupling_strength"){
-  bib_coup[,weight := (sum(min(nb_cit_entity_Target,nb_cit_entity_Source)*log(nb_doc/nb_cit))) / (nb_ref_Target*nb_ref_Source), .(Source,Target)]
-  } else {
-    bib_coup[,weight := sum(min(nb_cit_entity_Target,nb_cit_entity_Source))/sqrt(nb_ref_Target*nb_ref_Source), .(Source,Target)]
-    }
-
-  # copying the Source and Target columns in case of using Tidygraph later
-  bib_coup[, `:=` (from = Source, to = Target, Weighting_method = method)]
-
-  #Transforming in character
-  if(output_in_character == TRUE){
-    bib_coup$from <- as.character(bib_coup$from)
-    bib_coup$to <- as.character(bib_coup$to)
+  method <- rlang::arg_match(method)
+  check_bool(output_in_character, "output_in_character")
+  check_threshold(weight_threshold)
+  if (!is.data.frame(dt)) {
+    cli::cli_abort("{.arg dt} must be a data frame or a data.table.")
+  }
+  check_column_name(entity, "entity")
+  check_column_name(source, "source")
+  check_column_name(ref, "ref")
+  check_columns(dt, c(source, entity, ref), "dt")
+  if (anyDuplicated(c(source, entity, ref)) > 0) {
+    cli::cli_abort("{.arg source}, {.arg entity} and {.arg ref} must be three different columns.")
   }
 
-  bib_coup <- unique(bib_coup[, c("from","to","weight","Source","Target","Weighting_method")])
+  # A copy with the three columns, without missing values
+  dt <- data.table::as.data.table(dt)[, c(source, entity, ref), with = FALSE]
+  data.table::setnames(dt, c(source, entity, ref), c("id_art", "entity", "id_ref"))
+  nb_missing <- sum(!stats::complete.cases(dt))
+  if (nb_missing > 0) {
+    cli::cli_warn("Dropping {nb_missing} row{?s} with a missing identifier.")
+    dt <- dt[stats::complete.cases(dt)]
+  }
 
-  return (bib_coup)
+  # N: the number of citing documents in the corpus
+  nb_doc <- data.table::uniqueN(dt$id_art)
 
+  # f_j: how many documents cite each reference (by citing document, not by
+  # entity, to avoid double-counting documents with several entities)
+  ref_nb_cit <- unique(dt[, list(id_art, id_ref)])[, list(nb_cit = .N), by = id_ref]
+
+  # L(A): total number of citations of each entity; C_Aj: number of times an
+  # entity cites a reference (number of rows, i.e. of documents of the entity)
+  dt <- unique(dt)
+  dt <- dt[, list(nb_cit_entity = .N), by = list(entity, id_ref)]
+  dt[, nb_ref := as.numeric(sum(nb_cit_entity)), by = entity]
+  # S(A): the citations of the entity weighted by the idf of the references (for the similarity)
+  dt <- merge(dt, ref_nb_cit, by = "id_ref")
+  dt[, idf := log(nb_doc / nb_cit)]
+  dt[, Rs := sum(nb_cit_entity * idf), by = entity]
+  entity_nb_ref <- unique(dt[, list(entity, nb_ref, Rs)])
+
+  # References cited by a single entity cannot create a tie
+  dt <- dt[, nb_entity := .N, by = id_ref][nb_entity > 1]
+  data.table::setkey(dt, id_ref, entity)
+
+  # Pairs of entities with sparse matrices (see coupling_core()). The number
+  # of shared references is the product of the entity x reference matrix. The
+  # sum of min(C_Aj, C_Bj) w_j uses that min(a, b) is the number of levels
+  # k = 1, 2... reached by both a and b: each cell (entity, reference) with C
+  # citations is expanded in C cells (entity, reference-and-level k), and the
+  # cross-product of this larger matrix sums w_j over the levels reached by
+  # both entities, which is w_j min(C_Aj, C_Bj).
+  entities <- sort(entity_nb_ref$entity)
+  refs_kept <- unique(dt$id_ref)
+  i <- match(dt$entity, entities)
+  j <- match(dt$id_ref, refs_kept)
+  counts <- sparse_product(i, j, rep(1, nrow(dt)), length(entities), length(refs_kept))
+
+  levels_per_ref <- tapply(dt$nb_cit_entity, j, max)
+  offset <- c(0, cumsum(levels_per_ref))[seq_along(levels_per_ref)]
+  cell <- rep(seq_len(nrow(dt)), dt$nb_cit_entity)
+  level <- sequence(dt$nb_cit_entity)
+  cell_weight <- if (method == "coupling_angle") rep(1, length(cell)) else dt$idf[cell]
+  min_sum <- sparse_product(i[cell], offset[j[cell]] + level, cell_weight,
+                            length(entities), sum(levels_per_ref))
+
+  bib_coup <- data.table::data.table(Source = entities[counts$i], Target = entities[counts$j],
+                                     N = as.integer(counts$x), weight = match_pairs(counts, min_sum))
+  max_shared <- if (nrow(bib_coup) > 0) max(bib_coup$N) else 0L
+  bib_coup <- bib_coup[N >= weight_threshold]
+  if (nrow(bib_coup) == 0) {
+    warn_no_edges(
+      max_shared, weight_threshold,
+      none = "No two entities cite a same reference: nothing can be linked.",
+      unit = "shared references",
+      hint = "Check that {.arg entity} and {.arg ref} are the right columns, and that references have the same identifiers across documents."
+    )
+  }
+
+  # Normalisation by the number of citations of the two entities
+  bib_coup <- merge(bib_coup, entity_nb_ref, by.x = "Target", by.y = "entity")
+  data.table::setnames(bib_coup, c("nb_ref", "Rs"), c("nb_ref_Target", "Rs_Target"))
+  bib_coup <- merge(bib_coup, entity_nb_ref, by.x = "Source", by.y = "entity")
+  data.table::setnames(bib_coup, c("nb_ref", "Rs"), c("nb_ref_Source", "Rs_Source"))
+  if (method == "coupling_strength") {
+    bib_coup[, weight := weight / (nb_ref_Target * nb_ref_Source)]
+  } else if (method == "coupling_angle") {
+    bib_coup[, weight := weight / sqrt(nb_ref_Target * nb_ref_Source)]
+  } else {
+    # S = 0 only if all the references are cited by all the documents: 0 / 0 is set to 0
+    bib_coup[, weight := weight / sqrt(Rs_Target * Rs_Source)]
+    bib_coup[is.nan(weight), weight := 0]
+  }
+  bib_coup[, Weighting_method := method]
+
+  finalise_edges(bib_coup, last = "Weighting_method", output_in_character = output_in_character)
 }

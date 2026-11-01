@@ -2,7 +2,7 @@
 % Please edit documentation in R/coauth_network.R
 \name{coauth_network}
 \alias{coauth_network}
-\title{Creating Co-Authorship Network with Different Measures for Weights}
+\title{Co-authorship edges, with full or fractional counting}
 \usage{
 coauth_network(
   dt,
@@ -13,54 +13,117 @@ coauth_network(
 )
 }
 \arguments{
-\item{dt}{The data frame with authors (or institutions or countries) and the list of documents they have published.}
+\item{dt}{A data frame or a \code{data.table} with one row per author and
+document. It is not modified.}
 
-\item{authors}{The column name of the source identifiers, that is the authors (or institutions or countries).}
+\item{authors}{Character scalar. The column of the authors (or
+institutions, or countries), the nodes of the network.}
 
-\item{articles}{The column name of the documents identifiers.}
+\item{articles}{Character scalar. The column of the documents.}
 
-\item{method}{Method for calculating the edges weights, to be chosen among "full_counting","fractional_counting" or "fractional_counting_refined".}
+\item{method}{\code{"full_counting"} (default), \code{"fractional_counting"} or
+\code{"fractional_counting_refined"} (see the details).}
 
-\item{cosine_normalized}{Possibility to take into account the total number of articles written by two linked authors and to normalize the weight of their link
-using Salton's cosine.}
+\item{cosine_normalized}{Logical. If \code{TRUE}, divides the weight by the
+geometric mean of the numbers of co-authored documents of the two
+authors (Salton's cosine).}
 }
 \value{
-A data.table with the authors (or institutions or countries) identifier in \code{from} and \code{to} columns, with a \code{weight} column
-whose values depend on the method chosen. It also keeps a copy of \code{from} and \code{to} in the \code{Source} and \code{Target} columns. This is useful is you
-are using the tidygraph package then, where \code{from} and \code{to} values are modified when creating a graph.
+A \code{data.table} with one row per pair of authors: \code{from} and \code{to}
+(copies of \code{Source} and \code{Target}, with the type of the \code{authors}
+column), the \code{weight}, and the original identifiers in \code{Source} and
+\code{Target}. Each pair appears once, with \code{Source > Target} (the orientation of
+the previous versions of the package).
 }
 \description{
-This function creates an edge list for co-authorship networks from a data frame with a list of entities and their publications.
-The weight of edges can be calculated following different methods. The nodes of the network could be indifferently authors,
-institutions or countries.
+Builds the edges of a co-authorship network from a table with one row per
+author (or institution, or country) and document. Two authors are linked
+when they have co-signed documents. The weight of the tie can count each
+collaboration fully, or share it between the pairs of co-authors of a
+document (\emph{fractional counting}), following
+\insertCite{perianes-rodriguez2016b,leydesdorff2017}{biblionetwork}, and
+can be normalised by the productivity of the two authors with a cosine.
 }
 \details{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-Weights can be calculated with:
-\enumerate{
-\item the \code{"full_counting"} method: the linkds between authors correspond to their absolute number of collaborations.
-\item the \code{"fractional_counting"} method which takes into account the number of authors in each article,
-following \insertCite{perianes-rodriguez2016b}{biblionetwork} equation:
-\deqn{\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}}{n_{k}-1}} with M the total number of articles, \eqn{a_{ik}.a_{jk}}
-which takes 1 if author i and j have co-written the article k, and \eqn{n_{k}} the number of authors for article k.
-\item the \code{fractional_counting_refined} method, inspired by \insertCite{leydesdorff2017}{biblionetwork}
-which is similar to \code{fractional_counting} but which is formalised in a way
-that allows the sum of weights to equal the number of articles in the corpus: \deqn{\sum_{k = 1}^{M} \frac{a_{ik}.a_{jk}.2}{n_{k}.(n_{k}-1)}}.
+Write \eqn{a_{ik} = 1} if author \eqn{i} signed document \eqn{k}, and
+\eqn{n_k = \sum_i a_{ik}} for its number of authors. The weight of the tie
+between \eqn{i} and \eqn{j} is, according to \code{method}:
+\itemize{
+\item \code{"full_counting"}: the number of documents they co-signed,
+\deqn{w_{ij} = \sum_{k} a_{ik} a_{jk}}
+\item \code{"fractional_counting"}
+\insertCite{perianes-rodriguez2016b}{biblionetwork}: each document
+gives \eqn{1/(n_k - 1)} to each pair,
+\deqn{w_{ij} = \sum_{k} \frac{a_{ik} a_{jk}}{n_k - 1}}
+so that the weights of the ties of an author in a document sum to 1;
+\item \code{"fractional_counting_refined"}, inspired by
+\insertCite{leydesdorff2017}{biblionetwork}: each document gives
+\eqn{2 / (n_k (n_k - 1))} to each pair,
+\deqn{w_{ij} = \sum_{k} \frac{2 \, a_{ik} a_{jk}}{n_k (n_k - 1)}}
+so that each document has a total weight of 1 in the network: the sum
+of all the weights equals the number of (multi-authored) documents.
 }
 
-In addition, it is possible to take into account the total number of collaborations of two linked authors.
-If \code{cosine_normalized} is set to \code{True}, the weight calculated with one of the three methods above is divided by
-\eqn{\sqrt{C_{i}.C_{j}}}, with \eqn{C_{i}} being the number of articles co-written by author i.
+If \code{cosine_normalized = TRUE}, the weight is divided by
+\eqn{\sqrt{P_i P_j}}, with \eqn{P_i} the number of co-authored documents
+of author \eqn{i} (documents with a single author are ignored in the
+whole function, since they create no tie).
+
+Duplicated rows are counted once, rows with a missing identifier are
+dropped with a warning, the table of the user is not modified, and a
+zero-row table is returned, with a warning, if nobody co-authored a document.
 }
+\section{Why use it in research}{
+
+Co-authorship networks describe the social structure of a research
+community: who collaborates with whom, the existence of collaborative
+cliques, the central or bridging positions. The way collaborations are
+counted changes the picture. With full counting, a document signed by ten
+authors creates 45 ties of weight 1 and weighs much more in the network
+than a document signed by two authors; fractional counting corrects this
+by giving a document a total weight that does not depend on its number of
+authors. Normalising by productivity prevents very prolific authors from
+being linked to everybody. Perianes-Rodriguez et al.
+\insertCite{perianes-rodriguez2016b}{biblionetwork} compare full and
+fractional counting for bibliometric networks: read it before choosing.
+The nodes can be authors, institutions or countries, the latter being the
+basis of studies of international collaboration.
+}
+
+\section{Intuition}{
+
+Think of each document as a pie of value 1 to share among the pairs of its
+authors. With full counting, every pair of co-authors receives a full pie:
+a document with ten authors distributes 45 pies, a document with two
+authors distributes one. With fractional counting, a document always
+distributes the same total (one pie in the refined version, or one pie per
+author in the other), so that large collaborations do not dominate. The
+cosine then asks whether two authors collaborate much \emph{relative to} how
+much each of them collaborates in general.
+}
+
 \examples{
 library(biblionetwork)
 coauth_network(Authors_stagflation,
-authors = "Author",
-articles = "ItemID_Ref",
-method = "fractional_counting")
+               authors = "Author",
+               articles = "ItemID_Ref",
+               method = "fractional_counting")
+
+# Toy example: three authors sign document 1, two sign document 2.
+# With fractional counting, a-b gets 1/2 + 1/1 = 1.5
+toy <- data.frame(author = c("a", "b", "c", "a", "b"),
+                  paper = c(1, 1, 1, 2, 2))
+coauth_network(toy, authors = "author", articles = "paper",
+               method = "fractional_counting")
 
 }
 \references{
 \insertAllCited{}
 }
+\seealso{
+Other co-citation and co-authorship measures:
+\code{\link[=biblio_cocitation]{biblio_cocitation()}}
+}
+\concept{co-citation and co-authorship measures}

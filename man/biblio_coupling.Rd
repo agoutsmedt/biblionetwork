@@ -2,7 +2,7 @@
 % Please edit documentation in R/biblio_coupling.R
 \name{biblio_coupling}
 \alias{biblio_coupling}
-\title{Calculating the Coupling Angle Measure for Edges}
+\title{Bibliographic coupling edges, weighted by the coupling angle}
 \usage{
 biblio_coupling(
   dt,
@@ -14,78 +14,158 @@ biblio_coupling(
 )
 }
 \arguments{
-\item{dt}{For bibliographic coupling (or co-citation), the dataframe with citing and cited documents. It could also be used
-\enumerate{
-\item for title co-occurence network, with \code{source} being the articles,
-and \code{ref} being the list of words in articles titles;
-\item for co-authorship network,
-with \code{source} being the authors, and \code{ref} the list of articles.
-}}
+\item{dt}{A data frame or a \code{data.table} of direct citations, one row per
+link between a citing document and a cited reference. It is not modified.}
 
-\item{source}{The column name of the source identifiers, that is the documents that are citing. In a coupling network, these documents
-are the nodes of the network.}
+\item{source}{Character scalar. The column of the citing documents: they
+are the nodes of the coupling network.}
 
-\item{ref}{The column name of the cited references identifiers.}
+\item{ref}{Character scalar. The column of the cited references.}
 
-\item{normalized_weight_only}{If set to FALSE, the function returns the weights normalized by the cosine measure,
-but also the number of shared references.}
+\item{normalized_weight_only}{Logical. If \code{FALSE}, the number of shared
+references is returned in addition to the normalised \code{weight}.}
 
-\item{weight_threshold}{Corresponds to the value of the non-normalized weights of edges. The function just keeps the edges
-that have a non-normalized weight superior to the \code{weight_threshold}. In other words, if you set the
-parameter to 2, the function keeps only the edges between nodes that share at least two references
-in common in their bibliography. In a large bibliographic coupling network,
-you can consider for instance that sharing only one reference is not sufficient/significant for two articles to be linked together.
-This parameter could also be modified to avoid creating intractable networks with too many edges.}
+\item{weight_threshold}{Number. The minimum number of shared references
+for two documents to be linked (1 by default: any shared reference
+creates a tie). A threshold of 2 or 3 is common in large corpora, where
+sharing a single reference is weak evidence of proximity and produces
+very dense networks. It applies to the number of shared references, not
+to the normalised weight.}
 
-\item{output_in_character}{If TRUE, the function ends by transforming the \code{from} and \code{to} columns in character, to make the
-creation of a \href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} network easier.}
+\item{output_in_character}{Logical. If \code{TRUE} (default), the identifiers
+are also returned as character columns \code{from} and \code{to}, to build a
+\href{https://tidygraph.data-imaginist.com/index.html}{tidygraph} graph more
+easily.}
 }
 \value{
-A data.table with the articles (or authors) identifiers in \code{from} and \code{to} columns,
-with one or two additional columns (the coupling angle measure and the number of shared references).
-It also keeps a copy of \code{from} and \code{to} in the \code{Source} and \code{Target} columns. This is useful is you
-are using the tidygraph package after, where \code{from} and \code{to} values are modified when creating a graph.
+A \code{data.table} with one row per pair of documents sharing at least
+\code{weight_threshold} references: the identifiers in \code{from} and \code{to} (if
+\code{output_in_character = TRUE}), the \code{weight} (coupling angle) and,
+if \code{normalized_weight_only = FALSE}, \code{nb_shared_references}. The
+original identifiers are kept in \code{Source} and \code{Target} (\code{from} and \code{to}
+are modified by tidygraph when a graph is created). The network is
+undirected: each pair appears once, with \code{Source < Target}.
 }
 \description{
-This function calculates the number of references that different articles share together, as well as
-the coupling angle value of edges in a bibliographic coupling network \insertCite{sen1983}{biblionetwork}, from a direct
-citation data frame. This is a standard way to build bibliographic coupling network using Salton's cosine measure:
-it divides the number of references that two articles share by the square root of the product of
-both articles bibliography lengths. It avoids giving too much importance to articles with a large bibliography.
+Builds the edges of a \emph{bibliographic coupling} network from a table of
+direct citations (one row per citing document and cited reference). Two
+documents are coupled when their bibliographies overlap
+\insertCite{kessler1963}{biblionetwork}, and the weight of the tie is the
+coupling angle \insertCite{sen1983}{biblionetwork}: the number of shared
+references divided by the geometric mean of the lengths of the two
+bibliographies (a cosine).
 }
 \details{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-This function implements the following weight measure:
+Write \eqn{R(A)} for the set of references of document \eqn{A}, and
+\eqn{L(A) = |R(A)|} for the length of its bibliography. The weight of the
+tie between \eqn{A} and \eqn{B} is
 
-\deqn{\frac{R(A) \bullet R(B)}{\sqrt{L(A).L(B)}}}
+\deqn{w_{AB} = \frac{|R(A) \cap R(B)|}{\sqrt{L(A) \, L(B)}}}
 
-with \eqn{R(A)} and \eqn{R(B)} the references of document A and document B, \eqn{R(A) \bullet R(B)}
-being the number of shared references by A and B, and \eqn{L(A)} and \eqn{L(B)}
-the length of the bibliographies of document A and document B.
+The numerator is the number of shared references (returned as
+\code{nb_shared_references} when \code{normalized_weight_only = FALSE}). Dividing by
+\eqn{\sqrt{L(A) L(B)}} avoids giving too much importance to documents with
+a long bibliography, such as literature reviews. The weight lies between 0
+and 1, and is 1 only if the two bibliographies are identical.
 
-This function uses data.table package and is thus very fast. It allows the user to compute the coupling angle
-on a very large data frame quickly.
-
-This function is a relatively general function that can also be used
-\enumerate{
-\item for co-citation networks (just by inversing the \code{source} and \code{ref} columns).
-If you want to avoid confusion, rather use the \code{\link[=biblio_cocitation]{biblio_cocitation()}} function.
-\item for title co-occurence networks (taking care of
-the length of the title thanks to the coupling angle measure);
-\item for co-authorship networks (taking care of the
-number of co-authors an author has collaborated with on a period). For co-authorship,
-rather use the \code{\link[=coauth_network]{coauth_network()}} function.
+The function applies the following rules, which matter for the
+interpretation of the result:
+\itemize{
+\item duplicated rows are counted once, and a document citing itself is
+ignored;
+\item \eqn{L(A)} counts \emph{all} the references of \eqn{A}, including those cited
+by no other document of the table. Such references cannot create a tie
+but they lengthen the bibliography, and so lower the weights of
+\eqn{A};
+\item rows with a missing identifier are dropped, with a warning;
+\item the table of the user is not modified;
+\item if no reference is shared by two documents (or if no pair reaches
+\code{weight_threshold}), a zero-row table is returned, with the usual
+columns, and a warning that says why.
 }
+
+The function is written with \code{data.table} and is fast, but it first lists
+every pair of documents citing a same reference: a reference cited by
+\eqn{n} documents creates \eqn{n (n - 1) / 2} pairs. Very popular
+references (a classic cited by tens of thousands of documents) may
+therefore exhaust the memory on a large corpus. Split the corpus (by time
+window, for instance), or remove the most cited references, before
+calling the function.
+
+The function is general: it only needs two columns of identifiers. With
+\code{source} the articles and \code{ref} the words of their titles, it builds a
+title co-occurrence network; with \code{source} the cited documents and \code{ref}
+the citing ones, a co-citation network (but see \code{\link[=biblio_cocitation]{biblio_cocitation()}}).
 }
+\section{Why use it in research}{
+
+Documents that cite the same references rely on the same literature: they
+are likely to address related questions, with related tools. Bibliographic
+coupling is therefore a standard way of mapping the \emph{research fronts} of a
+field, and to group documents into specialities or schools with a
+community detection algorithm
+\insertCite{boyack2005,boyack2010,yan2012}{biblionetwork}. Two properties
+make it convenient for the history and sociology of science:
+\itemize{
+\item the links are fixed when a document is published, since they depend only
+on its own bibliography. A network built for 1970-1979 does not change
+when later documents are added, which allows comparing successive time
+windows (a dynamic analysis);
+\item it covers all the documents of the corpus, even uncited ones, as long as
+their references are recorded.
+}
+
+Its limit is the quality of the reference lists: documents without
+recorded references cannot be linked. Compare with the
+\link[=biblio_cocitation]{co-citation} approach, which links \emph{cited} documents
+and changes as new citations accumulate, and with the measures that weight
+the shared references (\code{\link[=coupling_strength]{coupling_strength()}}, \code{\link[=coupling_similarity]{coupling_similarity()}}).
+}
+
+\section{Intuition}{
+
+Picture each bibliography as a shopping list. Two lists that contain many
+of the same items are probably written by people who shop for the same
+meal. But a very long list contains many items by sheer size, and would
+look similar to everybody: the weight therefore compares the shared items
+with the geometric mean of the lengths of the two lists. Geometrically,
+each document is an arrow in a space with one axis per reference, pointing
+along the axes of the references it cites; the weight is the cosine of the
+angle between two arrows (hence "coupling angle"): 1 for identical
+bibliographies (same direction), 0 for bibliographies with nothing in
+common (perpendicular).
+}
+
 \examples{
 library(biblionetwork)
-biblio_coupling(Ref_stagflation,
-source = "Citing_ItemID_Ref",
-ref = "ItemID_Ref",
-weight_threshold = 3)
+# Edges between the documents explaining the 1970s stagflation, keeping
+# the pairs that share at least three references
+edges <- biblio_coupling(Ref_stagflation,
+                         source = "Citing_ItemID_Ref",
+                         ref = "ItemID_Ref",
+                         weight_threshold = 3)
+head(edges)
+
+# A tiny example that can be checked by hand: d1 and d2 share two of
+# their (respectively 3 and 2) references, so the weight is 2 / sqrt(3 * 2)
+toy <- data.frame(doc = c("d1", "d1", "d1", "d2", "d2"),
+                  ref = c("r1", "r2", "r3", "r1", "r2"))
+biblio_coupling(toy, source = "doc", ref = "ref", normalized_weight_only = FALSE)
 
 }
 \references{
 \insertAllCited{}
 }
+\seealso{
+Other coupling measures:
+\code{\link[=coupling_descriptive]{coupling_descriptive()}},
+\code{\link[=coupling_entity]{coupling_entity()}},
+\code{\link[=coupling_jaccard]{coupling_jaccard()}},
+\code{\link[=coupling_similarity]{coupling_similarity()}},
+\code{\link[=coupling_strength]{coupling_strength()}},
+\code{\link[=coupling_vladutz]{coupling_vladutz()}},
+\code{\link[=descriptive_terms]{descriptive_terms()}}
+}
+\concept{coupling measures}
