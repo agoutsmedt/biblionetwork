@@ -4,6 +4,8 @@
 # types, very uneven bibliographies and popular references). Skipped on CRAN,
 # in CI and wherever the databases are absent: these data cannot be
 # distributed with the package. Samples are small and deterministic.
+# LOCAL ONLY: this file is excluded from the built package (.Rbuildignore), so
+# DBI and duckdb are not dependencies. Run it with devtools::test().
 
 # A sample of the Scopus database: the references of the Journal of Monetary
 # Economics in 1995-1999 (about 420 documents and 6,700 references, with

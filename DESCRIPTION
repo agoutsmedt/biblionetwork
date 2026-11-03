@@ -39,8 +39,6 @@ RdMacros:
     Rdpack
 Suggests:
     backbone,
-    DBI,
-    duckdb,
     ggplot2,
     igraph,
     knitr,

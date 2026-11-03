@@ -15,3 +15,6 @@
 ^\.vscode$
 ^vignettes/\.quarto$
 ^vignettes/.*_files$
+^tests/testthat/test-databases\.R$
+^tests/testthat/helper-databases\.R$
+^\.github$
