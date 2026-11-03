@@ -12,9 +12,7 @@ This is an update (0.1.0 -> 0.2.0). The main changes (see NEWS.md):
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
-
-* NOTE (CRAN incoming feasibility): the maintainer's e-mail address changes (aurelien.goutsmedt@ichec.be, formerly agoutsmedt@hotmail.fr); the change must be confirmed from the previous address.
+0 errors | 0 warnings | 0 notes
 
 ## Notes
 

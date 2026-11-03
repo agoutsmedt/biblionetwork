@@ -74,11 +74,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Aurélien Goutsmedt \email{aurelien.goutsmedt@ichec.be} (\href{https://orcid.org/0000-0002-3788-7237}{ORCID})
+\strong{Maintainer}: Aurélien Goutsmedt \email{agoutsmedt@hotmail.fr} (\href{https://orcid.org/0000-0002-3788-7237}{ORCID})
 
 Authors:
 \itemize{
-  \item Aurélien Goutsmedt \email{aurelien.goutsmedt@ichec.be} (\href{https://orcid.org/0000-0002-3788-7237}{ORCID})
+  \item Aurélien Goutsmedt \email{agoutsmedt@hotmail.fr} (\href{https://orcid.org/0000-0002-3788-7237}{ORCID})
   \item François Claveau (\href{https://orcid.org/0000-0001-7129-7794}{ORCID})
   \item Alexandre Truc (\href{https://orcid.org/0000-0002-1328-7819}{ORCID})
 }
