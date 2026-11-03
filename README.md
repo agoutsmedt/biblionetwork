@@ -94,7 +94,8 @@ references that different articles share together, and a weight for each
 pair of articles in a bibliographic coupling network. By default, the
 weight is the coupling angle ([Sen and Gan 1983](#ref-sen1983)); the
 `method` argument selects another measure (`"strength"`, `"similarity"`,
-`"jaccard"`, `"vladutz"`).[^2] See the `vignette("Using_biblionetwork")`
+`"jaccard"`, `"vladutz"`).[^2] See the [vignette “How to use
+biblionetwork”](https://agoutsmedt.github.io/biblionetwork/articles/Using_biblionetwork.html)
 for a more in-depth presentation of the package.
 
 This example uses the [data included](#included-data) in the package.

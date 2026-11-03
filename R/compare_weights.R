@@ -28,7 +28,7 @@ compute_couplings <- function(dt, source, ref, methods = c("angle", "strength", 
   #' different (Vladutz-Cook and the others). Whether it matters for *your*
   #' corpus can only be checked on your corpus: compute the measures with this
   #' function, and compare the distributions and the rankings of the weights.
-  #' `vignette("comparing_measures")` does it on the stagflation corpus.
+  #' The article [comparing the measures](https://agoutsmedt.github.io/biblionetwork/articles/comparing_measures.html) does it on the stagflation corpus.
   #'
   #' @inheritParams coupling_angle
   #' @param methods Character vector, among `"angle"` ([coupling_angle()]),

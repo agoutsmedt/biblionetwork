@@ -2,10 +2,6 @@
 title: "How to use biblionetwork"
 author: "Aurélien Goutsmedt"
 description: "A tour of the functions of biblionetwork: coupling, co-citation, co-authorship, backbones, and uses beyond bibliometrics"
-vignette: >
-  %\VignetteIndexEntry{How to use biblionetwork}
-  %\VignetteEngine{quarto::html}
-  %\VignetteEncoding{UTF-8}
 format:
   html:
     toc: true
@@ -249,7 +245,7 @@ round(correlate_weights(measures), 2)
 
 Whether the choice of the measure matters on your corpus, which pairs of
 documents the measures disagree on, and how the communities change is the
-subject of `vignette("comparing_measures")`.
+subject of [the vignette on comparing measures](comparing_measures.html).
 
 # Co-citation: `biblio_cocitation()` {#sec-cocitation}
 

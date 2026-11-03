@@ -7,8 +7,7 @@
 * `compute_couplings()` accepts `methods = "descriptive"` ([`coupling_descriptive()`]), not computed by default: it informs the user of its cost and of the fact that its pairs differ, and needs `title` (further arguments in `descriptive_args`).
 * `merge_weights()` now adds the rank of each pair under each measure (`rank_<name>`, computed on the pairs present in all the tables) and the `rank_gap` between two measures; the vignettes use it to find the pairs on which two measures disagree.
 * The documentation of functions displays the mathematical formulas (KaTeX) on the website.
-* The vignettes and the README are now written in Quarto (`.qmd`): `Using_biblionetwork` is rewritten (more details on co-authorship counting, a section on backbones, a section on uses beyond bibliometrics), and the figures of the vignettes are checked.
-* New dependency in `Suggests`: `quarto` (vignette builder) and `backbone` (vignette example).
+* The vignettes are now Quarto articles of the website (`vignettes/articles/`, not built by `R CMD build`, so that checking the package does not need Quarto) and the README is written in Quarto (`.qmd`): `Using_biblionetwork` is rewritten (more details on co-authorship counting, a section on backbones, a section on uses beyond bibliometrics), and the figures of the vignettes are checked.
 
 ## Bug fixes
 

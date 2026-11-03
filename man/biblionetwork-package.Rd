@@ -38,7 +38,7 @@ the distributions and the rankings of their weights.
 Coupling ties are fixed when documents are published, so they suit the
 comparison of successive time windows; co-citation ties depend on later
 citations and describe the reception of the cited documents. The
-vignette \code{vignette("Using_biblionetwork")} illustrates all the functions
+article \href{https://agoutsmedt.github.io/biblionetwork/articles/Using_biblionetwork.html}{How to use biblionetwork} illustrates all the functions
 on the data of the package (the literature explaining the US stagflation of
 the 1970s, \insertCite{goutsmedt2021a}{biblionetwork}).
 }

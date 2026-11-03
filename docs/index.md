@@ -44,9 +44,10 @@ statistically significant.
 
 The original function, which uses `data.table` ([Dowle and Srinivasan
 2020](#ref-datatable)) and allows the user to find edges and calculate
-weights for large networks, was developed by François Claveau. The
-different functions in this package have been developed, from Claveau’s
-original idea, by [Alexandre
+weights for large networks, was developed by [François
+Claveau](https://www.usherbrooke.ca/recherche/fr/specialistes/details/francois.claveau).
+The different functions in this package have been developed, from
+Claveau’s original idea, by [Alexandre
 Truc](https://sites.google.com/view/alexandre-truc/home-and-contact) and
 [Aurélien Goutsmedt](https://aurelien-goutsmedt.com/). The package is
 maintained by Aurélien Goutsmedt.[^1]
@@ -83,7 +84,8 @@ together, and a weight for each pair of articles in a bibliographic
 coupling network. By default, the weight is the coupling angle ([Sen and
 Gan 1983](#ref-sen1983)); the `method` argument selects another measure
 (`"strength"`, `"similarity"`, `"jaccard"`, `"vladutz"`).[^2] See the
-[`vignette("Using_biblionetwork")`](https://agoutsmedt.github.io/biblionetwork/articles/Using_biblionetwork.md)
+[vignette “How to use
+biblionetwork”](https://agoutsmedt.github.io/biblionetwork/articles/Using_biblionetwork.html)
 for a more in-depth presentation of the package.
 
 This example uses the [data included](#included-data) in the package.

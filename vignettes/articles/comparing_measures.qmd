@@ -2,10 +2,6 @@
 title: "Does the choice of the coupling measure matter? The stagflation corpus"
 author: "Aurélien Goutsmedt"
 description: "Compare the coupling and co-citation measures of biblionetwork on the stagflation corpus: weights, rankings and communities"
-vignette: >
-  %\VignetteIndexEntry{Does the choice of the coupling measure matter? The stagflation corpus}
-  %\VignetteEngine{quarto::html}
-  %\VignetteEncoding{UTF-8}
 format:
   html:
     toc: true

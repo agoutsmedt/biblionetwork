@@ -125,8 +125,8 @@ measures can be very close (coupling angle and similarity) or quite
 different (Vladutz-Cook and the others). Whether it matters for *your*
 corpus can only be checked on your corpus: compute the measures with
 this function, and compare the distributions and the rankings of the
-weights.
-[`vignette("comparing_measures")`](https://agoutsmedt.github.io/biblionetwork/articles/comparing_measures.md)
+weights. The article [comparing the
+measures](https://agoutsmedt.github.io/biblionetwork/articles/comparing_measures.html)
 does it on the stagflation corpus.
 
 ## References

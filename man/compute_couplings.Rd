@@ -92,7 +92,7 @@ measures can be very close (coupling angle and similarity) or quite
 different (Vladutz-Cook and the others). Whether it matters for \emph{your}
 corpus can only be checked on your corpus: compute the measures with this
 function, and compare the distributions and the rankings of the weights.
-\code{vignette("comparing_measures")} does it on the stagflation corpus.
+The article \href{https://agoutsmedt.github.io/biblionetwork/articles/comparing_measures.html}{comparing the measures} does it on the stagflation corpus.
 }
 
 \examples{

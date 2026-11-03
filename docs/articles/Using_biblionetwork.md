@@ -326,8 +326,8 @@ round(correlate_weights(measures), 2)
 
 Whether the choice of the measure matters on your corpus, which pairs of
 documents the measures disagree on, and how the communities change is
-the subject of
-[`vignette("comparing_measures")`](https://agoutsmedt.github.io/biblionetwork/articles/comparing_measures.md).
+the subject of [the vignette on comparing
+measures](https://agoutsmedt.github.io/biblionetwork/articles/comparing_measures.md).
 
 ## Co-citation: `biblio_cocitation()`
 

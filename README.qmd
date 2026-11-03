@@ -64,7 +64,7 @@ citation("biblionetwork")
 
 ## Example
 
-All you need is a table with entities (documents, authors, universities, _etc._) citing references. `biblio_coupling()` calculates the number of references that different articles share together, and a weight for each pair of articles in a bibliographic coupling network. By default, the weight is the coupling angle [@sen1983]; the `method` argument selects another measure (`"strength"`, `"similarity"`, `"jaccard"`, `"vladutz"`).^[If you want to build a coupling network with entities larger than a document (meaning entities that have published several documents, and thus can cite a reference several times), we rather recommend the use of the `entity_network()` function.] See the `vignette("Using_biblionetwork")` for a more in-depth presentation of the package.
+All you need is a table with entities (documents, authors, universities, _etc._) citing references. `biblio_coupling()` calculates the number of references that different articles share together, and a weight for each pair of articles in a bibliographic coupling network. By default, the weight is the coupling angle [@sen1983]; the `method` argument selects another measure (`"strength"`, `"similarity"`, `"jaccard"`, `"vladutz"`).^[If you want to build a coupling network with entities larger than a document (meaning entities that have published several documents, and thus can cite a reference several times), we rather recommend the use of the `entity_network()` function.] See the [vignette "How to use biblionetwork"](https://agoutsmedt.github.io/biblionetwork/articles/Using_biblionetwork.html) for a more in-depth presentation of the package.
 
 This example uses the [data included](#included-data) in the package.
 

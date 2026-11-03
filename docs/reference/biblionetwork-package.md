@@ -36,9 +36,9 @@ compare the distributions and the rankings of their weights.
 
 Coupling ties are fixed when documents are published, so they suit the
 comparison of successive time windows; co-citation ties depend on later
-citations and describe the reception of the cited documents. The
-vignette
-[`vignette("Using_biblionetwork")`](https://agoutsmedt.github.io/biblionetwork/articles/Using_biblionetwork.md)
+citations and describe the reception of the cited documents. The article
+[How to use
+biblionetwork](https://agoutsmedt.github.io/biblionetwork/articles/Using_biblionetwork.html)
 illustrates all the functions on the data of the package (the literature
 explaining the US stagflation of the 1970s, (Goutsmedt 2021) ).
 
@@ -107,12 +107,12 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Aurélien Goutsmedt <aurelien.goutsmedt@ichec.be>
+**Maintainer**: Aurélien Goutsmedt <agoutsmedt@hotmail.fr>
 ([ORCID](https://orcid.org/0000-0002-3788-7237))
 
 Authors:
 
-- Aurélien Goutsmedt <aurelien.goutsmedt@ichec.be>
+- Aurélien Goutsmedt <agoutsmedt@hotmail.fr>
   ([ORCID](https://orcid.org/0000-0002-3788-7237))
 
 - François Claveau ([ORCID](https://orcid.org/0000-0001-7129-7794))
