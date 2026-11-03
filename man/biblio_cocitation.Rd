@@ -87,7 +87,7 @@ a zero-row table is returned with a warning explaining why.
 }
 
 Memory and speed: the pairs are computed with sparse matrices, as in
-\code{\link[=biblio_coupling]{biblio_coupling()}}; a few documents with extremely long bibliographies
+\code{\link[=coupling_angle]{coupling_angle()}}; a few documents with extremely long bibliographies
 still create many pairs. Consider removing them first.
 }
 \section{Why use it in research}{

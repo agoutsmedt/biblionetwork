@@ -2,33 +2,73 @@
 % Please edit documentation in R/compare_weights.R
 \name{merge_weights}
 \alias{merge_weights}
-\title{Put the weights of several measures side by side}
+\title{Put the weights of several measures side by side, with their ranks}
 \usage{
-merge_weights(edges)
+merge_weights(
+  edges,
+  rank = TRUE,
+  rank_gap = NULL,
+  ties = c("average", "min", "max", "first")
+)
 }
 \arguments{
 \item{edges}{A named list of edge tables, each with the columns \code{Source},
 \code{Target} and \code{weight}. The tables are not modified.}
+
+\item{rank}{Logical. If \code{TRUE} (default), adds one \verb{rank_<name>} column per
+element of \code{edges}.}
+
+\item{rank_gap}{Character vector of two names of \code{edges}, or \code{NULL}
+(default). If given, adds the \code{rank_gap} column, \verb{rank_<second> - rank_<first>}. If \code{NULL} and \code{edges} has exactly two elements, the gap
+between them (second minus first) is computed. It requires \code{rank = TRUE}.}
+
+\item{ties}{How ties are ranked, as in \code{\link[data.table:frank]{data.table::frank()}}
+(\code{"average"} by default).}
 }
 \value{
-A \code{data.table} with \code{Source}, \code{Target} and one column per element
-of \code{edges}. A pair absent from a table (for instance because tables were
-built with different thresholds) gets \code{NA}.
+A \code{data.table} with \code{Source}, \code{Target}, one column of weights per
+element of \code{edges} and, according to the arguments, the \verb{rank_<name>}
+columns and \code{rank_gap}. A pair absent from a table (for instance because
+tables were built with different thresholds) gets \code{NA}.
 }
 \description{
 Joins a named list of edge tables (for instance the result of
 \code{\link[=compute_couplings]{compute_couplings()}}) by pair of nodes, with one column of weights per
-element. It is the table behind the other comparison functions, and
-is useful to inspect the pairs on which two measures disagree.
+element, and, by default, the rank of each pair under each measure and the
+gap between the ranks of two measures. It is the table behind the other
+comparison functions, and the tool to inspect the pairs on which two
+measures disagree.
 }
 \details{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
+Weights of different measures do not have the same scale, but their ranks
+do: rank 1 is the strongest pair of the measure. A pair with a high weight
+for one measure and a low weight for another has a large \emph{gap} between
+the two ranks. The gap is
+
+\deqn{\mathrm{rank\_gap}_{AB} = \mathrm{rank}_{2}(A, B) - \mathrm{rank}_{1}(A, B)}
+
+with 1 and 2 the first and second elements of \code{rank_gap}: it is positive
+when the second measure ranks the pair lower (as less close) than the
+first one, negative when it ranks it higher. Sorting the table on the gap
+(decreasing, then increasing) gives the pairs on which the measures
+disagree the most.
+
+Ranks are computed on the pairs present in \emph{all} the tables, so that they
+are comparable: the pairs that a measure does not have (for instance
+those of \code{\link[=coupling_descriptive]{coupling_descriptive()}}, which links documents that share no
+reference) get \code{NA} ranks.
 }
 \examples{
 library(biblionetwork)
 edges <- compute_couplings(Ref_stagflation, "Citing_ItemID_Ref", "ItemID_Ref",
                            methods = c("angle", "strength"), weight_threshold = 2)
-head(merge_weights(edges))
+merged <- merge_weights(edges)
+head(merged)
+
+# The pairs that the angle ranks high and the strength ranks low
+head(merged[order(-rank_gap)])
 
 }
 \seealso{

@@ -36,10 +36,10 @@ test_that("weight_threshold filters on the number of co-citations", {
   expect_equal(c(edges$Source, edges$Target), c("r1", "r2"))
 })
 
-test_that("it is biblio_coupling() with the two columns swapped", {
+test_that("it is coupling_angle() with the two columns swapped", {
   toy <- toy_citations()
   cocitation <- biblio_cocitation(toy, "doc", "ref", normalized_weight_only = FALSE)
-  coupling <- biblio_coupling(toy, "ref", "doc", normalized_weight_only = FALSE)
+  coupling <- coupling_angle(toy, "ref", "doc", normalized_weight_only = FALSE)
 
   expect_equal(sort_edges(cocitation)$weight, sort_edges(coupling)$weight)
   expect_equal(sort_edges(cocitation)$nb_shared_citations, sort_edges(coupling)$nb_shared_references)

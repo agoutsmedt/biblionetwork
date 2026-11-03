@@ -3,7 +3,7 @@
 
 test_that("the number of shared references matches Table 3 (Kessler coupling)", {
   table3 <- shen_tables()
-  edges <- biblio_coupling(shen_citations(), "doc", "ref", normalized_weight_only = FALSE)
+  edges <- coupling_angle(shen_citations(), "doc", "ref", normalized_weight_only = FALSE)
 
   # the pairs with a coupling of 0 are not edges
   expect_equal(nrow(edges), sum(table3$kessler > 0))
@@ -36,7 +36,7 @@ test_that("the coupling strength matches Table 4", {
 
 test_that("the other measures give their definitions on the same example", {
   # I and II share 4 of their 5 references: angle 4/5, Jaccard 4/6
-  expect_equal(weight_of(biblio_coupling(shen_citations(), "doc", "ref"), "I", "II"), 4 / 5)
+  expect_equal(weight_of(coupling_angle(shen_citations(), "doc", "ref"), "I", "II"), 4 / 5)
   expect_equal(weight_of(coupling_jaccard(shen_citations(), "doc", "ref"), "I", "II"), 4 / 6)
   # Vladutz-Cook: 4 / (5 + 5) * (1/7 + 1/9 + 1/5 + 1/5)
   expect_equal(weight_of(coupling_vladutz(shen_citations(), "doc", "ref"), "I", "II"),

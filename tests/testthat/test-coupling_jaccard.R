@@ -11,7 +11,7 @@ test_that("the Jaccard coupling matches the hand-computed values", {
 
 test_that("the Jaccard index never exceeds the cosine", {
   jaccard <- sort_edges(coupling_jaccard(shen_citations(), "doc", "ref"))
-  angle <- sort_edges(biblio_coupling(shen_citations(), "doc", "ref"))
+  angle <- sort_edges(coupling_angle(shen_citations(), "doc", "ref"))
 
   expect_all_true(jaccard$weight <= angle$weight + 1e-12)
   expect_all_true(jaccard$weight > 0 & jaccard$weight <= 1)

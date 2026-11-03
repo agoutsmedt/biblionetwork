@@ -1,0 +1,97 @@
+---
+format: gfm
+bibliography: ./inst/REFERENCES.bib
+csl: ./inst/chicago-author-date.csl
+suppress-bibliography: false
+link-citations: true
+knitr:
+  opts_chunk:
+    collapse: false
+    comment: "#>"
+    fig.path: "man/figures/README-"
+    out.width: "100%"
+---
+
+<!-- README.md is generated from README.qmd. Please edit that file -->
+
+# biblionetwork <img src="man/figures/logo.png" align="right" alt="" width="120" />
+
+<!-- badges: start -->
+[![CRAN Status](https://www.r-pkg.org/badges/version-last-release/biblionetwork)](https://cran.r-project.org/package=biblionetwork)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7677369.svg)](https://doi.org/10.5281/zenodo.7677369)
+[![downloads](https://cranlogs.r-pkg.org/badges/biblionetwork)](https://cran.r-project.org/package=biblionetwork)
+[![downloads-total](https://cranlogs.r-pkg.org/badges/grand-total/biblionetwork)](https://cran.r-project.org/package=biblionetwork)
+<!-- badges: end -->
+
+## What does biblionetwork do?
+
+`biblionetwork` turns a **table of links between two kinds of items** (documents and the references they cite, authors and the documents they sign) into the **edges of a network**, whose nodes are one of the two kinds of items. You choose the type of network and the way the ties are weighted, depending on what you want to analyse:
+
+| Network | Nodes are linked when they... | Main function |
+|---|---|---|
+| bibliographic coupling | cite the same references [@kessler1963] | `biblio_coupling()` |
+| co-citation | are cited together [@small1973] | `biblio_cocitation()` |
+| coupling or co-citation of entities (authors, journals, institutions) | the documents of the entities cite the same references (or are cited together) [@zhao2008b] | `entity_network()` |
+| co-authorship | co-sign documents | `coauth_network()` |
+
+The weight of a tie can be computed with several measures: the coupling angle [@sen1983], the coupling strength and the idf-weighted similarity [@shen2019], the Jaccard index, the Vladutz-Cook formula, or full and fractional counting for co-authorship [@perianes-rodriguez2016b; @leydesdorff2017]. `compute_couplings()` computes several of them at once, and a few functions compare their distributions and rankings (`merge_weights()` ranks the pairs and measures the rank gap between two measures) on your own corpus.
+
+The package returns plain tables (`data.table`), ready to be turned into a graph with [`tidygraph`](https://tidygraph.data-imaginist.com/) or [`igraph`](https://r.igraph.org/). It is written for **very large corpora**: the pairs of nodes are computed with sparse matrices, which keeps time and memory low. Nothing is specific to bibliography, though: any two-mode table (accounts and the accounts they follow, posts and their words...) can be projected the same way (see the vignette). To go further, [`networkflow`](https://agoutsmedt.github.io/networkflow/) builds on `biblionetwork` to cluster, follow and draw networks over time, and the [`backbone`](https://github.com/zpneal/backbone) package [@neal2026] can filter the ties that are not statistically significant.
+
+The original function, which uses `data.table` [@datatable] and allows the user to find edges and calculate weights for large networks, was developed by [François Claveau](https://www.usherbrooke.ca/recherche/fr/specialistes/details/francois.claveau). The different functions in this package have been developed, from Claveau's original idea, by [Alexandre Truc](https://sites.google.com/view/alexandre-truc/home-and-contact) and [Aurélien Goutsmedt](https://aurelien-goutsmedt.com/). The package is maintained by Aurélien Goutsmedt.^[Contact: [aurelien.goutsmedt@ichec.be](mailto:aurelien.goutsmedt@ichec.be).]
+
+## Installation
+
+You can install the release version from CRAN:
+
+``` r
+install.packages("biblionetwork")
+```
+
+or the development version from [GitHub](https://github.com/agoutsmedt/biblionetwork):
+
+``` r
+# install.packages("devtools")
+devtools::install_github("agoutsmedt/biblionetwork")
+```
+
+You can cite this package as:
+
+``` r
+citation("biblionetwork")
+```
+
+## Example
+
+All you need is a table with entities (documents, authors, universities, _etc._) citing references. `biblio_coupling()` calculates the number of references that different articles share together, and a weight for each pair of articles in a bibliographic coupling network. By default, the weight is the coupling angle [@sen1983]; the `method` argument selects another measure (`"strength"`, `"similarity"`, `"jaccard"`, `"vladutz"`).^[If you want to build a coupling network with entities larger than a document (meaning entities that have published several documents, and thus can cite a reference several times), we rather recommend the use of the `entity_network()` function.] See the `vignette("Using_biblionetwork")` for a more in-depth presentation of the package.
+
+This example uses the [data included](#included-data) in the package.
+
+```{r}
+#| label: coupling-angle
+library(biblionetwork)
+
+biblio_coupling(Ref_stagflation,
+                source = "Citing_ItemID_Ref",
+                ref = "ItemID_Ref",
+                normalized_weight_only = FALSE,
+                weight_threshold = 1)
+```
+
+The same pairs of articles, weighted so that sharing a rare reference counts more than sharing a classic [@shen2019]:
+
+```{r}
+#| label: coupling-strength
+biblio_coupling(Ref_stagflation,
+                source = "Citing_ItemID_Ref",
+                ref = "ItemID_Ref",
+                method = "strength",
+                weight_threshold = 3)
+```
+
+## Included data {#included-data}
+
+The `biblionetwork` package contains bibliometric data built by @goutsmedt2021a. These data gather the academic articles and books, published between 1975 and 2013, that endeavoured to explain the United States stagflation of the 1970s. They also gather all the references cited by these articles and books on stagflation. The `Nodes_stagflation.rda` file contains information about the academic articles and books on stagflation (the stagflation documents), as well as about the references cited at least by two of these stagflation documents. The `Ref_stagflation.rda` is a data frame of direct citations, with the identifiers of citing documents, and the identifiers of cited documents. The `Authors_stagflation.rda` is a data frame with the list of documents explaining the US stagflation, and all the authors of these documents (`Nodes_stagflation.rda` just takes the first author for each document).
+
+## References

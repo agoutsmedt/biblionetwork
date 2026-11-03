@@ -7,7 +7,7 @@ coupling_similarity <- function(dt, source, ref, weight_threshold = 1, output_in
   #' @description
   #' The cosine counterpart of [coupling_strength()]. It is the similarity
   #' measure \eqn{SIM_{CS}} of \insertCite{shen2019}{biblionetwork}, which
-  #' generalises the coupling angle of [biblio_coupling()]
+  #' generalises the coupling angle of [coupling_angle()]
   #' \insertCite{sen1983}{biblionetwork}: instead of describing a document by
   #' a 0/1 vector over references, it uses a vector whose components are the
   #' (square roots of the) idf weights of the references, and takes the cosine

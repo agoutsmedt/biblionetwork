@@ -3,3 +3,6 @@ inst/doc
 .Rhistory
 *.bib
 *.Rhistory
+
+/.quarto/
+**/*.quarto_ipynb

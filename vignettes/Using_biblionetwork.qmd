@@ -1,0 +1,690 @@
+---
+title: "How to use biblionetwork"
+author: "Aurélien Goutsmedt"
+description: "A tour of the functions of biblionetwork: coupling, co-citation, co-authorship, backbones, and uses beyond bibliometrics"
+vignette: >
+  %\VignetteIndexEntry{How to use biblionetwork}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-tools: false
+knitr:
+  opts_chunk:
+    collapse: false
+    comment: "#>"
+    fig.width: 8
+    fig.height: 5.5
+    out.width: "100%"
+bibliography: REFERENCES.bib
+csl: chicago-author-date.csl
+link-citations: true
+---
+
+This vignette is a guided tour of the functions of `biblionetwork`, using the
+data included in the package (see @sec-data). Every function turns a **table of
+links between two kinds of items** (for instance documents and the references
+they cite) into the **edges of a network** whose nodes are one of the two
+kinds, with a weight for each edge. The functions differ by the kind of nodes
+and by the way the weight is computed.
+
+```{r}
+#| label: setup
+#| message: false
+library(biblionetwork)
+library(data.table)
+```
+
+| You want to link... | Because they... | Function |
+|---|---|---|
+| citing documents | share references [@kessler1963] | `biblio_coupling()` (see @sec-coupling) |
+| cited references | are cited together [@small1973] | `biblio_cocitation()` (see @sec-cocitation) |
+| authors, journals, institutions | cite the same references (or are cited together) through their documents [@zhao2008b] | `entity_network()` (see @sec-entity) |
+| authors, institutions, countries | co-sign documents | `coauth_network()` (see @sec-coauthorship) |
+
+: Which function for which network? {#tbl-functions}
+
+# The data included in the package {#sec-data}
+
+The package contains bibliometric data built by @goutsmedt2021a: the academic
+articles and books, published between 1975 and 2013, that tried to explain the
+US stagflation of the 1970s, and the references they cite.
+
+* `Ref_stagflation` is a table of **direct citations**: one row per link
+  between a citing document (`Citing_ItemID_Ref`) and a cited document
+  (`ItemID_Ref`). It is the typical input of the coupling and co-citation
+  functions.
+* `Nodes_stagflation` describes the stagflation documents, and the references
+  cited by at least two of them (one row per document, with the first author
+  only).
+* `Authors_stagflation` lists the stagflation documents with *all* their
+  authors (one row per author and document). It is the input of the
+  co-authorship function.
+
+```{r}
+#| label: data
+Ref_stagflation[1:5, 1:2]
+```
+
+Every function of the package needs only **two columns of identifiers**,
+that you name in the arguments `source` and `ref`. The names of the columns in
+your own data do not matter, and the table you give is never modified.
+
+# Bibliographic coupling: `biblio_coupling()` {#sec-coupling}
+
+Two documents are *bibliographically coupled* when they cite the same
+references [@kessler1963]: the more their bibliographies overlap, the more
+likely they are to address related questions. `biblio_coupling()` takes a
+table of direct citations and returns the list of the pairs of documents that
+share at least one reference, with a weight for each pair.
+
+```{r}
+#| label: coupling-default
+edges <- biblio_coupling(Ref_stagflation,
+                         source = "Citing_ItemID_Ref",
+                         ref = "ItemID_Ref",
+                         normalized_weight_only = FALSE)
+edges
+```
+
+The output is an **edge list**:
+
+* `from` and `to` are the identifiers of the two documents (as characters, which
+  is what graph packages such as `tidygraph` expect; set
+  `output_in_character = FALSE` to skip them);
+* `weight` is the weight of the tie;
+* `nb_shared_references` is the number of references the two documents share.
+  It is displayed only if `normalized_weight_only = FALSE`;
+* `Source` and `Target` keep the original identifiers (with their original
+  type). Each pair appears once, with `Source < Target`: the network is
+  undirected.
+
+## The default weight: the coupling angle
+
+By default, the weight is the **coupling angle** (or cosine) of @sen1983, the
+standard way of normalising coupling. It divides the number of references two
+documents share by the geometric mean of the lengths of their bibliographies:
+
+$$
+w_{AB} = \frac{|R(A) \cap R(B)|}{\sqrt{L(A) \, L(B)}}
+$$
+
+where $R(A)$ is the set of references of document $A$, $|R(A) \cap R(B)|$ the
+number of references shared by $A$ and $B$, and $L(A) = |R(A)|$ the length of the
+bibliography of $A$. Without the denominator, a literature review with 200
+references would be linked to almost everybody, simply because it cites a lot.
+The weight lies between 0 (nothing in common) and 1 (identical
+bibliographies). The same measure is available under its own name,
+`coupling_angle()`, which is what `biblio_coupling()` calls when you do not
+choose another `method`.
+
+::: {.callout-note}
+## What counts as the length of a bibliography?
+$L(A)$ counts *all* the references of $A$ present in your table, including
+those that no other document cites. They cannot create a tie, but they make the
+bibliography longer, and so they lower the weights of $A$. If you want to ignore
+them, remove them from the table before calling the function.
+:::
+
+## Choosing the minimal number of shared references
+
+In a large corpus, sharing a single reference is weak evidence that two
+documents are related, and keeping all such pairs produces very dense networks.
+`weight_threshold` sets the minimal number of shared references for a pair to be
+kept. It applies to the *number of shared references*, not to the normalised
+weight.
+
+```{r}
+#| label: coupling-threshold
+biblio_coupling(Ref_stagflation,
+                source = "Citing_ItemID_Ref",
+                ref = "ItemID_Ref",
+                weight_threshold = 3)
+```
+
+Raising the threshold is also the simplest way to keep a network tractable.
+
+::: {.callout-warning}
+## Very popular references and memory
+The functions first list the pairs of documents that cite a same reference. A
+reference cited by $n$ documents creates $n(n-1)/2$ pairs: a classic cited by
+50,000 documents creates more than a billion of them. The package uses sparse
+matrices to keep this under control, but very popular references can still
+exhaust the memory of your computer on a large corpus. Split the corpus (by
+time window, for instance) or remove the most cited references before building
+the network.
+:::
+
+## Other weights: the `method` argument {#sec-methods}
+
+The coupling angle gives the same importance to every shared reference. But two
+documents that both cite a classic cited by half of the corpus are not as
+clearly related as two documents that both cite an obscure article. Several
+measures take this into account, in the spirit of the
+[tf-idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) weighting of
+information retrieval [@sparckjones1972]. They are all available through the
+`method` argument of `biblio_coupling()`, and each has its own function:
+
+| `method` | Function | Intuition |
+|---|---|---|
+| `"angle"` (default) | `coupling_angle()` | Shared references relative to the length of the two bibliographies (a cosine) [@sen1983]. |
+| `"jaccard"` | `coupling_jaccard()` | Of everything the two documents cite, the share they both cite [@sen1983]. |
+| `"strength"` | `coupling_strength()` | A shared *rare* reference counts more than a shared classic [@vladutz1984; @shen2019]. |
+| `"similarity"` | `coupling_similarity()` | The same idea, as a cosine bounded by 1 [@shen2019]. |
+| `"vladutz"` | `coupling_vladutz()` | A shared reference counts $1/f_j$: a very steep discount of popular references [@vladutz1984]. |
+
+: The weights of document coupling {#tbl-methods}
+
+In the formulas below, $N$ is the number of citing documents in the table and
+$f_j$ the number of documents that cite the reference $j$ (its *frequency*): the
+weight $\log(N/f_j)$ of a reference is the inverse document frequency (idf), high for
+rare references and close to zero for references cited by almost everybody.
+
+**Coupling strength** [@shen2019] sums the idf of the shared references, and
+divides by the lengths of the two bibliographies:
+
+$$
+w_{AB} = \frac{1}{L(A) \, L(B)} \sum_{j \in R(A) \cap R(B)} \log\left(\frac{N}{f_j}\right)
+$$
+
+Use it when a few references are cited by most documents of your corpus (the
+classics of the field): sharing them says little about the proximity of two
+documents. The price is a measure that depends on the whole corpus, and whose
+scale (it is not bounded by 1) is not comparable across corpora.
+
+```{r}
+#| label: coupling-strength
+biblio_coupling(Ref_stagflation,
+                source = "Citing_ItemID_Ref",
+                ref = "ItemID_Ref",
+                method = "strength",
+                weight_threshold = 3)
+```
+
+**Coupling similarity** [@shen2019, Eq. 8] is the idf-weighted cosine. Each
+document is described by the "informational size" of its bibliography,
+$S(A) = \sum_{j \in R(A)} \log(N/f_j)$, and
+
+$$
+w_{AB} = \frac{\sum_{j \in R(A) \cap R(B)} \log(N/f_j)}{\sqrt{S(A) \, S(B)}}
+$$
+
+It generalises the coupling angle (if all the references had the same idf, we
+would get the angle back) and is bounded by 1.
+
+```{r}
+#| label: coupling-similarity
+coupling_similarity(Ref_stagflation,
+                    source = "Citing_ItemID_Ref",
+                    ref = "ItemID_Ref",
+                    weight_threshold = 3)
+```
+
+The two other measures are mostly useful for comparison. `coupling_jaccard()`
+divides the number of shared references by the size of the *union* of the two
+bibliographies, and penalises more strongly pairs of bibliographies of very
+different lengths. `coupling_vladutz()` implements the first formula that
+discounted popular references [@vladutz1984], which @shen2019 later corrected
+with the idf.
+
+## Comparing the measures on your corpus
+
+The measures do not have the same scale, so their weights cannot be compared
+directly, but their distributions and rankings can. `compute_couplings()`
+computes several measures at once (listing the pairs of documents only once),
+and `summarise_weights()`, `correlate_weights()`, `overlap_top_weights()`,
+`merge_weights()` and `plot_weights()` compare them.
+
+```{r}
+#| label: compare
+measures <- compute_couplings(Ref_stagflation,
+                              source = "Citing_ItemID_Ref",
+                              ref = "ItemID_Ref",
+                              weight_threshold = 2)
+# Rank correlation between the measures (1 = the same ranking of the pairs)
+round(correlate_weights(measures), 2)
+```
+
+Whether the choice of the measure matters on your corpus, which pairs of
+documents the measures disagree on, and how the communities change is the
+subject of `vignette("comparing_measures")`.
+
+# Co-citation: `biblio_cocitation()` {#sec-cocitation}
+
+Coupling links the documents that *cite*; co-citation links the documents that
+are *cited*: two references are co-cited when a same document cites both
+[@small1973]. It is the mirror image of coupling, and it is obtained by
+swapping the roles of the two columns. `biblio_cocitation()` does the swap for
+you: the citing documents stay in `source` and the references in `ref`, and the
+nodes of the network are the references.
+
+```{r}
+#| label: cocitation
+biblio_cocitation(Ref_stagflation,
+                  source = "Citing_ItemID_Ref",
+                  ref = "ItemID_Ref",
+                  weight_threshold = 2)
+```
+
+You get the same result by hand with `biblio_coupling()`, by inverting the two
+columns:
+
+```{r}
+#| label: cocitation-by-hand
+by_hand <- biblio_coupling(Ref_stagflation,
+                           source = "ItemID_Ref",
+                           ref = "Citing_ItemID_Ref",
+                           weight_threshold = 2)
+all.equal(by_hand, biblio_cocitation(Ref_stagflation,
+                                     source = "Citing_ItemID_Ref",
+                                     ref = "ItemID_Ref",
+                                     weight_threshold = 2))
+```
+
+`biblio_cocitation()` also has a `method` argument, with the same measures as
+coupling. There is a difference of interpretation, though: coupling ties are
+fixed once the documents are published (they depend only on their own
+bibliographies), whereas co-citation ties change as new documents cite the
+references. Coupling is therefore better suited to comparing successive time
+windows, and co-citation to describing how a literature is perceived at a given
+moment.
+
+# Aggregating at the level of entities: `entity_network()` {#sec-entity}
+
+You may want to link authors, institutions or journals rather than documents.
+This is not a different kind of network, nor a different measure: it is the
+*same* coupling (or co-citation), computed for entities that aggregate
+documents. An entity publishes several documents and can cite the same
+reference several times. `entity_network()` takes this into account: for each
+reference shared by two entities, it counts the **minimum** number of times the
+two entities cite it [@zhao2008b]. If one author cites a reference in two of
+their articles and another in three, the reference counts for two.
+
+The consequence is that a reference that two entities cite repeatedly
+contributes more to the tie than a reference each of them cites once. With the
+coupling strength, the weight is
+
+$$
+w_{AB} = \frac{1}{L(A) \, L(B)} \sum_{j} \min(C_{Aj}, C_{Bj}) \, \log\left(\frac{N}{f_j}\right)
+$$
+
+where $C_{Aj}$ and $C_{Bj}$ are the numbers of times $A$ and $B$ cite the
+reference $j$, $L(A)$ is the total number of citations made by $A$, $N$ the number of citing
+documents and $f_j$ the number of documents citing $j$. The `method` argument
+accepts the same methods as `biblio_coupling()` (`"angle"`, `"strength"`,
+`"similarity"`, `"jaccard"` and `"vladutz"`), each adapted with the minimum
+rule (see `?entity_network` for the formulas), and the `network` argument
+chooses between `"coupling"` (entities that cite the same references) and
+`"cocitation"` (entities whose references are cited together, as in author
+co-citation analysis).
+
+The input needs one row per citation *and* per entity: we merge the table of
+direct citations with the table of authors. A document with several authors
+appears several times, hence `allow.cartesian = TRUE`.
+
+```{r}
+#| label: entity-network
+entity_citations <- merge(Ref_stagflation,
+                          Authors_stagflation,
+                          by.x = "Citing_ItemID_Ref",
+                          by.y = "ItemID_Ref",
+                          allow.cartesian = TRUE)
+
+entity_network(entity_citations,
+               source = "Citing_ItemID_Ref",
+               ref = "ItemID_Ref",
+               entity = "Author.y",
+               method = "angle")
+```
+
+For a co-citation network of entities, the `entity` column must describe the
+*cited* reference (the author or the journal of the cited document) rather than
+the citing one. Here, the journals of the cited documents:
+
+```{r}
+#| label: entity-cocitation
+entity_network(Ref_stagflation,
+                    source = "Citing_ItemID_Ref",
+                    ref = "ItemID_Ref",
+                    entity = "Journal",
+                    network = "cocitation",
+                    weight_threshold = 3)
+```
+
+# Co-authorship: `coauth_network()` {#sec-coauthorship}
+
+Co-authorship links the authors (or institutions, or countries) who sign
+documents together. You could build it with `biblio_coupling()`, authors being
+the `source` and documents the `ref`, but coupling is not designed for it: what
+matters here is how to **count a collaboration**. `coauth_network()` offers
+three ways, and an optional normalisation by the productivity of the authors.
+
+To see what they do, take a toy example: three authors, $a$, $b$ and $c$, sign
+document 1; $a$ and $b$ sign document 2.
+
+```{r}
+#| label: coauth-toy
+toy <- data.frame(author = c("a", "b", "c", "a", "b"),
+                  paper  = c(1, 1, 1, 2, 2))
+```
+
+**Full counting** (`"full_counting"`) gives one point to each pair of authors for
+each document they co-sign. The weight is the number of co-signed documents.
+Here $a$–$b$ gets 2 points, and $a$–$c$ and $b$–$c$ one point each. The problem is
+that big collaborations weigh more: a document with ten authors creates 45
+pairs, so it adds 45 points to the network, whereas a document with two
+authors adds one.
+
+```{r}
+#| label: coauth-full
+coauth_network(toy, authors = "author", articles = "paper", method = "full_counting")
+```
+
+**Fractional counting** (`"fractional_counting"`) shares the value of a document
+among the co-authors, so that a large collaboration does not dominate
+[@perianes-rodriguez2016b]. A document with $n$ authors gives $1/(n-1)$ to each
+pair of its authors, so that the weights of all the ties of an author in this
+document sum to one: each author "spends" one unit of collaboration per
+document, split among the co-authors. In the toy example, document 1 has three
+authors, so each of its three pairs receives $1/2$; document 2 has two authors,
+so $a$–$b$ receives $1$. The weight of $a$–$b$ is $1/2 + 1 = 1.5$, and that of
+$a$–$c$ and $b$–$c$ is $1/2$: the pair that collaborated in a small team is
+worth more than a pair in a large team. @perianes-rodriguez2016b compare full
+and fractional counting on bibliometric networks, and show that the choice
+changes the picture.
+
+```{r}
+#| label: coauth-fractional
+coauth_network(toy, authors = "author", articles = "paper", method = "fractional_counting")
+```
+
+**Refined fractional counting** (`"fractional_counting_refined"`), inspired by
+@leydesdorff2017, goes one step further: each *document*, rather than each
+author, has a total weight of one in the network. A document with $n$ authors
+creates $n(n-1)/2$ pairs, so each pair gets $2/(n(n-1))$. Document 1 gives
+$1/3$ to each of its three pairs ($3 \times 1/3 = 1$) and document 2 gives $1$
+to $a$–$b$. The weight of $a$–$b$ is $1/3 + 1 \approx 1.33$. The sum of all the
+weights of the network is then the number of co-authored documents.
+
+```{r}
+#| label: coauth-refined
+coauth_network(toy, authors = "author", articles = "paper", method = "fractional_counting_refined")
+```
+
+In all cases, documents with a single author are ignored, since they create no
+tie.
+
+**Normalising by productivity.** Prolific authors have many collaborations
+simply because they publish a lot. With `cosine_normalized = TRUE`, the weight
+is divided by $\sqrt{P_i P_j}$, where $P_i$ is the number of co-authored
+documents of author $i$ (Salton's cosine, as for the coupling angle). The weight
+then measures whether two authors collaborate a lot *relative to* how much each
+of them collaborates in general. In the toy example, $P_a = P_b = 2$ and
+$P_c = 1$: with full counting, $a$–$b$ gets $2/\sqrt{2 \times 2} = 1$ and $a$–$c$
+gets $1/\sqrt{2 \times 1} \approx 0.71$.
+
+```{r}
+#| label: coauth-cosine
+coauth_network(toy, authors = "author", articles = "paper",
+               method = "full_counting", cosine_normalized = TRUE)
+```
+
+On the stagflation authors, with fractional counting and the cosine
+normalisation:
+
+```{r}
+#| label: coauth-stagflation
+coauth_network(Authors_stagflation,
+               authors = "Author",
+               articles = "ItemID_Ref",
+               method = "fractional_counting",
+               cosine_normalized = TRUE)
+```
+
+Note that, for historical reasons, `coauth_network()` orients its edges with
+`Source > Target`, the opposite of the other functions.
+
+# Filtering the edges: thresholds and backbones {#sec-backbone}
+
+A bibliometric network built from a large corpus is often too dense to be read
+or clustered: almost every pair of documents shares at least one reference.
+There are two ways of simplifying it.
+
+* **A threshold**, as seen above: `weight_threshold` keeps the pairs sharing at
+  least $k$ references. It is simple and fast, but arbitrary, and it is
+  *global*: the same threshold applies to a document with a hundred references
+  and to a document with five.
+* **A backbone**: keep only the ties that are statistically unlikely under a
+  null model, that is, the ties that are stronger than what the position of
+  the nodes in the network would produce by chance. This is the aim of the
+  [`backbone`](https://github.com/zpneal/backbone) package [@neal2026], which
+  is complementary to `biblionetwork`: `biblionetwork` computes the edges and their weights,
+  `backbone` decides which ones are worth keeping.
+
+`backbone` offers two families of methods, and they do not start from the same
+object.
+
+**Filters of weighted networks** (`backbone_from_weighted()`, with the disparity
+filter of @serrano2009 for instance) start from a *weighted one-mode network*.
+They can be run directly on the edges produced by `biblionetwork`: convert the
+edge list into a graph and give it to `backbone`. Since these filters assume that the weights are
+strengths of ties, it is more natural to feed them with the *number of shared
+references* (`normalized_weight_only = FALSE`) than with a cosine.
+
+```{r}
+#| label: backbone-weighted
+#| eval: !expr requireNamespace("backbone", quietly = TRUE) && requireNamespace("igraph", quietly = TRUE)
+edges <- biblio_coupling(Ref_stagflation,
+                         source = "Citing_ItemID_Ref",
+                         ref = "ItemID_Ref",
+                         normalized_weight_only = FALSE,
+                         weight_threshold = 2)
+
+# The weighted graph; the number of shared references is the weight
+graph <- igraph::graph_from_data_frame(
+  edges[, .(from, to, weight = nb_shared_references)],
+  directed = FALSE
+)
+
+# The disparity filter: keep an edge if its weight is significantly high
+# compared to the other edges of (at least one of) its two nodes
+backbone <- backbone::backbone_from_weighted(graph, model = "disparity", alpha = 0.05)
+c(edges_before = igraph::ecount(graph), edges_after = igraph::ecount(backbone))
+```
+
+**Filters of bipartite projections** (`backbone_from_projection()`, with
+models such as `"sdsm"`, the stochastic degree sequence model) do not start from
+the edges but from the *original two-mode table*: they compare the number of
+references that two documents share with the number expected if documents cited
+references at random, given how many references each document cites and how
+many documents cite each reference. The input is the table of citations as an
+incidence matrix (documents in rows, references in columns), which is the same
+table as the one you give to `biblionetwork`.
+
+```{r}
+#| label: backbone-projection
+#| eval: !expr requireNamespace("backbone", quietly = TRUE) && requireNamespace("igraph", quietly = TRUE)
+# Incidence matrix of the citations: 1 if the document (row) cites the reference (column)
+incidence <- unclass(table(Ref_stagflation$Citing_ItemID_Ref, Ref_stagflation$ItemID_Ref))
+incidence[incidence > 1] <- 1
+
+# Statistically significant coupling ties (the filter is applied to the rows)
+backbone_sdsm <- backbone::backbone_from_projection(incidence, model = "sdsm", alpha = 0.05)
+sum(backbone_sdsm) / 2   # number of ties kept (the matrix is symmetric)
+```
+
+Two practical remarks.
+
+* The statistical models test the *count* of shared references, not a
+  normalised weight. Run them on the full table, **without** a
+  `weight_threshold`: a pair removed by the threshold cannot be tested. The
+  backbone then replaces the threshold. You can use `biblionetwork` afterwards,
+  on the pairs kept, if you want the normalised weights of the surviving ties
+  (merge the two edge lists by pair of documents).
+* These tests are computationally heavier than the edge computation of
+  `biblionetwork`, and the null models are not designed for the huge corpora
+  that `biblionetwork` handles: on a large corpus, split it by time window, or
+  start from the filters of weighted networks.
+
+`networkflow` integrates both steps: its function `build_dynamic_networks()`
+can compute the coupling edges and apply a statistical backbone for each time
+window (see the [`networkflow`](https://agoutsmedt.github.io/networkflow/)
+documentation).
+
+# Beyond bibliometrics {#sec-beyond}
+
+Nothing in the functions of `biblionetwork` is specific to bibliography. They
+take a table with two columns, "a *source* that is linked to a *ref*", and
+build the network of the sources that share refs (coupling) or of the refs
+that share sources (co-citation). The words "document" and "reference" are only
+the vocabulary of the field in which the package was written. Whenever you have
+a two-mode relation, the same questions can be asked:
+
+| Source ("citing") | Ref ("cited") | Coupling links sources that... | Co-citation links refs that... |
+|---|---|---|---|
+| article | reference | cite the same references | are cited by the same articles |
+| social media account | account followed | follow the same accounts (an audience in common) | are followed by the same accounts |
+| social media account | post reposted | repost the same posts | are reposted by the same accounts |
+| post | hashtag, link, mention | use the same hashtags, links or mentions | are used in the same posts |
+| document | word | use the same words | appear in the same documents |
+
+: A two-mode table, many networks {#tbl-beyond}
+
+## Networks of accounts on a social media platform
+
+Take a table of the accounts of a social media platform and the accounts
+they follow. Two accounts that follow many of the same accounts probably listen
+to the same voices: this is the bibliographic coupling of the "follows" (the
+account is the "document", the accounts it follows are its "bibliography"). In
+the same way, two accounts that repost the same posts are close in what they
+amplify. The following table is invented, for the sake of the example.
+
+```{r}
+#| label: social-toy
+follows <- data.table(
+  account = c("ann", "ann", "ann", "ben", "ben", "ben", "cleo", "cleo", "dan", "dan", "eve", "eve", "eve"),
+  follows = c("news_desk", "dev_tools", "open_web", "news_desk", "dev_tools", "open_web",
+              "news_desk", "celebrity", "celebrity", "news_desk", "celebrity", "dev_tools", "open_web")
+)
+
+# Accounts close because they follow the same accounts
+biblio_coupling(follows, source = "account", ref = "follows", normalized_weight_only = FALSE)
+```
+
+Here `news_desk` and `celebrity` are followed by almost everybody: following
+them says little. The idf-based methods, designed for the "classics" of
+a bibliography, are exactly what is needed to discount the accounts followed by
+a large audience:
+
+```{r}
+#| label: social-strength
+biblio_coupling(follows, source = "account", ref = "follows", method = "strength")
+```
+
+This is how coupling is used on social media data: popular targets (an account
+followed by millions) are the equivalent of the classics of a field, and the
+warning on memory of @sec-coupling matters even more, as such targets are
+much more frequent than in a bibliography. Reposts work the same way, with
+`source` the account and `ref` the reposted post. And co-citation answers the
+mirror question: *which posts are reposted by the same accounts?*
+
+```{r}
+#| label: social-cocitation
+reposts <- data.table(
+  account = c("ann", "ann", "ben", "ben", "cleo", "cleo", "dan"),
+  post    = c("p1", "p2", "p1", "p2", "p2", "p3", "p3")
+)
+biblio_cocitation(reposts, source = "account", ref = "post")
+```
+
+Because a network of this kind is often dense (and the measures do not tell
+which ties are "surprising"), the backbone of @sec-backbone is particularly
+useful there.
+
+## Networks of words
+
+A text is a "document" that "cites" words. The coupling of texts links the texts
+that use the same words; the co-citation of words links the words that appear
+together. We illustrate it with the titles of the stagflation documents.
+
+```{r}
+#| label: words-prepare
+titles <- Nodes_stagflation[!is.na(Title), .(ItemID_Ref, Title)]
+
+# One row per title and distinct word. Short words and a few stop words are dropped:
+# like popular references, very frequent words create a huge number of pairs and carry little meaning.
+stop_words <- c("the", "and", "for", "with", "from", "that", "this", "its", "are", "was",
+                "into", "their", "between", "some", "what", "how", "when", "than", "have", "new")
+words <- titles[, .(word = unique(tolower(unlist(strsplit(Title, "[^A-Za-z]+"))))), by = ItemID_Ref]
+words <- words[nchar(word) > 3 & !word %in% stop_words]
+words[1:5]
+```
+
+Titles are coupled when they share words. The coupling strength gives more
+weight to rare words than to words such as "inflation" or "policy", present in
+many titles:
+
+```{r}
+#| label: words-coupling
+title_edges <- biblio_coupling(words, source = "ItemID_Ref", ref = "word",
+                               method = "strength", normalized_weight_only = FALSE,
+                               weight_threshold = 2)
+title_edges[order(-weight)][1:5]
+```
+
+Words are linked when they appear in the same titles (this is the co-citation
+of words). The words that always appear together are the fixed expressions of
+the corpus:
+
+```{r}
+#| label: words-cooccurrence
+word_edges <- biblio_cocitation(words, source = "ItemID_Ref", ref = "word",
+                                weight_threshold = 2, normalized_weight_only = FALSE)
+word_edges[order(-nb_shared_citations)][1:8, .(from, to, weight, nb_shared_citations)]
+```
+
+The same logic applies to any "bag of ..." representation (n-grams, keywords,
+hashtags, named entities, topics of a topic model...). For the words in the
+titles of references, `coupling_descriptive()` implements a more elaborate
+approach [@liu2017], which couples documents that cite *different but related*
+references.
+
+## What to check before using it outside bibliometrics
+
+* **Orientation.** `source` is the node of the network produced by `biblio_coupling()`;
+  `ref` is what the nodes share. If the network you obtain has the wrong nodes, you
+  probably swapped the columns (the function warns you when no pair is found).
+* **Popular targets.** A target shared by very many sources (a celebrity, a
+  stop word) creates a quadratic number of pairs and carries little
+  information. Remove it, or use a method that discounts it, or work by time window.
+* **The meaning of "length".** The normalisation by the length of the
+  bibliography assumes that having many refs is a form of dilution. For an account
+  following 10,000 accounts, this is reasonable; for a text, the length of the
+  document in words may be a different matter.
+* **Time.** Coupling ties are fixed when the source is created. For social media data,
+  the "follows" are not dated in the same way as references: think about the
+  moment at which the table is observed.
+
+# A last word on choosing {#sec-choose}
+
+| Question | Nodes | Function |
+|---|---|---|
+| Which documents rely on the same literature? Which research fronts? [@kessler1963; @boyack2010] | citing documents | `biblio_coupling()` |
+| Same, but not driven by the classics of the corpus [@shen2019] | citing documents | `biblio_coupling(method = "strength")` or `"similarity"` |
+| Does the choice of the measure matter on my corpus? | citing documents | `compute_couplings()`, then `correlate_weights()`, `plot_weights()` |
+| Which authors, journals or institutions rely on the same literature (or are cited together)? [@zhao2008b] | entities | `entity_network()` |
+| Which cited texts are perceived as belonging together? [@small1973] | cited references | `biblio_cocitation()` |
+| Who collaborates with whom? [@perianes-rodriguez2016b; @leydesdorff2017] | authors, institutions, countries | `coauth_network()` |
+| Which of these ties are not due to chance? [@neal2026] | any | the `backbone` package |
+
+: Which measure for which research question? {#tbl-questions}
+
+All the functions return undirected edges (one row per pair), never modify the table you give them,
+and return an empty table, with a warning that says why, when no pair of nodes is linked.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

@@ -5,7 +5,7 @@
 # a cosine is bounded by 1, a coupling strength is not. Comparing them
 # therefore requires looking at distributions and ranks, not raw values.
 
-compute_couplings <- function(dt, source, ref, methods = c("angle", "strength", "similarity", "jaccard", "vladutz"), weight_threshold = 1, network = c("coupling", "cocitation"))
+compute_couplings <- function(dt, source, ref, methods = c("angle", "strength", "similarity", "jaccard", "vladutz"), weight_threshold = 1, network = c("coupling", "cocitation"), title = NULL, descriptive_args = list())
 {
   #' Compute several coupling (or co-citation) measures at once
   #'
@@ -30,19 +30,43 @@ compute_couplings <- function(dt, source, ref, methods = c("angle", "strength", 
   #' function, and compare the distributions and the rankings of the weights.
   #' `vignette("comparing_measures")` does it on the stagflation corpus.
   #'
-  #' @inheritParams biblio_coupling
-  #' @param methods Character vector, among `"angle"` ([biblio_coupling()]),
+  #' @inheritParams coupling_angle
+  #' @param methods Character vector, among `"angle"` ([coupling_angle()]),
   #'   `"strength"` ([coupling_strength()]), `"similarity"`
-  #'   ([coupling_similarity()]), `"jaccard"` ([coupling_jaccard()]) and
-  #'   `"vladutz"` ([coupling_vladutz()]).
+  #'   ([coupling_similarity()]), `"jaccard"` ([coupling_jaccard()]),
+  #'   `"vladutz"` ([coupling_vladutz()]) and `"descriptive"`
+  #'   ([coupling_descriptive()]). The first five are computed by default;
+  #'   `"descriptive"` is not, since it is much more costly (see the details),
+  #'   and it needs `title`.
+  #' @param title Character scalar. The column with the title of the cited
+  #'   references, needed (only) for `methods` including `"descriptive"`.
+  #' @param descriptive_args A list of further arguments for
+  #'   [coupling_descriptive()] (`targets`, `stopwords`, `min_weight`,
+  #'   `max_documents`).
   #' @param network `"coupling"` (default): the nodes are the documents of
   #'   `source`. `"cocitation"`: the nodes are the references of `ref`, and
   #'   the measures are those of [biblio_cocitation()].
   #'
+  #' @details
+  #' The five measures that start from the shared references are computed on
+  #' the same pairs of nodes (those sharing at least `weight_threshold`
+  #' references), so that their weights can be compared pair by pair.
+  #' `"descriptive"` (the DescriptiveBC measure of
+  #' \insertCite{liu2017}{biblionetwork}) is different in two ways. It
+  #' couples documents that cite *different but related* references, so its
+  #' pairs are not the same ones: any pair of documents with similar titles of
+  #' references is concerned, whatever the number of shared references (the
+  #' `weight_threshold` does not apply to it). And its cost grows with the
+  #' square of the number of documents: the function informs you when you
+  #' ask for it, and you should give `targets` or work on a time window for a
+  #' large corpus. [merge_weights()] puts the tables side by side, with `NA`
+  #' for the pairs a measure does not have.
+  #'
   #' @return A named list with one `data.table` per method, each with columns
-  #'   `Source`, `Target` and `weight`. All the tables describe the same
-  #'   pairs of nodes (those sharing at least `weight_threshold` references,
-  #'   or co-cited at least `weight_threshold` times), in the same order.
+  #'   `Source`, `Target` and `weight`. The tables of the five measures
+  #'   describe the same pairs of nodes (those sharing at least
+  #'   `weight_threshold` references, or co-cited at least `weight_threshold`
+  #'   times), in the same order. The table of `"descriptive"` has its own pairs.
   #'
   #' @family tools to compare coupling measures
   #'
@@ -56,6 +80,17 @@ compute_couplings <- function(dt, source, ref, methods = c("angle", "strength", 
   #' summarise_weights(edges)
   #' correlate_weights(edges)
   #'
+  #' # The titles-based measure is not computed by default; it needs the titles of the references
+  #' \donttest{
+  #' toy <- data.frame(
+  #'   doc = c("a", "a", "b", "b"),
+  #'   ref = c("r1", "r2", "r1", "r3"),
+  #'   title = c("inflation expectations", "oil supply shocks",
+  #'             "inflation expectations", "supply shocks prices")
+  #' )
+  #' compute_couplings(toy, "doc", "ref", methods = c("angle", "descriptive"), title = "title")
+  #' }
+  #'
   #' @references
   #' \insertAllCited{}
   #'
@@ -63,31 +98,60 @@ compute_couplings <- function(dt, source, ref, methods = c("angle", "strength", 
 
   Source <- Target <- NULL
 
-  if (!is.character(methods) || length(methods) == 0 || !all(methods %in% coupling_methods)) {
+  available <- c(coupling_methods, "descriptive")
+  if (!is.character(methods) || length(methods) == 0 || !all(methods %in% available)) {
     cli::cli_abort(c(
       "{.arg methods} must be a subset of the available measures.",
-      "i" = "Possible values: {.val {coupling_methods}}."
+      "i" = "Possible values: {.val {available}}."
     ))
   }
   methods <- unique(methods)
   network <- rlang::arg_match(network)
   check_threshold(weight_threshold)
 
-  pairs <- if (network == "coupling") {
-    coupling_core(dt, source, ref, weight_threshold, needs = coupling_needs(methods))
-  } else {
-    coupling_core(dt, ref, source, weight_threshold, needs = coupling_needs(methods),
-                  nodes = "references")
-  }
-  data.table::setorder(pairs, Source, Target)
-
-  lapply(
-    stats::setNames(methods, methods),
-    function(method) {
-      data.table::data.table(Source = pairs$Source, Target = pairs$Target,
-                             weight = coupling_weights(pairs, method))
+  with_descriptive <- "descriptive" %in% methods
+  if (with_descriptive) {
+    if (network == "cocitation") {
+      cli::cli_abort("{.val descriptive} is a measure of coupling: it cannot be used with {.code network = \"cocitation\"}.")
     }
-  )
+    if (is.null(title)) {
+      cli::cli_abort("{.arg title} (the column with the titles of the references) is needed for the {.val descriptive} measure.")
+    }
+    cli::cli_inform(c(
+      "i" = "Computing the {.val descriptive} measure of Liu (2017), which is not part of the default measures.",
+      "!" = "Its cost grows with the square of the number of documents, and its pairs are not those of the other measures: documents with no shared reference can be linked.",
+      "i" = "For a large corpus, give {.code descriptive_args = list(targets = ...)} or work by time window."
+    ), class = "biblionetwork_descriptive_cost")
+  }
+
+  core_methods <- setdiff(methods, "descriptive")
+  weights <- list()
+  if (length(core_methods) > 0) {
+    pairs <- if (network == "coupling") {
+      coupling_core(dt, source, ref, weight_threshold, needs = coupling_needs(core_methods))
+    } else {
+      coupling_core(dt, ref, source, weight_threshold, needs = coupling_needs(core_methods),
+                    nodes = "references")
+    }
+    data.table::setorder(pairs, Source, Target)
+    weights <- lapply(
+      stats::setNames(core_methods, core_methods),
+      function(method) {
+        data.table::data.table(Source = pairs$Source, Target = pairs$Target,
+                               weight = coupling_weights(pairs, method))
+      }
+    )
+  }
+  if (with_descriptive) {
+    descriptive <- do.call(
+      coupling_descriptive,
+      c(list(dt = dt, source = source, ref = ref, title = title, output_in_character = FALSE), descriptive_args)
+    )
+    weights$descriptive <- data.table::data.table(Source = descriptive$Source, Target = descriptive$Target,
+                                                  weight = descriptive$weight)
+    data.table::setorder(weights$descriptive, Source, Target)
+  }
+  weights[methods]
 }
 
 # Checks that `edges` is a named list of edge tables and returns it as a list of data.tables
@@ -96,7 +160,7 @@ check_edge_list <- function(edges, min_length = 1, call = rlang::caller_env()) {
       is.null(names(edges)) || any(names(edges) == "") || anyDuplicated(names(edges)) > 0) {
     cli::cli_abort(
       c("{.arg edges} must be a named list of at least {min_length} edge table{?s}.",
-        "i" = "Build it with {.fn compute_couplings}, or with {.code list(angle = biblio_coupling(...), strength = coupling_strength(...))}."),
+        "i" = "Build it with {.fn compute_couplings}, or with {.code list(angle = coupling_angle(...), strength = coupling_strength(...))}."),
       call = call
     )
   }
@@ -109,24 +173,54 @@ check_edge_list <- function(edges, min_length = 1, call = rlang::caller_env()) {
   })
 }
 
-merge_weights <- function(edges)
+merge_weights <- function(edges, rank = TRUE, rank_gap = NULL, ties = c("average", "min", "max", "first"))
 {
-  #' Put the weights of several measures side by side
+  #' Put the weights of several measures side by side, with their ranks
   #'
   #' `r lifecycle::badge("experimental")`
   #'
   #' @description
   #' Joins a named list of edge tables (for instance the result of
   #' [compute_couplings()]) by pair of nodes, with one column of weights per
-  #' element. It is the table behind the other comparison functions, and
-  #' is useful to inspect the pairs on which two measures disagree.
+  #' element, and, by default, the rank of each pair under each measure and the
+  #' gap between the ranks of two measures. It is the table behind the other
+  #' comparison functions, and the tool to inspect the pairs on which two
+  #' measures disagree.
+  #'
+  #' @details
+  #' Weights of different measures do not have the same scale, but their ranks
+  #' do: rank 1 is the strongest pair of the measure. A pair with a high weight
+  #' for one measure and a low weight for another has a large *gap* between
+  #' the two ranks. The gap is
+  #'
+  #' \deqn{\mathrm{rank\_gap}_{AB} = \mathrm{rank}_{2}(A, B) - \mathrm{rank}_{1}(A, B)}
+  #'
+  #' with 1 and 2 the first and second elements of `rank_gap`: it is positive
+  #' when the second measure ranks the pair lower (as less close) than the
+  #' first one, negative when it ranks it higher. Sorting the table on the gap
+  #' (decreasing, then increasing) gives the pairs on which the measures
+  #' disagree the most.
+  #'
+  #' Ranks are computed on the pairs present in *all* the tables, so that they
+  #' are comparable: the pairs that a measure does not have (for instance
+  #' those of [coupling_descriptive()], which links documents that share no
+  #' reference) get `NA` ranks.
   #'
   #' @param edges A named list of edge tables, each with the columns `Source`,
   #'   `Target` and `weight`. The tables are not modified.
+  #' @param rank Logical. If `TRUE` (default), adds one `rank_<name>` column per
+  #'   element of `edges`.
+  #' @param rank_gap Character vector of two names of `edges`, or `NULL`
+  #'   (default). If given, adds the `rank_gap` column, `rank_<second> -
+  #'   rank_<first>`. If `NULL` and `edges` has exactly two elements, the gap
+  #'   between them (second minus first) is computed. It requires `rank = TRUE`.
+  #' @param ties How ties are ranked, as in [data.table::frank()]
+  #'   (`"average"` by default).
   #'
-  #' @return A `data.table` with `Source`, `Target` and one column per element
-  #'   of `edges`. A pair absent from a table (for instance because tables were
-  #'   built with different thresholds) gets `NA`.
+  #' @return A `data.table` with `Source`, `Target`, one column of weights per
+  #'   element of `edges` and, according to the arguments, the `rank_<name>`
+  #'   columns and `rank_gap`. A pair absent from a table (for instance because
+  #'   tables were built with different thresholds) gets `NA`.
   #'
   #' @family tools to compare coupling measures
   #'
@@ -134,20 +228,49 @@ merge_weights <- function(edges)
   #' library(biblionetwork)
   #' edges <- compute_couplings(Ref_stagflation, "Citing_ItemID_Ref", "ItemID_Ref",
   #'                            methods = c("angle", "strength"), weight_threshold = 2)
-  #' head(merge_weights(edges))
+  #' merged <- merge_weights(edges)
+  #' head(merged)
+  #'
+  #' # The pairs that the angle ranks high and the strength ranks low
+  #' head(merged[order(-rank_gap)])
   #'
   #' @export
 
   Source <- Target <- NULL
+  check_bool(rank, "rank")
+  ties <- rlang::arg_match(ties)
   edges <- check_edge_list(edges)
+  names_edges <- names(edges)
+  if (!is.null(rank_gap)) {
+    if (!rank) cli::cli_abort("{.arg rank_gap} needs {.code rank = TRUE}.")
+    if (!is.character(rank_gap) || length(rank_gap) != 2 || !all(rank_gap %in% names_edges)) {
+      cli::cli_abort("{.arg rank_gap} must be two names among {.val {names_edges}}.")
+    }
+  } else if (rank && length(edges) == 2) {
+    rank_gap <- names_edges
+  }
+
   tables <- Map(function(x, name) {
     x <- data.table::copy(x)
     data.table::setnames(x, "weight", name)
     x
-  }, edges, names(edges))
+  }, edges, names_edges)
   merged <- Reduce(function(a, b) merge(a, b, by = c("Source", "Target"), all = TRUE), tables)
   data.table::setorder(merged, Source, Target)
-  merged
+
+  if (rank) {
+    common <- stats::complete.cases(merged[, names_edges, with = FALSE])
+    for (name in names_edges) {
+      ranks <- rep(NA_real_, nrow(merged))
+      ranks[common] <- data.table::frank(-merged[[name]][common], ties.method = ties)
+      data.table::set(merged, j = paste0("rank_", name), value = ranks)
+    }
+    if (!is.null(rank_gap)) {
+      data.table::set(merged, j = "rank_gap",
+                      value = merged[[paste0("rank_", rank_gap[2])]] - merged[[paste0("rank_", rank_gap[1])]])
+    }
+  }
+  merged[]
 }
 
 summarise_weights <- function(edges, probs = c(0.01, 0.25, 0.5, 0.75, 0.99))
@@ -256,7 +379,7 @@ correlate_weights <- function(edges, method = c("spearman", "pearson", "kendall"
 
   method <- rlang::arg_match(method)
   edges <- check_edge_list(edges, min_length = 2)
-  wide <- merge_weights(edges)
+  wide <- merge_weights(edges, rank = FALSE)
   methods <- names(edges)
   wide <- wide[stats::complete.cases(wide[, methods, with = FALSE])]
   if (nrow(wide) < 2) {
@@ -305,7 +428,7 @@ overlap_top_weights <- function(edges, top = 0.1)
     cli::cli_abort("{.arg top} must be a number in ]0, 1].")
   }
   edges <- check_edge_list(edges, min_length = 2)
-  wide <- merge_weights(edges)
+  wide <- merge_weights(edges, rank = FALSE)
   methods <- names(edges)
   wide <- wide[stats::complete.cases(wide[, methods, with = FALSE])]
   if (nrow(wide) == 0) {
@@ -397,7 +520,7 @@ plot_weights <- function(edges, type = c("distribution", "scatter"), x = NULL, y
     if (!all(c(x, y) %in% names(edges))) {
       cli::cli_abort("{.arg x} and {.arg y} must be names of {.arg edges}: {.val {names(edges)}}.")
     }
-    wide <- merge_weights(edges[unique(c(x, y))])
+    wide <- merge_weights(edges[unique(c(x, y))], rank = FALSE)
     wide <- wide[stats::complete.cases(wide[, unique(c(x, y)), with = FALSE])]
     plot_data <- data.frame(
       rank_x = rank(wide[[x]]) / nrow(wide),

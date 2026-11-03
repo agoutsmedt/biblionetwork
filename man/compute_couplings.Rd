@@ -10,7 +10,9 @@ compute_couplings(
   ref,
   methods = c("angle", "strength", "similarity", "jaccard", "vladutz"),
   weight_threshold = 1,
-  network = c("coupling", "cocitation")
+  network = c("coupling", "cocitation"),
+  title = NULL,
+  descriptive_args = list()
 )
 }
 \arguments{
@@ -22,10 +24,13 @@ are the nodes of the coupling network.}
 
 \item{ref}{Character scalar. The column of the cited references.}
 
-\item{methods}{Character vector, among \code{"angle"} (\code{\link[=biblio_coupling]{biblio_coupling()}}),
+\item{methods}{Character vector, among \code{"angle"} (\code{\link[=coupling_angle]{coupling_angle()}}),
 \code{"strength"} (\code{\link[=coupling_strength]{coupling_strength()}}), \code{"similarity"}
-(\code{\link[=coupling_similarity]{coupling_similarity()}}), \code{"jaccard"} (\code{\link[=coupling_jaccard]{coupling_jaccard()}}) and
-\code{"vladutz"} (\code{\link[=coupling_vladutz]{coupling_vladutz()}}).}
+(\code{\link[=coupling_similarity]{coupling_similarity()}}), \code{"jaccard"} (\code{\link[=coupling_jaccard]{coupling_jaccard()}}),
+\code{"vladutz"} (\code{\link[=coupling_vladutz]{coupling_vladutz()}}) and \code{"descriptive"}
+(\code{\link[=coupling_descriptive]{coupling_descriptive()}}). The first five are computed by default;
+\code{"descriptive"} is not, since it is much more costly (see the details),
+and it needs \code{title}.}
 
 \item{weight_threshold}{Number. The minimum number of shared references
 for two documents to be linked (1 by default: any shared reference
@@ -37,12 +42,20 @@ to the normalised weight.}
 \item{network}{\code{"coupling"} (default): the nodes are the documents of
 \code{source}. \code{"cocitation"}: the nodes are the references of \code{ref}, and
 the measures are those of \code{\link[=biblio_cocitation]{biblio_cocitation()}}.}
+
+\item{title}{Character scalar. The column with the title of the cited
+references, needed (only) for \code{methods} including \code{"descriptive"}.}
+
+\item{descriptive_args}{A list of further arguments for
+\code{\link[=coupling_descriptive]{coupling_descriptive()}} (\code{targets}, \code{stopwords}, \code{min_weight},
+\code{max_documents}).}
 }
 \value{
 A named list with one \code{data.table} per method, each with columns
-\code{Source}, \code{Target} and \code{weight}. All the tables describe the same
-pairs of nodes (those sharing at least \code{weight_threshold} references,
-or co-cited at least \code{weight_threshold} times), in the same order.
+\code{Source}, \code{Target} and \code{weight}. The tables of the five measures
+describe the same pairs of nodes (those sharing at least
+\code{weight_threshold} references, or co-cited at least \code{weight_threshold}
+times), in the same order. The table of \code{"descriptive"} has its own pairs.
 }
 \description{
 Computes several measures of bibliographic coupling (or of co-citation)
@@ -55,6 +68,20 @@ computing one.
 }
 \details{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
+The five measures that start from the shared references are computed on
+the same pairs of nodes (those sharing at least \code{weight_threshold}
+references), so that their weights can be compared pair by pair.
+\code{"descriptive"} (the DescriptiveBC measure of
+\insertCite{liu2017}{biblionetwork}) is different in two ways. It
+couples documents that cite \emph{different but related} references, so its
+pairs are not the same ones: any pair of documents with similar titles of
+references is concerned, whatever the number of shared references (the
+\code{weight_threshold} does not apply to it). And its cost grows with the
+square of the number of documents: the function informs you when you
+ask for it, and you should give \code{targets} or work on a time window for a
+large corpus. \code{\link[=merge_weights]{merge_weights()}} puts the tables side by side, with \code{NA}
+for the pairs a measure does not have.
 }
 \section{Why use it in research}{
 
@@ -77,6 +104,17 @@ edges <- compute_couplings(Ref_stagflation,
 names(edges)
 summarise_weights(edges)
 correlate_weights(edges)
+
+# The titles-based measure is not computed by default; it needs the titles of the references
+\donttest{
+toy <- data.frame(
+  doc = c("a", "a", "b", "b"),
+  ref = c("r1", "r2", "r1", "r3"),
+  title = c("inflation expectations", "oil supply shocks",
+            "inflation expectations", "supply shocks prices")
+)
+compute_couplings(toy, "doc", "ref", methods = c("angle", "descriptive"), title = "title")
+}
 
 }
 \references{

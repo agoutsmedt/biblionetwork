@@ -1,36 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://agoutsmedt.github.io/biblionetwork//index.html</loc>
-  </url>
-  <url>
-    <loc>https://agoutsmedt.github.io/biblionetwork//reference/Authors_stagflation.html</loc>
-  </url>
-  <url>
-    <loc>https://agoutsmedt.github.io/biblionetwork//reference/biblio_cocitation.html</loc>
-  </url>
-  <url>
-    <loc>https://agoutsmedt.github.io/biblionetwork//reference/biblio_coupling.html</loc>
-  </url>
-  <url>
-    <loc>https://agoutsmedt.github.io/biblionetwork//reference/coauth_network.html</loc>
-  </url>
-  <url>
-    <loc>https://agoutsmedt.github.io/biblionetwork//reference/coupling_entity.html</loc>
-  </url>
-  <url>
-    <loc>https://agoutsmedt.github.io/biblionetwork//reference/coupling_similarity.html</loc>
-  </url>
-  <url>
-    <loc>https://agoutsmedt.github.io/biblionetwork//reference/coupling_strength.html</loc>
-  </url>
-  <url>
-    <loc>https://agoutsmedt.github.io/biblionetwork//reference/Nodes_stagflation.html</loc>
-  </url>
-  <url>
-    <loc>https://agoutsmedt.github.io/biblionetwork//reference/Ref_stagflation.html</loc>
-  </url>
-  <url>
-    <loc>https://agoutsmedt.github.io/biblionetwork//articles/Using_biblionetwork.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/404.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/CLAUDE.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/LICENSE-text.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/LICENSE.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/articles/Using_biblionetwork.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/articles/comparing_measures.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/articles/index.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/authors.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/index.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/news/index.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/Authors_stagflation.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/Nodes_stagflation.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/Ref_stagflation.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/biblio_cocitation.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/biblio_coupling.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/biblionetwork-package.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/coauth_network.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/compute_couplings.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/correlate_weights.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/coupling_angle.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/coupling_descriptive.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/coupling_entity.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/coupling_jaccard.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/coupling_similarity.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/coupling_strength.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/coupling_vladutz.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/descriptive_terms.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/entity_network.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/index.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/merge_weights.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/overlap_top_weights.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/plot_weights.html</loc></url>
+<url><loc>https://agoutsmedt.github.io/biblionetwork/reference/summarise_weights.html</loc></url>
 </urlset>
+

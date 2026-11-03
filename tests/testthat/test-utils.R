@@ -22,6 +22,6 @@ test_that("lengths of bibliographies are numeric, so that their products cannot 
   pairs <- coupling_core(toy_citations(), "doc", "ref", 1)
   expect_type(pairs$nb_ref_Source, "double")
 
-  entity_edges <- coupling_entity(toy_entities(), "art", "ref", "entity", method = "coupling_angle")
+  entity_edges <- entity_network(toy_entities(), "art", "ref", "entity", method = "angle")
   expect_all_true(is.finite(entity_edges$weight))
 })

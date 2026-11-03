@@ -11,7 +11,7 @@ coupling_jaccard <- function(dt, source, ref, weight_threshold = 1, output_in_ch
   #' bibliographies. It is a Jaccard index, as noted by
   #' \insertCite{shen2019}{biblionetwork} (who credit Egghe and Rousseau,
   #' 1990). It is the other classic normalisation of the number of shared
-  #' references, next to the cosine of [biblio_coupling()].
+  #' references, next to the cosine of [coupling_angle()].
   #'
   #' @section Why use it in research:
   #' Like the coupling angle, it corrects for the length of the bibliographies,
@@ -37,10 +37,10 @@ coupling_jaccard <- function(dt, source, ref, weight_threshold = 1, output_in_ch
   #'
   #' \deqn{w_{AB} = \frac{|R(A) \cap R(B)|}{L(A) + L(B) - |R(A) \cap R(B)|} = \frac{|R(A) \cap R(B)|}{|R(A) \cup R(B)|}}
   #'
-  #' Computing choices: see [biblio_coupling()]. \eqn{L(A)} counts all the
+  #' Computing choices: see [coupling_angle()]. \eqn{L(A)} counts all the
   #' references of \eqn{A}, including those cited by no other document.
   #'
-  #' @inheritParams biblio_coupling
+  #' @inheritParams coupling_angle
   #' @return A `data.table` with one row per pair of documents sharing at
   #'   least `weight_threshold` references: `from` and `to` (character if
   #'   `output_in_character = TRUE`), the `weight` (between 0 and 1) and the

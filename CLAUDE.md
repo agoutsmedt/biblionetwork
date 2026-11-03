@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-R package `biblionetwork` (0.1.1; authors Goutsmedt, Claveau, Truc; MIT; GitHub `agoutsmedt/biblionetwork`, pkgdown site; submitted to CRAN: see `cran-comments.md`, `CRAN-RELEASE`) that computes the edges of bibliometric networks (`biblio_coupling`, `biblio_cocitation`, `coauth_network`, `coupling_strength`, `coupling_similarity`, `coupling_entity`) with several weighting methods, optimised with `data.table`. `networkflow` imports it, and `socio_atproto` compares its own sparse-matrix implementation (`coupling_strength_edges()`) against `biblionetwork::coupling_strength()`: that project found the package version **explodes in memory on very popular targets** (a reference cited by many documents creates a huge number of pairs). Keep that in mind when testing and changing performance.
+R package `biblionetwork` (0.2.0; authors Goutsmedt, Claveau, Truc; MIT; GitHub `agoutsmedt/biblionetwork`, pkgdown site; submitted to CRAN: see `cran-comments.md`, `CRAN-RELEASE`) that computes the edges of bibliometric networks (`biblio_coupling` (general, `method =`), `coupling_angle` (the former `biblio_coupling`), `biblio_cocitation`, `coauth_network`, `coupling_strength`, `coupling_similarity`, `entity_network`, formerly `coupling_entity`, now deprecated) with several weighting methods, optimised with `data.table`. `networkflow` imports it, and `socio_atproto` compares its own sparse-matrix implementation (`coupling_strength_edges()`) against `biblionetwork::coupling_strength()`: that project found the package version **explodes in memory on very popular targets** (a reference cited by many documents creates a huge number of pairs). Keep that in mind when testing and changing performance.
 
 Install with `R CMD INSTALL ~/git_projects/biblionetwork`.
 
@@ -13,7 +13,7 @@ devtools::check()           # R CMD check (no tests/ yet)
 devtools::test()            # once tests/ exists
 devtools::test(filter = "coupling_strength")   # a single test file
 pkgdown::build_site()       # site in docs/ (config: _pkgdown.yml)
-rmarkdown::render("README.Rmd")                # README.md is generated
+quarto::quarto_render("README.qmd")           # README.md is generated
 ```
 
 ## Architecture
@@ -25,9 +25,9 @@ One exported function per file in `R/`, plus `R/utils.R` and `R/coupling_core.R`
 3. Count shared references per pair, apply `weight_threshold`, normalise (cosine `N / sqrt(L_A L_B)`, or the strength/similarity variants).
 4. `finalise_edges()`: `Source`/`Target`/`weight` (+ extra columns), or `from`/`to` (character if `output_in_character`) as copies. Orientation is `Source < Target`, except `coauth_network()` (`Source > Target`, kept from earlier versions).
 
-Package-level imports (`@import data.table`, `Rdpack`, `lifecycle`) live in `R/biblionetwork-package.R`, not in each function. The `*_stagflation.R` files in `R/` only document the datasets in `data/`. Non-standard-evaluation column names are declared as `NULL` at the top of each function to silence `R CMD check` notes (add new ones there; the helpers in `utils.R` do the same). Vignette: `vignettes/Using_biblionetwork.Rmd`. `docs/`, `revdep/`, `data-raw/` are excluded from the build via `.Rbuildignore`; `.travis.yml` is obsolete (no GitHub Actions workflow).
+Package-level imports (`@import data.table`, `Rdpack`, `lifecycle`) live in `R/biblionetwork-package.R`, not in each function. The `*_stagflation.R` files in `R/` only document the datasets in `data/`. Non-standard-evaluation column names are declared as `NULL` at the top of each function to silence `R CMD check` notes (add new ones there; the helpers in `utils.R` do the same). Vignettes and README are Quarto (`vignettes/*.qmd`, `README.qmd` -> `README.md`; set `QUARTO_PATH` to a quarto binary, e.g. `~/quarto-1.10.18-linux-amd64/quarto-1.10.18/bin/quarto`, to build them). The site theme is in `pkgdown/extra.scss`. `docs/`, `revdep/`, `data-raw/` are excluded from the build via `.Rbuildignore`; `.travis.yml` is obsolete (no GitHub Actions workflow).
 
-## State (2026-11-01, version 0.1.1.9000)
+## State (2026-11-03, version 0.2.0)
 
 Fixed in this development version (details in `NEWS.md`): `coupling_similarity()`
 (idf bug, `nb_doc` a 1x1 table recycled with its first value, **and** wrong
@@ -50,7 +50,7 @@ Open points:
 - **networkflow documents the old `coupling_similarity()`** (`R/build_dynamic_networks.R`
   details: "S_i proportional to L_i", scale of the weights, CPM advice): update it.
 - Speed/memory: `coupling_core()` uses sparse matrices (`Matrix::tcrossprod`); the
-  quantities of the measures are the products B diag(w) t(B). `coupling_entity()` (the `min` rule becomes a sum over
+  quantities of the measures are the products B diag(w) t(B). `entity_network()` (the `min` rule becomes a sum over
   levels k reached by both entities) and `coauth_network()` use `sparse_product()`
   too. Benchmarks in `NEWS.md`.
 - Table 4 of Shen et al. has an apparent typo (cell VII-II, 0.201 instead of
@@ -67,7 +67,7 @@ Open points:
 ## Conventions
 
 - The roxygen block sits **inside** the function body in this package (`f <- function(...) { #' ... }`): keep that style when editing, and regenerate with `devtools::document()`; never edit `NAMESPACE`/`man/` by hand. References use Rdpack (`\insertCite{}{biblionetwork}`, `inst/REFERENCES.bib`).
-- `README.md` is rendered from `README.Rmd`. Update `NEWS.md` and `cran-comments.md` for releases. British English.
+- `README.md` is rendered from `README.qmd`. Update `NEWS.md` and `cran-comments.md` for releases. British English.
 - Example data (`data/*_stagflation.rda`, built in `data-raw/`) are the examples of the documentation and the natural test fixtures; do not change them without rebuilding from `data-raw/`.
 - `data.table` functions can modify by reference: check that functions never alter the user's input table (a classic bug to test).
 

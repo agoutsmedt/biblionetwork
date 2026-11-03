@@ -4,7 +4,7 @@ test_that("compute_couplings() returns the same values as the individual functio
 
   expect_named(edges, c("angle", "strength", "similarity", "jaccard", "vladutz"))
   expect_equal(sort_edges(edges$angle)$weight,
-               sort_edges(biblio_coupling(toy, "doc", "ref", output_in_character = FALSE))$weight)
+               sort_edges(coupling_angle(toy, "doc", "ref", output_in_character = FALSE))$weight)
   expect_equal(sort_edges(edges$strength)$weight,
                sort_edges(coupling_strength(toy, "doc", "ref", output_in_character = FALSE))$weight)
   expect_equal(sort_edges(edges$similarity)$weight,
@@ -31,11 +31,59 @@ test_that("merge_weights() puts the weights side by side", {
   edges <- compute_couplings(toy_citations(), "doc", "ref", methods = c("angle", "jaccard"))
   wide <- merge_weights(edges)
 
-  expect_named(wide, c("Source", "Target", "angle", "jaccard"))
+  expect_named(wide, c("Source", "Target", "angle", "jaccard", "rank_angle", "rank_jaccard", "rank_gap"))
   expect_equal(nrow(wide), 3)
+  expect_named(merge_weights(edges, rank = FALSE), c("Source", "Target", "angle", "jaccard"))
   # pairs absent from one table are kept, with NA
   partial <- list(a = edges$angle, b = edges$angle[1:2])
   expect_equal(sum(is.na(merge_weights(partial)$b)), 1)
+})
+
+test_that("merge_weights() ranks the pairs (1 = strongest) and measures the gap between two measures", {
+  edges <- list(
+    a = data.frame(Source = 1:4, Target = 5:8, weight = c(4, 3, 2, 1)),
+    b = data.frame(Source = 1:4, Target = 5:8, weight = c(1, 3, 2, 4)),
+    c = data.frame(Source = 1:4, Target = 5:8, weight = c(4, 3, 2, 1))
+  )
+  wide <- merge_weights(edges, rank_gap = c("a", "b"))
+
+  expect_equal(wide$rank_a, c(1, 2, 3, 4))
+  expect_equal(wide$rank_b, c(4, 2, 3, 1))
+  # second minus first: positive when b ranks the pair lower than a
+  expect_equal(wide$rank_gap, c(3, 0, 0, -3))
+  # no automatic gap with three measures, an automatic one with two
+  expect_false("rank_gap" %in% names(merge_weights(edges)))
+  expect_equal(merge_weights(edges[1:2])$rank_gap, c(3, 0, 0, -3))
+  expect_error(merge_weights(edges, rank_gap = c("a", "z")), "rank_gap")
+  expect_error(merge_weights(edges, rank = FALSE, rank_gap = c("a", "b")), "rank")
+})
+
+test_that("ranks are computed on the pairs that all the tables share", {
+  edges <- list(
+    a = data.frame(Source = 1:3, Target = 4:6, weight = c(3, 2, 1)),
+    b = data.frame(Source = 1:2, Target = 4:5, weight = c(1, 2))
+  )
+  wide <- merge_weights(edges)
+
+  expect_equal(wide$rank_a, c(1, 2, NA))
+  expect_equal(wide$rank_b, c(2, 1, NA))
+})
+
+test_that("compute_couplings() can add the descriptive measure, with an information message", {
+  toy <- data.frame(
+    doc = c("a", "a", "b", "b"),
+    ref = c("r1", "r2", "r1", "r3"),
+    title = c("inflation expectations", "oil supply shocks", "inflation expectations", "supply shocks prices")
+  )
+  expect_named(compute_couplings(toy, "doc", "ref"), c("angle", "strength", "similarity", "jaccard", "vladutz"))
+  expect_message(
+    edges <- compute_couplings(toy, "doc", "ref", methods = c("angle", "descriptive"), title = "title"),
+    class = "biblionetwork_descriptive_cost"
+  )
+  expect_named(edges, c("angle", "descriptive"))
+  expect_equal(edges$descriptive$weight, (1 + 0.5 + 1 + 0.5) / 4)
+  expect_error(suppressMessages(compute_couplings(toy, "doc", "ref", methods = "descriptive")), "title")
+  expect_error(suppressMessages(compute_couplings(toy, "doc", "ref", methods = "descriptive", title = "title", network = "cocitation")), "cocitation")
 })
 
 test_that("summarise_weights() describes each distribution", {

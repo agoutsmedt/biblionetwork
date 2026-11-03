@@ -1,10 +1,10 @@
-pandoc: 2.11.4
-pkgdown: 1.6.1
+pandoc: 3.7.0.2
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
+  comparing_measures: comparing_measures.html
   Using_biblionetwork: Using_biblionetwork.html
-last_built: 2021-04-12T16:16Z
+last_built: 2026-11-03T14:38Z
 urls:
-  reference: https://agoutsmedt.github.io/biblionetwork//reference
-  article: https://agoutsmedt.github.io/biblionetwork//articles
-
+  reference: https://agoutsmedt.github.io/biblionetwork/reference
+  article: https://agoutsmedt.github.io/biblionetwork/articles

@@ -1,7 +1,9 @@
 ^biblionetwork\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
-^README\.Rmd$
+^README\.qmd$
+^README\.html$
+^\.quarto$
 ^data-raw$
 ^_pkgdown\.yml$
 ^docs$
@@ -9,6 +11,7 @@
 ^cran-comments\.md$
 ^\.travis\.yml$
 ^revdep$
-^CRAN-RELEASE$
 ^CLAUDE\.md$
 ^\.vscode$
+^vignettes/\.quarto$
+^vignettes/.*_files$

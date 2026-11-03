@@ -20,13 +20,13 @@ projects, clusters and draws the networks.
 \section{Which function for which question?}{
 \tabular{lll}{
    Nodes \tab Tie \tab Function \cr
-   citing documents \tab share references \insertCite{kessler1963}{biblionetwork} \tab \code{\link[=biblio_coupling]{biblio_coupling()}} (cosine \insertCite{sen1983}{biblionetwork}) \cr
+   citing documents \tab share references \insertCite{kessler1963}{biblionetwork} \tab \code{\link[=biblio_coupling]{biblio_coupling()}}, by default the cosine of \code{\link[=coupling_angle]{coupling_angle()}} \insertCite{sen1983}{biblionetwork} \cr
    citing documents \tab share \emph{rare} references \tab \code{\link[=coupling_strength]{coupling_strength()}}, \code{\link[=coupling_similarity]{coupling_similarity()}} \insertCite{shen2019}{biblionetwork} \cr
    citing documents \tab other classic normalisations \tab \code{\link[=coupling_jaccard]{coupling_jaccard()}} \insertCite{sen1983}{biblionetwork}, \code{\link[=coupling_vladutz]{coupling_vladutz()}} \insertCite{vladutz1984}{biblionetwork} \cr
    citing documents \tab cite different but related references (similar titles) \tab \code{\link[=coupling_descriptive]{coupling_descriptive()}} \insertCite{liu2017}{biblionetwork} \cr
-   entities (authors, journals...) \tab their documents share references \tab \code{\link[=coupling_entity]{coupling_entity()}} \cr
    cited references \tab are cited together \insertCite{small1973}{biblionetwork} \tab \code{\link[=biblio_cocitation]{biblio_cocitation()}} \cr
    authors, institutions, countries \tab co-sign documents \tab \code{\link[=coauth_network]{coauth_network()}} \cr
+   entities (authors, journals...) \tab their documents cite the same references, or are cited together \tab \code{\link[=entity_network]{entity_network()}}: not a new measure, the aggregation of the measures above at the level of entities \cr
 }
 
 

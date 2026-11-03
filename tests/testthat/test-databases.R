@@ -54,7 +54,7 @@ test_that("the coupling functions respect their invariants on a Scopus sample", 
   skip_if(nrow(links) == 0, "no references in the sample")
   links_before <- data.table::copy(links)
 
-  angle <- biblio_coupling(links, "doc", "ref", normalized_weight_only = FALSE, output_in_character = FALSE)
+  angle <- coupling_angle(links, "doc", "ref", normalized_weight_only = FALSE, output_in_character = FALSE)
   strength <- coupling_strength(links, "doc", "ref", output_in_character = FALSE)
   similarity <- coupling_similarity(links, "doc", "ref", output_in_character = FALSE)
 
@@ -68,7 +68,7 @@ test_that("the coupling functions respect their invariants on a Scopus sample", 
   expect_equal(nrow(strength), nrow(angle))
   expect_equal(nrow(similarity), nrow(angle))
   # raising the threshold only removes edges
-  strict <- biblio_coupling(links, "doc", "ref", weight_threshold = 3, output_in_character = FALSE)
+  strict <- coupling_angle(links, "doc", "ref", weight_threshold = 3, output_in_character = FALSE)
   expect_lt(nrow(strict), nrow(angle))
   expect_all_true(strict$weight %in% angle$weight)
   expect_equal(nrow(strict), sum(angle$nb_shared_references >= 3))
@@ -128,8 +128,8 @@ test_that("co-citation and entity coupling run on a Scopus sample", {
   authorships <- scopus_sample(con)$authorships
   first_author <- authorships[!duplicated(authorships$paper), ]
   entity_links <- merge(links, first_author, by.x = "doc", by.y = "paper")
-  edges <- coupling_entity(entity_links, "doc", "ref", "author", weight_threshold = 2,
-                           method = "coupling_angle")
+  edges <- entity_network(entity_links, "doc", "ref", "author", weight_threshold = 2,
+                           method = "angle")
   expect_gt(nrow(edges), 0)
   expect_all_true(edges$Source < edges$Target)
   expect_all_true(is.finite(edges$weight) & edges$weight > 0)
@@ -140,7 +140,7 @@ test_that("the coupling functions respect their invariants on a Web of Science s
   links <- wos_sample(con)$citations
   skip_if(nrow(links) == 0, "no references in the sample")
 
-  angle <- biblio_coupling(links, "doc", "ref", normalized_weight_only = FALSE, output_in_character = FALSE)
+  angle <- coupling_angle(links, "doc", "ref", normalized_weight_only = FALSE, output_in_character = FALSE)
   strength <- coupling_strength(links, "doc", "ref", output_in_character = FALSE)
   similarity <- coupling_similarity(links, "doc", "ref", output_in_character = FALSE)
 
@@ -151,7 +151,7 @@ test_that("the coupling functions respect their invariants on a Web of Science s
   expect_all_true(angle$weight <= 1 + 1e-12)
 
   # character identifiers give the same edges
-  as_character <- biblio_coupling(links, "doc", "ref", output_in_character = TRUE)
+  as_character <- coupling_angle(links, "doc", "ref", output_in_character = TRUE)
   expect_equal(nrow(as_character), nrow(angle))
   expect_type(as_character$from, "character")
 })
@@ -182,5 +182,42 @@ test_that("co-authorship respects its invariants on Web of Science and Scopus sa
     expect_equal(sum(refined$weight), n_coauthored, info = name)
     expect_equal(nrow(full), nrow(refined), info = name)
     expect_all_true(cosine$weight <= 1 + 1e-12)
+  }
+})
+
+# Every method, checked edge by edge against the definition written with sets
+# (not with the sparse matrices of the package), on both databases.
+set_based_weight <- function(links, a, b, method) {
+  links <- unique(links[!is.na(links$doc) & !is.na(links$ref) & links$doc != links$ref, ])
+  n_docs <- length(unique(links$doc))
+  freq <- table(links$ref)
+  ra <- links$ref[links$doc == a]
+  rb <- links$ref[links$doc == b]
+  shared <- intersect(ra, rb)
+  idf <- function(r) log(n_docs / as.numeric(freq[as.character(r)]))
+  s_a <- sum(idf(ra))
+  s_b <- sum(idf(rb))
+  switch(
+    method,
+    angle = length(shared) / sqrt(length(ra) * length(rb)),
+    strength = sum(idf(shared)) / (length(ra) * length(rb)),
+    similarity = sum(idf(shared)) / sqrt(s_a * s_b),
+    jaccard = length(shared) / (length(ra) + length(rb) - length(shared)),
+    vladutz = 4 / (length(ra) + length(rb)) * sum(1 / as.numeric(freq[as.character(shared)]))
+  )
+}
+
+test_that("every coupling method matches its set-based definition on real data", {
+  withr::local_seed(11)
+  for (database in c("~/data/scopus/scopus.duckdb", "~/data/wos/wos.duckdb")) {
+    con <- local_database(database)
+    links <- if (grepl("scopus", database)) scopus_sample(con)$citations else wos_sample(con)$citations
+    skip_if(nrow(links) == 0, "no references in the sample")
+    for (method in c("angle", "strength", "similarity", "jaccard", "vladutz")) {
+      edges <- biblio_coupling(links, "doc", "ref", method = method, weight_threshold = 2, output_in_character = FALSE)
+      rows <- sample(nrow(edges), min(30, nrow(edges)))
+      expected <- unname(mapply(function(a, b) set_based_weight(links, a, b, method), edges$Source[rows], edges$Target[rows]))
+      expect_equal(edges$weight[rows], expected, info = paste(database, method))
+    }
   }
 })

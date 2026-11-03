@@ -47,7 +47,7 @@ two documents divided by the number of references in the \emph{union} of their
 bibliographies. It is a Jaccard index, as noted by
 \insertCite{shen2019}{biblionetwork} (who credit Egghe and Rousseau,
 1990). It is the other classic normalisation of the number of shared
-references, next to the cosine of \code{\link[=biblio_coupling]{biblio_coupling()}}.
+references, next to the cosine of \code{\link[=coupling_angle]{coupling_angle()}}.
 }
 \details{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
@@ -56,7 +56,7 @@ With \eqn{R(A)} the references of \eqn{A} and \eqn{L(A) = |R(A)|},
 
 \deqn{w_{AB} = \frac{|R(A) \cap R(B)|}{L(A) + L(B) - |R(A) \cap R(B)|} = \frac{|R(A) \cap R(B)|}{|R(A) \cup R(B)|}}
 
-Computing choices: see \code{\link[=biblio_coupling]{biblio_coupling()}}. \eqn{L(A)} counts all the
+Computing choices: see \code{\link[=coupling_angle]{coupling_angle()}}. \eqn{L(A)} counts all the
 references of \eqn{A}, including those cited by no other document.
 }
 \section{Why use it in research}{
@@ -96,8 +96,8 @@ coupling_jaccard(toy, source = "doc", ref = "ref")
 \seealso{
 Other coupling measures:
 \code{\link[=biblio_coupling]{biblio_coupling()}},
+\code{\link[=coupling_angle]{coupling_angle()}},
 \code{\link[=coupling_descriptive]{coupling_descriptive()}},
-\code{\link[=coupling_entity]{coupling_entity()}},
 \code{\link[=coupling_similarity]{coupling_similarity()}},
 \code{\link[=coupling_strength]{coupling_strength()}},
 \code{\link[=coupling_vladutz]{coupling_vladutz()}},

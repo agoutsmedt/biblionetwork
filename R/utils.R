@@ -70,6 +70,7 @@ prepare_links <- function(dt, first, second, new_names = c("id_art", "id_ref"),
 
   links <- data.table::as.data.table(dt)[, c(first, second), with = FALSE]
   data.table::setnames(links, c(first, second), new_names)
+  factors_to_character(links, new_names)
 
   # Missing identifiers cannot be nodes of a network.
   missing_rows <- links[, which(is.na(.SD[[1L]]) | is.na(.SD[[2L]]))]
@@ -87,6 +88,15 @@ prepare_links <- function(dt, first, second, new_names = c("id_art", "id_ref"),
     links <- links[links[[new_names[1]]] != links[[new_names[2]]]]
   }
   links
+}
+
+# Identifiers stored as factors are turned into characters (in place, on a copy
+# made by the caller): two factors with different levels cannot be compared.
+factors_to_character <- function(dt, cols) {
+  for (col in cols) {
+    if (is.factor(dt[[col]])) data.table::set(dt, j = col, value = as.character(dt[[col]]))
+  }
+  invisible(dt)
 }
 
 # A zero-row edge table with the columns of a result.

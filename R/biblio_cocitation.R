@@ -85,10 +85,10 @@ biblio_cocitation <- function(dt, source, ref, normalized_weight_only = TRUE, we
   #'   a zero-row table is returned with a warning explaining why.
   #'
   #' Memory and speed: the pairs are computed with sparse matrices, as in
-  #' [biblio_coupling()]; a few documents with extremely long bibliographies
+  #' [coupling_angle()]; a few documents with extremely long bibliographies
   #' still create many pairs. Consider removing them first.
   #'
-  #' @inheritParams biblio_coupling
+  #' @inheritParams coupling_angle
   #' @param ref Character scalar. The column of the cited references: they are
   #'   the nodes of the co-citation network.
   #' @param normalized_weight_only Logical. If `FALSE`, the number of

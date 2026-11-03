@@ -109,3 +109,15 @@ test_that("descriptive_terms() ranks the words of the matching references", {
   expect_lte(nrow(descriptive_terms(toy_titles(), "doc", "ref", "title", "a", "b", n_terms = 2)), 2)
   expect_error(descriptive_terms(toy_titles(), "doc", "ref", "title", "a", "zzz"), "documents of")
 })
+
+test_that("a pair of documents appears once, even if both documents are targets", {
+  toy <- data.frame(
+    doc = c("a", "a", "b", "b", "c", "c"),
+    ref = c("r1", "r2", "r1", "r3", "r2", "r3"),
+    title = c("inflation expectations", "oil supply shocks", "inflation expectations",
+              "supply shocks prices", "oil supply shocks", "supply shocks prices")
+  )
+  edges <- coupling_descriptive(toy, "doc", "ref", "title", output_in_character = FALSE)
+  expect_equal(nrow(edges), nrow(unique(edges[, c("Source", "Target")])))
+  expect_equal(nrow(edges), 3)
+})

@@ -142,7 +142,7 @@ coupling_descriptive(toy, source = "doc", ref = "ref", title = "title")
 \seealso{
 Other coupling measures:
 \code{\link[=biblio_coupling]{biblio_coupling()}},
-\code{\link[=coupling_entity]{coupling_entity()}},
+\code{\link[=coupling_angle]{coupling_angle()}},
 \code{\link[=coupling_jaccard]{coupling_jaccard()}},
 \code{\link[=coupling_similarity]{coupling_similarity()}},
 \code{\link[=coupling_strength]{coupling_strength()}},

@@ -42,7 +42,7 @@ coupling_vladutz <- function(dt, source, ref, weight_threshold = 1, output_in_ch
   #' have \eqn{f_j \geq 2}, the weight is never above 1. Computing choices: see
   #' [coupling_strength()].
   #'
-  #' @inheritParams biblio_coupling
+  #' @inheritParams coupling_angle
   #' @return A `data.table` with one row per pair of documents sharing at
   #'   least `weight_threshold` references: `from` and `to` (character if
   #'   `output_in_character = TRUE`), the `weight` and the original

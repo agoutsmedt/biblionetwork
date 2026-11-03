@@ -1,8 +1,20 @@
-# biblionetwork 0.1.1.9000 (development)
+# biblionetwork 0.2.0
+
+## Changes of the interface
+
+* `biblio_coupling()` is now the **general** coupling function, with a `method` argument (`"angle"`, `"strength"`, `"similarity"`, `"jaccard"`, `"vladutz"`). The former `biblio_coupling()` (the coupling angle of Sen and Gan, 1983) is renamed `coupling_angle()`. Calls that leave `method` at its default and name their other arguments give the same result; a call passing `normalized_weight_only` by position (4th argument) must now name it, since `method` comes first.
+* `coupling_entity()` is renamed `entity_network()` and is deprecated (it still works, with the former method names): it is not a measure of its own, but the aggregation of the coupling measures at the level of entities. It now accepts all the methods of `biblio_coupling()` (`"angle"`, `"strength"`, `"similarity"`, `"jaccard"`, `"vladutz"`; the last two with the minimum rule of Zhao and Strotmann by analogy, not taken from the paper) and a `network` argument, `"coupling"` or `"cocitation"`.
+* `compute_couplings()` accepts `methods = "descriptive"` ([`coupling_descriptive()`]), not computed by default: it informs the user of its cost and of the fact that its pairs differ, and needs `title` (further arguments in `descriptive_args`).
+* `merge_weights()` now adds the rank of each pair under each measure (`rank_<name>`, computed on the pairs present in all the tables) and the `rank_gap` between two measures; the vignettes use it to find the pairs on which two measures disagree.
+* The documentation of functions displays the mathematical formulas (KaTeX) on the website.
+* The vignettes and the README are now written in Quarto (`.qmd`): `Using_biblionetwork` is rewritten (more details on co-authorship counting, a section on backbones, a section on uses beyond bibliometrics), and the figures of the vignettes are checked.
+* New dependency in `Suggests`: `quarto` (vignette builder) and `backbone` (vignette example).
 
 ## Bug fixes
 
-* `coupling_similarity()` was wrong in two ways. The idf of every reference was computed from the first reference of the table only (`nb_doc` was a one-cell table, recycled with its first value), so that the weights were proportional to those of `coupling_strength()`. And the denominator was the product of the informational lengths instead of its square root, so that the measure was not the cosine of Shen et al. (2019, Eq. 8) that the documentation announced. It now computes `sum_shared idf / sqrt(S(A) S(B))`, a cosine bounded by 1, checked against the formula and the worked example of the paper. **The weights of the previous versions are wrong and are not comparable with the new ones.**
+* Identifiers stored as factors with different levels made every function fail ("level sets of factors are different"): they are now turned into characters.
+* `coupling_descriptive()` returned a pair of documents twice when both were targets (weights equal up to floating-point error, so `unique()` kept both).
+* `coupling_similarity()` was wrong in two ways. The idf of every reference was computed from the first reference of the table only (`nb_doc` was a one-cell table, recycled with its first value), so that the weights were proportional to those of `coupling_strength()`. And the denominator was the product of the informational lengths instead of its square root, so that the measure was not the cosine of Shen et al. (2019, Eq. 8) that the documentation announced. It now computes `sum_shared idf / sqrt(S(A) S(B))`, a cosine bounded by 1, checked against the formula and the worked example of the paper.
 * `coupling_strength()` computed `N` (the number of documents) after removing the references cited once, forgetting the documents without any shared reference. `N` now counts all the citing documents, as documented: weights change slightly (about 2% on average on the stagflation data).
 * `coupling_entity()` used a global `min()` instead of the element-wise `pmin()` for the number of times two entities cite a reference: the weights were wrong as soon as an entity cited several references several times.
 * `biblio_cocitation(normalized_weight_only = FALSE, output_in_character = FALSE)` failed (wrong column name).
@@ -28,12 +40,9 @@
 ## Other changes
 
 * The document-level coupling functions share one internal engine (`R/coupling_core.R`).
-* The package now lists `aurelien.goutsmedt@ichec.be` as the only contact address.
-
 * A new vignette, `comparing_measures`, compares all the measures on the stagflation corpus.
 * New internal helpers (`R/utils.R`) shared by all the functions: the input is checked with informative `cli` errors (missing columns, wrong arguments), rows with missing identifiers are dropped with a warning, and the pairs are built in one place.
 * `coauth_network()`: an unknown `method` is now an error instead of silently using the refined fractional counting.
-* Documentation rewritten to explain the research use of each measure, the formalisation and the computing choices, with references to the literature; new package-level overview and a section in the vignette to choose a measure.
 * First test suite (`testthat` 3): hand-computed toy examples, invariants, cross-checks with a slow implementation, and tests on samples of the authors' Scopus and Web of Science databases (skipped where the databases are absent).
 * The package now depends on R >= 4.1.0 and imports `cli`, `rlang` and `Matrix`.
 

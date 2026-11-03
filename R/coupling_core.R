@@ -1,4 +1,4 @@
-# The engine of the document-level coupling measures (biblio_coupling(),
+# The engine of the document-level coupling measures (coupling_angle(),
 # coupling_strength(), coupling_similarity(), coupling_jaccard(),
 # coupling_vladutz(), compute_couplings()) and, with the two columns swapped,
 # of the co-citation measures. All these measures are functions of the same

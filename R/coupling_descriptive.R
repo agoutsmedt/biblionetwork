@@ -91,7 +91,7 @@ coupling_descriptive <- function(dt, source, ref, title, targets = NULL, min_wei
   #' reduces the number of similar references a lot. By default, more than
   #' `max_documents` documents without `targets` is an error.
   #'
-  #' @inheritParams biblio_coupling
+  #' @inheritParams coupling_angle
   #' @param title Character scalar. The column with the title of the cited
   #'   reference (one title per reference).
   #' @param targets Optional vector of identifiers of documents (values of
@@ -184,7 +184,10 @@ coupling_descriptive <- function(dt, source, ref, title, targets = NULL, min_wei
     both[, list(i = pmin(i, a), j = pmax(i, a),
                 weight = (fwd + bwd) / (doc_length[a] + doc_length[i]))]
   })
-  pairs <- unique(data.table::rbindlist(results))
+  # A pair compared from both of its documents appears twice, with weights that
+  # are equal up to floating point error (unique() would keep both): keep one
+  pairs <- data.table::rbindlist(results)
+  pairs <- pairs[, list(weight = mean(weight)), by = list(i, j)]
   pairs <- pairs[weight > min_weight]
 
   if (nrow(pairs) == 0) {

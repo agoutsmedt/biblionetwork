@@ -15,13 +15,13 @@
 #' @section Which function for which question?:
 #' | Nodes | Tie | Function |
 #' |---|---|---|
-#' | citing documents | share references \insertCite{kessler1963}{biblionetwork} | [biblio_coupling()] (cosine \insertCite{sen1983}{biblionetwork}) |
+#' | citing documents | share references \insertCite{kessler1963}{biblionetwork} | [biblio_coupling()], by default the cosine of [coupling_angle()] \insertCite{sen1983}{biblionetwork} |
 #' | citing documents | share *rare* references | [coupling_strength()], [coupling_similarity()] \insertCite{shen2019}{biblionetwork} |
 #' | citing documents | other classic normalisations | [coupling_jaccard()] \insertCite{sen1983}{biblionetwork}, [coupling_vladutz()] \insertCite{vladutz1984}{biblionetwork} |
 #' | citing documents | cite different but related references (similar titles) | [coupling_descriptive()] \insertCite{liu2017}{biblionetwork} |
-#' | entities (authors, journals...) | their documents share references | [coupling_entity()] |
 #' | cited references | are cited together \insertCite{small1973}{biblionetwork} | [biblio_cocitation()] |
 #' | authors, institutions, countries | co-sign documents | [coauth_network()] |
+#' | entities (authors, journals...) | their documents cite the same references, or are cited together | [entity_network()]: not a new measure, the aggregation of the measures above at the level of entities |
 #'
 #' The measures of coupling do not give the same weights: [compute_couplings()]
 #' computes several of them at once, and [summarise_weights()],

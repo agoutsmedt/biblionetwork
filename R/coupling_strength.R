@@ -10,7 +10,7 @@ coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_c
   #' says more about the proximity of two documents than sharing a reference
   #' that the whole corpus cites. The weight is the *coupling strength*
   #' \insertCite{vladutz1984,shen2019}{biblionetwork}, a refinement of the
-  #' coupling angle of [biblio_coupling()] that gives each shared reference a
+  #' coupling angle of [coupling_angle()] that gives each shared reference a
   #' weight decreasing with its number of citations, in the spirit of the
   #' inverse document frequency of information retrieval
   #' \insertCite{sparckjones1972,salton1988}{biblionetwork} (see
@@ -79,7 +79,7 @@ coupling_strength <- function(dt, source, ref, weight_threshold = 1, output_in_c
   #' exhaust the memory. Since such references have the smallest weights, they
   #' can often be removed before the call with little effect on the result.
   #'
-  #' @inheritParams biblio_coupling
+  #' @inheritParams coupling_angle
   #' @param weight_threshold Number. The minimum number of shared references
   #'   for two documents to be linked (1 by default). It applies to the number
   #'   of shared references, not to the weight.

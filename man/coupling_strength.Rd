@@ -43,7 +43,7 @@ references are not all equal: sharing a reference that few documents cite
 says more about the proximity of two documents than sharing a reference
 that the whole corpus cites. The weight is the \emph{coupling strength}
 \insertCite{vladutz1984,shen2019}{biblionetwork}, a refinement of the
-coupling angle of \code{\link[=biblio_coupling]{biblio_coupling()}} that gives each shared reference a
+coupling angle of \code{\link[=coupling_angle]{coupling_angle()}} that gives each shared reference a
 weight decreasing with its number of citations, in the spirit of the
 inverse document frequency of information retrieval
 \insertCite{sparckjones1972,salton1988}{biblionetwork} (see
@@ -138,8 +138,8 @@ coupling_strength(toy, source = "doc", ref = "ref")
 \seealso{
 Other coupling measures:
 \code{\link[=biblio_coupling]{biblio_coupling()}},
+\code{\link[=coupling_angle]{coupling_angle()}},
 \code{\link[=coupling_descriptive]{coupling_descriptive()}},
-\code{\link[=coupling_entity]{coupling_entity()}},
 \code{\link[=coupling_jaccard]{coupling_jaccard()}},
 \code{\link[=coupling_similarity]{coupling_similarity()}},
 \code{\link[=coupling_vladutz]{coupling_vladutz()}},

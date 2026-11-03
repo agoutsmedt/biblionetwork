@@ -40,7 +40,7 @@ and \code{Target}. Each pair appears once, with \code{Source < Target}.
 \description{
 The cosine counterpart of \code{\link[=coupling_strength]{coupling_strength()}}. It is the similarity
 measure \eqn{SIM_{CS}} of \insertCite{shen2019}{biblionetwork}, which
-generalises the coupling angle of \code{\link[=biblio_coupling]{biblio_coupling()}}
+generalises the coupling angle of \code{\link[=coupling_angle]{coupling_angle()}}
 \insertCite{sen1983}{biblionetwork}: instead of describing a document by
 a 0/1 vector over references, it uses a vector whose components are the
 (square roots of the) idf weights of the references, and takes the cosine
@@ -127,8 +127,8 @@ coupling_similarity(toy, source = "doc", ref = "ref")
 \seealso{
 Other coupling measures:
 \code{\link[=biblio_coupling]{biblio_coupling()}},
+\code{\link[=coupling_angle]{coupling_angle()}},
 \code{\link[=coupling_descriptive]{coupling_descriptive()}},
-\code{\link[=coupling_entity]{coupling_entity()}},
 \code{\link[=coupling_jaccard]{coupling_jaccard()}},
 \code{\link[=coupling_strength]{coupling_strength()}},
 \code{\link[=coupling_vladutz]{coupling_vladutz()}},

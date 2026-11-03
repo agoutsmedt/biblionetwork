@@ -4,14 +4,39 @@ home:
 
 url: https://agoutsmedt.github.io/biblionetwork/
 
+# Only the maintainer is shown in the sidebar and the footer of the site
 authors:
   Aurélien Goutsmedt:
     href: https://aurelien-goutsmedt.com
+  footer:
+    roles: [cre]
+  sidebar:
+    roles: [cre]
 
 template:
-  package: preferably
+  bootstrap: 5
+  math-rendering: katex
+  light-switch: true            # light/dark toggle in the navbar
+  theme: a11y-light             # code highlighting, light mode
+  theme-dark: a11y-dark         # code highlighting, dark mode
+  bslib:
+    # Palette inspired by Otto Dix, Portrait of the Journalist Sylvia von Harden (1926):
+    # ochre-cream ground, vermilion dress, bottle-green and near-black ink.
+    # Dark-mode overrides are in pkgdown/extra.scss.
+    bg: "#f5ecd7"
+    fg: "#201b16"
+    primary: "#a3261c"
+    secondary: "#2e5b4d"
+    success: "#2e5b4d"
+    info: "#2f5f7a"
+    warning: "#c98a1b"
+    danger: "#a3261c"
+    link-color: "#a3261c"
+    navbar-bg: "#201b16"
+    base_font: {google: "Source Sans 3"}
+    heading_font: {google: "Playfair Display"}
+    code_font: {google: "Fira Code"}
   params:
-    toggle: manual
     ganalytics: G-F6FLB1LSK1
     docsearch:
       api_key: cc247f47f9194be41d67c72615a371cf
@@ -28,13 +53,19 @@ template:
 reference:
 - title: "Bibliographic Coupling"
   desc: >
-    Functions for building coupling type networks.
+    One general function, `biblio_coupling()`, to link documents that cite the
+    same references, and one function per weighting method.
 - contents:
   - biblio_coupling
-  - starts_with("coupling")
+  - coupling_angle
+  - coupling_strength
+  - coupling_similarity
+  - coupling_jaccard
+  - coupling_vladutz
+  - coupling_descriptive
   - descriptive_terms
 - title: "Comparing Coupling Measures"
-  desc: "Compute several measures at once and compare the distributions and rankings of their weights."
+  desc: "Compute several measures at once and compare the distributions, the rankings and the gaps between the ranks of their weights."
 - contents:
   - compute_couplings
   - merge_weights
@@ -46,6 +77,12 @@ reference:
   desc: "Functions for building co-citation type networks."
 - contents:
   - biblio_cocitation
+- title: "Networks of Entities"
+  desc: >
+    Not a new measure: the coupling (or co-citation) measures, aggregated at
+    the level of authors, journals, institutions...
+- contents:
+  - entity_network
 - title: "Co-authorship Network"
   desc: "Functions for building co-authorship type networks."
 - contents:
@@ -57,5 +94,5 @@ reference:
 
 news:
   releases:
-  - text: "Version 0.1.1"
+  - text: "Version 0.1.0"
     href: https://aurelien-goutsmedt.com/post/release-biblionetwork/
