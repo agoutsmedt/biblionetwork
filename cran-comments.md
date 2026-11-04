@@ -8,11 +8,15 @@ This is an update (0.1.0 -> 0.2.0). The main changes (see NEWS.md):
 
 ## Test environments
 
-* local Fedora Linux, R 4.6.1 (to be completed with win-builder and R-hub before submission)
+* local Fedora Linux, R 4.6.1
+* win-builder (R-devel), via `devtools::check_win_devel()`
+* R-hub: Ubuntu Linux and macOS
 
 ## R CMD check results
 
 0 errors | 0 warnings | 0 notes
+
+This result is the same on the local machine, win-builder (R-devel) and R-hub (Ubuntu Linux and macOS).
 
 ## Notes
 
