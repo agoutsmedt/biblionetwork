@@ -1,3 +1,7 @@
+# biblionetwork (development version)
+
+* No change yet since 0.2.0 (released on CRAN on 4 November 2026).
+
 # biblionetwork 0.2.0
 
 ## Changes of the interface

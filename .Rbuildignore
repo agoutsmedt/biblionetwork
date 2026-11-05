@@ -9,7 +9,6 @@
 ^docs$
 ^pkgdown$
 ^cran-comments\.md$
-^\.travis\.yml$
 ^revdep$
 ^CLAUDE\.md$
 ^\.vscode$
@@ -17,3 +16,5 @@
 ^tests/testthat/helper-databases\.R$
 ^\.github$
 ^vignettes$
+^to_do\.qmd$
+^notes$

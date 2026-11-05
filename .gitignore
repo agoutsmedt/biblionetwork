@@ -6,3 +6,5 @@ inst/doc
 
 /.quarto/
 **/*.quarto_ipynb
+/to_do.qmd
+/notes/
