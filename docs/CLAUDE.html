@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="index.html">biblionetwork</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@
 <li>Count shared references per pair, apply <code>weight_threshold</code>, normalise (cosine <code>N / sqrt(L_A L_B)</code>, or the strength/similarity variants).</li>
 <li>
 <code>finalise_edges()</code>: <code>Source</code>/<code>Target</code>/<code>weight</code> (+ extra columns), or <code>from</code>/<code>to</code> (character if <code>output_in_character</code>) as copies. Orientation is <code>Source &lt; Target</code>, except <code><a href="reference/coauth_network.html">coauth_network()</a></code> (<code>Source &gt; Target</code>, kept from earlier versions).</li>
-</ol><p>Package-level imports (<code>@import data.table</code>, <code>Rdpack</code>, <code>lifecycle</code>) live in <code>R/biblionetwork-package.R</code>, not in each function. The <code>*_stagflation.R</code> files in <code>R/</code> only document the datasets in <code>data/</code>. Non-standard-evaluation column names are declared as <code>NULL</code> at the top of each function to silence <code>R CMD check</code> notes (add new ones there; the helpers in <code>utils.R</code> do the same). Vignettes and README are Quarto (<code>vignettes/*.qmd</code>, <code>README.qmd</code> -&gt; <code>README.md</code>; set <code>QUARTO_PATH</code> to a quarto binary, e.g. <code>~/quarto-1.10.18-linux-amd64/quarto-1.10.18/bin/quarto</code>, to build them). The site theme is in <code>pkgdown/extra.scss</code>. <code>docs/</code>, <code>revdep/</code>, <code>data-raw/</code> are excluded from the build via <code>.Rbuildignore</code>; <code>.travis.yml</code> is obsolete (no GitHub Actions workflow).</p>
+</ol><p>Package-level imports (<code>@import data.table</code>, <code>Rdpack</code>, <code>lifecycle</code>) live in <code>R/biblionetwork-package.R</code>, not in each function. The <code>*_stagflation.R</code> files in <code>R/</code> only document the datasets in <code>data/</code>. Non-standard-evaluation column names are declared as <code>NULL</code> at the top of each function to silence <code>R CMD check</code> notes (add new ones there; the helpers in <code>utils.R</code> do the same). Articles and README are Quarto (<code>vignettes/articles/*.qmd</code>, shown on the site only, not built by R CMD; <code>README.qmd</code> -&gt; <code>README.md</code>; set <code>QUARTO_PATH</code> to a quarto binary, e.g. <code>~/quarto-1.10.18-linux-amd64/quarto-1.10.18/bin/quarto</code>, to build them). The site theme is in <code>pkgdown/extra.scss</code>. <code>docs/</code>, <code>revdep/</code>, <code>data-raw/</code> are excluded from the build via <code>.Rbuildignore</code>; <code>.travis.yml</code> is obsolete (no GitHub Actions workflow).</p>
 </div>
 <div class="section level2">
 <h2 id="state-2026-11-03-version-020">State (2026-11-03, version 0.2.0)<a class="anchor" aria-label="anchor" href="#state-2026-11-03-version-020"></a></h2>

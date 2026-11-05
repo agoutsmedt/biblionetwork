@@ -16,13 +16,13 @@ Source:
 [`inst/CITATION`](https://github.com/agoutsmedt/biblionetwork/blob/HEAD/inst/CITATION)
 
 Goutsmedt A, Claveau F, Truc A (2026). *biblionetwork: Create Different
-Types of Bibliometric Networks*. R package version 0.2.0,
+Types of Bibliometric Networks*. R package version 0.2.0.9000,
 <https://github.com/agoutsmedt/biblionetwork>.
 
     @Manual{,
       title = {biblionetwork: Create Different Types of Bibliometric Networks},
       author = {Aurélien Goutsmedt and François Claveau and Alexandre Truc},
       year = {2026},
-      note = {R package version 0.2.0},
+      note = {R package version 0.2.0.9000},
       url = {https://github.com/agoutsmedt/biblionetwork},
     }

@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">biblionetwork</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,7 +55,11 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.0" id="biblionetwork-020">biblionetwork 0.2.0<a class="anchor" aria-label="anchor" href="#biblionetwork-020"></a></h2>
+<h2 class="pkg-version" data-toc-text="development version" id="biblionetwork-development-version">biblionetwork (development version)<a class="anchor" aria-label="anchor" href="#biblionetwork-development-version"></a></h2>
+<ul><li>No change yet since 0.2.0 (released on CRAN on 4 November 2026).</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="biblionetwork-020">biblionetwork 0.2.0<a class="anchor" aria-label="anchor" href="#biblionetwork-020"></a></h2><p class="text-muted">CRAN release: 2026-11-04</p>
 <div class="section level3">
 <h3 id="changes-of-the-interface-0-2-0">Changes of the interface<a class="anchor" aria-label="anchor" href="#changes-of-the-interface-0-2-0"></a></h3>
 <ul><li>
@@ -67,8 +71,7 @@
 <li>
 <code><a href="../reference/merge_weights.html">merge_weights()</a></code> now adds the rank of each pair under each measure (<code>rank_&lt;name&gt;</code>, computed on the pairs present in all the tables) and the <code>rank_gap</code> between two measures; the vignettes use it to find the pairs on which two measures disagree.</li>
 <li>The documentation of functions displays the mathematical formulas (KaTeX) on the website.</li>
-<li>The vignettes and the README are now written in Quarto (<code>.qmd</code>): <code>Using_biblionetwork</code> is rewritten (more details on co-authorship counting, a section on backbones, a section on uses beyond bibliometrics), and the figures of the vignettes are checked.</li>
-<li>New dependency in <code>Suggests</code>: <code>quarto</code> (vignette builder) and <code>backbone</code> (vignette example).</li>
+<li>The vignettes are now Quarto articles of the website (<code>vignettes/articles/</code>, not built by <code>R CMD build</code>, so that checking the package does not need Quarto) and the README is written in Quarto (<code>.qmd</code>): <code>Using_biblionetwork</code> is rewritten (more details on co-authorship counting, a section on backbones, a section on uses beyond bibliometrics), and the figures of the vignettes are checked.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-2-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0"></a></h3>

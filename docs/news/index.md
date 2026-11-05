@@ -1,6 +1,12 @@
 # Changelog
 
+## biblionetwork (development version)
+
+- No change yet since 0.2.0 (released on CRAN on 4 November 2026).
+
 ## biblionetwork 0.2.0
+
+CRAN release: 2026-11-04
 
 ### Changes of the interface
 
@@ -39,12 +45,12 @@
   two measures disagree.
 - The documentation of functions displays the mathematical formulas
   (KaTeX) on the website.
-- The vignettes and the README are now written in Quarto (`.qmd`):
-  `Using_biblionetwork` is rewritten (more details on co-authorship
-  counting, a section on backbones, a section on uses beyond
-  bibliometrics), and the figures of the vignettes are checked.
-- New dependency in `Suggests`: `quarto` (vignette builder) and
-  `backbone` (vignette example).
+- The vignettes are now Quarto articles of the website
+  (`vignettes/articles/`, not built by `R CMD build`, so that checking
+  the package does not need Quarto) and the README is written in Quarto
+  (`.qmd`): `Using_biblionetwork` is rewritten (more details on
+  co-authorship counting, a section on backbones, a section on uses
+  beyond bibliometrics), and the figures of the vignettes are checked.
 
 ### Bug fixes
 

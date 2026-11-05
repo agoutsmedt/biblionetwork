@@ -61,9 +61,9 @@ in `R/biblionetwork-package.R`, not in each function. The
 `*_stagflation.R` files in `R/` only document the datasets in `data/`.
 Non-standard-evaluation column names are declared as `NULL` at the top
 of each function to silence `R CMD check` notes (add new ones there; the
-helpers in `utils.R` do the same). Vignettes and README are Quarto
-(`vignettes/*.qmd`, `README.qmd` -\> `README.md`; set `QUARTO_PATH` to a
-quarto binary,
+helpers in `utils.R` do the same). Articles and README are Quarto
+(`vignettes/articles/*.qmd`, shown on the site only, not built by R CMD;
+`README.qmd` -\> `README.md`; set `QUARTO_PATH` to a quarto binary,
 e.g. `~/quarto-1.10.18-linux-amd64/quarto-1.10.18/bin/quarto`, to build
 them). The site theme is in `pkgdown/extra.scss`. `docs/`, `revdep/`,
 `data-raw/` are excluded from the build via `.Rbuildignore`;
