@@ -10,7 +10,7 @@
 ^pkgdown$
 ^cran-comments\.md$
 ^revdep$
-^CLAUDE\.md$
+^\.claude$
 ^\.vscode$
 ^tests/testthat/test-databases\.R$
 ^tests/testthat/helper-databases\.R$
