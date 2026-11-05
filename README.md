@@ -6,13 +6,12 @@
 
 <!-- badges: start -->
 
-[![CRAN
-Status](https://www.r-pkg.org/badges/version-last-release/biblionetwork.png)](https://cran.r-project.org/package=biblionetwork)
+<a href="https://cran.r-project.org/package=biblionetwork"><img src="https://www.r-pkg.org/badges/version-last-release/biblionetwork" alt="CRAN Status"></a>
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7677369.svg)](https://doi.org/10.5281/zenodo.7677369)
-[![downloads](https://cranlogs.r-pkg.org/badges/biblionetwork.png)](https://cran.r-project.org/package=biblionetwork)
-[![downloads-total](https://cranlogs.r-pkg.org/badges/grand-total/biblionetwork.png)](https://cran.r-project.org/package=biblionetwork)
+<a href="https://cran.r-project.org/package=biblionetwork"><img src="https://cranlogs.r-pkg.org/badges/biblionetwork" alt="downloads"></a>
+<a href="https://cran.r-project.org/package=biblionetwork"><img src="https://cranlogs.r-pkg.org/badges/grand-total/biblionetwork" alt="downloads-total"></a>
 <!-- badges: end -->
 
 ## What does biblionetwork do?
