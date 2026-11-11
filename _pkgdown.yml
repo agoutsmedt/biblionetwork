@@ -94,5 +94,7 @@ reference:
 
 news:
   releases:
+  - text: "Version 0.2.0"
+    href: https://aurelien-goutsmedt.com/post/release-biblionetwork-0-2-0/
   - text: "Version 0.1.0"
     href: https://aurelien-goutsmedt.com/post/release-biblionetwork/
